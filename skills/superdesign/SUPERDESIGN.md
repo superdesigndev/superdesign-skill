@@ -163,25 +163,13 @@ Then in the iterate command:
       --json
     ```
     → Note: `draftId` in response is the baseline draft
-  3.4 Branch designs from baseline (use `draftId` from step 3.3):
-
-    **Option A: Single prompt + count** (AI generates different approaches)
+  3.4 Branch designs from baseline (use `draftId` from step 3.3)
     ```bash
     superdesign iterate-design-draft \
       --draft-id <draftId> \
-      -p "<design requirements>" \
-      --mode branch \
-      --count 3 \
-      --json
-    ```
-
-    **Option B: Multiple specific prompts** (each prompt = one variation)
-    ```bash
-    superdesign iterate-design-draft \
-      --draft-id <draftId> \
-      -p "Dark theme with neon accents" \
-      -p "Minimal with more whitespace" \
-      -p "Bold gradients and shadows" \
+      --prompt "Dark theme with neon accents" \
+      --prompt "Minimal with more whitespace" \
+      --prompt "Bold gradients and shadows" \
       --mode branch \
       --json
     ```
@@ -224,17 +212,19 @@ superdesign create-project --title "X" --prompt "..." --json
 superdesign create-project --title "X" --prompt-file .superdesign/design-system.md --json
 superdesign create-project --title "X" --html-file ./index.html --prompt-file .superdesign/design-system.md --json
 
-superdesign create-design-draft --project-id <id> --title "X" --prompt "..." --device desktop --json
-
 # Iterate: replace mode (single variation, updates in place)
-superdesign iterate-design-draft --draft-id <id> -p "..." --mode replace --json
+superdesign iterate-design-draft --draft-id <id> --prompt "..." --mode replace --json
 
-# Iterate: branch mode with count (AI generates N variations)
-superdesign iterate-design-draft --draft-id <id> -p "..." --mode branch --count 3 --json
+# Iterate: Explore multiple versions & variations (each prompt = one variation, prompt should be just directional, do not specify color, style, let superdesign design expert fill in details, you just give direction)
+superdesign iterate-design-draft --draft-id <id> --prompt "dark theme" --prompt "minimal" --prompt "bold" --mode branch --json
 
-# Iterate: branch mode with multiple prompts (each prompt = one variation)
-superdesign iterate-design-draft --draft-id <id> -p "dark theme" -p "minimal" -p "bold" --mode branch --json
+# Iterate: branch mode with count (only give exploration direction, and let Superdesign fill in details, e.g. explore different styles)
+superdesign iterate-design-draft --draft-id <id> --prompt "..." --mode branch --count 3 --json
+
 
 superdesign fetch-design-nodes --project-id <id> --json
 superdesign get-design --draft-id <id> --json
+
+# Create new design from scracth without any reference - ONLY use this for creating brand new design, default NEVER use this
+superdesign create-design-draft --project-id <id> --title "X" --prompt "..." --device desktop --json
 ```
