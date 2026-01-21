@@ -77,6 +77,19 @@ The playground HTML must contain **ONLY UI that currently exists in the codebase
   - **Full page**: replica of page where component operates (shows surrounding context)
 - Save to: `.superdesign/playgrounds/<name>.html`
 
+### Naming & Reuse
+
+**Naming convention** — Name playgrounds for reusability:
+- **Full page**: Use the page route (e.g., `home.html`, `settings-profile.html`, `dashboard.html`)
+- **Component**: Use the component name (e.g., `sidebar-nav.html`, `pricing-card.html`)
+
+This makes it easy to identify if a playground already exists for the same page/component.
+
+**Before creating a playground:**
+1. Check if `.superdesign/playgrounds/` already contains a matching file
+2. If exists: **update** the existing file instead of creating a new one
+3. If not exists: create the new playground file
+
 ### Example: Adding a "Book Demo" section to home page
 
 **BAD approach:**
@@ -114,24 +127,26 @@ Then in the iterate command:
 ### A) Extract from codebase
 
 1. Investigate codebase:
+   - Product context: what is being built, target users, core value proposition, key user journeys and page structure
    - design tokens, typography, colors, spacing, radius, shadows
    - motion/animation patterns
    - example components usage + implementation patterns
-   - core product functions + key pages
 2. Write standalone design system to:
    - `.superdesign/design-system.md`
    - Must be implementable without the codebase
 
 ### B) Create a new design system (to improve current UI)
 
-1. Investigate codebase to understand product + needed pages/components
+1. Investigate codebase to understand:
+   - Product context: what is being built, target users, core value proposition, key user journeys and page structure
+   - needed pages/components
 2. Gather inspirations (generic tools):
    - `superdesign search-prompts --tags "style" --json`
    - `superdesign get-prompts --slugs ... --json`
    - optional: `superdesign extract-brand-guide --url ... --json`
 3. Interview user (`askQuestion`) to choose direction
 4. Write:
-   - `.superdesign/design-system.md` (adapted to product + references)
+   - `.superdesign/design-system.md` (product context + UX flows + visual design, adapted to references)
 
 ---
 
