@@ -46,7 +46,7 @@ Use design agent to generate high quality design drafts:
 5. If yes to superdesign
   5.1 Create/update a pixel perfect html replica of current UI of page that we will design on top of in `.superdesign/replica_html_template/<name>.html` (html should only contain & reflect how UI look now, the actual design should be handled by superdesign agent)
   5.2 Create project with this replica html + design system guide
-  5.3 Start desigining by creating design draft based on designDraft ID returned from project
+  5.3 Start desigining by iterating & branching design draft based on designDraft ID returned from project
 
 
 ## Always-on rules
@@ -163,13 +163,26 @@ Then in the iterate command:
       --json
     ```
     → Note: `draftId` in response is the baseline draft
-  3.4 Branch designs from baseline (use `draftId` from step 4):
+  3.4 Branch designs from baseline (use `draftId` from step 3.3):
+
+    **Option A: Single prompt + count** (AI generates different approaches)
     ```bash
     superdesign iterate-design-draft \
       --draft-id <draftId> \
-      --prompt "<design requirements>" \
+      -p "<design requirements>" \
       --mode branch \
       --count 3 \
+      --json
+    ```
+
+    **Option B: Multiple specific prompts** (each prompt = one variation)
+    ```bash
+    superdesign iterate-design-draft \
+      --draft-id <draftId> \
+      -p "Dark theme with neon accents" \
+      -p "Minimal with more whitespace" \
+      -p "Bold gradients and shadows" \
+      --mode branch \
       --json
     ```
   3.5 Share design title & preview URL → collect feedback → iterate
@@ -177,17 +190,7 @@ Then in the iterate command:
 
 ### Advanced usage
 
-#### Plan + generate a full user journey
-
-Plan:
-
-```bash
-superdesign plan-flow-pages \
-  --draft-id <draftId> \
-  --source-node-id <nodeId> \
-  --context "<flow context>" \
-  --json
-```
+#### Design multiple page OR a full user journey
 
 Execute:
 
@@ -222,8 +225,15 @@ superdesign create-project --title "X" --prompt-file .superdesign/design-system.
 superdesign create-project --title "X" --html-file ./index.html --prompt-file .superdesign/design-system.md --json
 
 superdesign create-design-draft --project-id <id> --title "X" --prompt "..." --device desktop --json
-superdesign iterate-design-draft --draft-id <id> --prompt "..." --mode replace --json
-superdesign iterate-design-draft --draft-id <id> --prompt "..." --mode branch --count 3 --json
+
+# Iterate: replace mode (single variation, updates in place)
+superdesign iterate-design-draft --draft-id <id> -p "..." --mode replace --json
+
+# Iterate: branch mode with count (AI generates N variations)
+superdesign iterate-design-draft --draft-id <id> -p "..." --mode branch --count 3 --json
+
+# Iterate: branch mode with multiple prompts (each prompt = one variation)
+superdesign iterate-design-draft --draft-id <id> -p "dark theme" -p "minimal" -p "bold" --mode branch --json
 
 superdesign fetch-design-nodes --project-id <id> --json
 superdesign get-design --draft-id <id> --json
