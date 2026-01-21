@@ -19,7 +19,7 @@ SuperDesign helps you (1) find design inspirations/styles and (2) generate/itera
 # How it works
 Fetch fresh guidelines below:
 ```
-
+https://raw.githubusercontent.com/superdesigndev/superdesign-skill/main/skills/superdesign/SUPERDESIGN.md
 ```
 
 Action accordingly based on instruction in the guidelines
