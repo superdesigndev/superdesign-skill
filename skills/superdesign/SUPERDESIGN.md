@@ -209,25 +209,23 @@ superdesign extract-brand-guide --url https://example.com --json
 
 # Canvas - Create project
 # Options: -s/--set-project-prompt (inline), --set-project-prompt-file (from file)
-superdesign create-project --title "X" -s "..." --json
+superdesign create-project --title "X" --set-project-prompt "..." --json
 superdesign create-project --title "X" --set-project-prompt-file .superdesign/design-system.md --json
 superdesign create-project --title "X" --html-file ./index.html --set-project-prompt-file .superdesign/design-system.md --json
 
 # Iterate: replace mode (single variation, updates in place)
-# Options: -p/--prompt
 superdesign iterate-design-draft --draft-id <id> -p "..." --mode replace --json
 
-# Iterate: branch mode - explore multiple variations (each -p = one variation)
+# Iterate: Explore multiple versions & variations (each prompt = one variation, prompt should be just directional, do not specify color, style, let superdesign design expert fill in details, you just give direction)
 superdesign iterate-design-draft --draft-id <id> -p "dark theme" -p "minimal" -p "bold" --mode branch --json
 
-# Iterate: branch mode with count (explore N variations of single direction)
+# Iterate: Auto explore (only give exploration direction, and let Superdesign fill in details, e.g. explore different styles; Default do not use this)
 superdesign iterate-design-draft --draft-id <id> -p "..." --mode branch --count 3 --json
 
 # Fetch & get designs
 superdesign fetch-design-nodes --project-id <id> --json
 superdesign get-design --draft-id <id> --json
 
-# Create new design from scratch (ONLY for brand new designs without reference)
-# Options: -p/--prompt
+# Create new design from scracth without any reference - ONLY use this for creating brand new design, default NEVER use this
 superdesign create-design-draft --project-id <id> --title "X" -p "..." --json
 ```
