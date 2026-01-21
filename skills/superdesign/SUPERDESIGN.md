@@ -159,7 +159,7 @@ Then in the iterate command:
     superdesign create-project \
       --title "<feature>" \
       --html-file .superdesign/replica_html_template/<file>.html \
-      --prompt-file .superdesign/design-system.md \
+      --set-project-prompt-file .superdesign/design-system.md \
       --json
     ```
     → Note: `draftId` in response is the baseline draft
@@ -167,9 +167,9 @@ Then in the iterate command:
     ```bash
     superdesign iterate-design-draft \
       --draft-id <draftId> \
-      --prompt "Dark theme with neon accents" \
-      --prompt "Minimal with more whitespace" \
-      --prompt "Bold gradients and shadows" \
+      -p "Dark theme with neon accents" \
+      -p "Minimal with more whitespace" \
+      -p "Bold gradients and shadows" \
       --mode branch \
       --json
     ```
@@ -207,24 +207,27 @@ superdesign search-prompts --tags "style" --json
 superdesign get-prompts --slugs "<slug1,slug2>" --json
 superdesign extract-brand-guide --url https://example.com --json
 
-# Canvas
-superdesign create-project --title "X" --prompt "..." --json
-superdesign create-project --title "X" --prompt-file .superdesign/design-system.md --json
-superdesign create-project --title "X" --html-file ./index.html --prompt-file .superdesign/design-system.md --json
+# Canvas - Create project
+# Options: -s/--set-project-prompt (inline), --set-project-prompt-file (from file)
+superdesign create-project --title "X" -s "..." --json
+superdesign create-project --title "X" --set-project-prompt-file .superdesign/design-system.md --json
+superdesign create-project --title "X" --html-file ./index.html --set-project-prompt-file .superdesign/design-system.md --json
 
 # Iterate: replace mode (single variation, updates in place)
-superdesign iterate-design-draft --draft-id <id> --prompt "..." --mode replace --json
+# Options: -p/--prompt
+superdesign iterate-design-draft --draft-id <id> -p "..." --mode replace --json
 
-# Iterate: Explore multiple versions & variations (each prompt = one variation, prompt should be just directional, do not specify color, style, let superdesign design expert fill in details, you just give direction)
-superdesign iterate-design-draft --draft-id <id> --prompt "dark theme" --prompt "minimal" --prompt "bold" --mode branch --json
+# Iterate: branch mode - explore multiple variations (each -p = one variation)
+superdesign iterate-design-draft --draft-id <id> -p "dark theme" -p "minimal" -p "bold" --mode branch --json
 
-# Iterate: branch mode with count (only give exploration direction, and let Superdesign fill in details, e.g. explore different styles)
-superdesign iterate-design-draft --draft-id <id> --prompt "..." --mode branch --count 3 --json
+# Iterate: branch mode with count (explore N variations of single direction)
+superdesign iterate-design-draft --draft-id <id> -p "..." --mode branch --count 3 --json
 
-
+# Fetch & get designs
 superdesign fetch-design-nodes --project-id <id> --json
 superdesign get-design --draft-id <id> --json
 
-# Create new design from scracth without any reference - ONLY use this for creating brand new design, default NEVER use this
-superdesign create-design-draft --project-id <id> --title "X" --prompt "..." --device desktop --json
+# Create new design from scratch (ONLY for brand new designs without reference)
+# Options: -p/--prompt
+superdesign create-design-draft --project-id <id> --title "X" -p "..." --json
 ```
