@@ -1,15 +1,5 @@
 SuperDesign helps you (1) find design inspirations/styles and (2) optionally generate/iterate design drafts on an infinite canvas.
 
-Each SuperDesign canvas run creates a new node and returns a `previewUrl`.
-
----
-
-## Core scenarios (what this skill handles)
-
-1. **Help me design X** (feature/page/flow)
-2. **Set design system**
-3. **Help me improve design of X**
-
 ---
 
 ## Tooling overview
@@ -45,9 +35,9 @@ Use these when you want to explore multiple directions and show previews:
 - Create design draft
 - Iterate design draft (replace / branch)
 - Plan flow pages → execute flow pages
-- Fetch nodes, export HTML
+- Fetch specific design draft
 
-> Pixel-perfect HTML playground is ONLY required for Canvas workflows.
+> Pixel-perfect replica_html_template is ONLY required for Canvas workflows.
 
 ---
 
@@ -56,46 +46,50 @@ Use these when you want to explore multiple directions and show previews:
 - Design system should live at: `.superdesign/design-system.md`
 - If `.superdesign/design-system.md` is missing, run **Design System Setup** first.
 - Use `askQuestion` to ask high-signal questions (constraints, taste, tradeoffs).
-- For Canvas workflows: build a simplified/pixel-perfect prototype HTML in:
-  - `.superdesign/playgrounds/<name>.html`
+- For Canvas workflows: if we are designing on top of existing UI, build a pixel-perfect replica html of the page to provide starting context for design:
+  - `.superdesign/replica_html_template/<name>.html`
 - Always use `--json` for machine parsing.
 
 ---
 
-## Playground rules (Canvas only)
+## replica_html_template rules (Canvas only)
 
-**Playground = BEFORE state (what exists now).** It provides context for SuperDesign agent.
+The purpose of replica html template is creating a lightweight version of existing UI so design agent can iterate on top of it (Since superdesign doesn't have access to your codebase directly, this is important context)
+
+Overall process for designing features on top of existing app:
+1. Identify & understand existing UI of page related
+2. Create/update a pixel perfect replica html in `.superdesign/replica_html_template/<name>.html` (Only replicate how UI look now, do NOT design)
+  - If design task is redesign Profile page, then the replica should just replicate how profile page look now
+  - If design task is add a new 
+3. Create project with this replica html + design system guide, then start designing by creating design draft based on designDraft ID returned
+
+**replica_html_template = BEFORE state (what exists now).** It provides context for SuperDesign agent.
 **Prompt = DESIRED CHANGE (what to add/modify).**
 
-The playground HTML must contain **ONLY UI that currently exists in the codebase**. For NEW features/sections, describe them entirely in the `--prompt` flag — do NOT add wireframes, placeholders, or sketches to the playground HTML.
+The replica_html_template must contain **ONLY UI that currently exists in the codebase**. 
 
-- **DO NOT** design or improve anything in the playground
+- **DO NOT** design or improve anything in the replica_html_template
 - **DO NOT** add placeholder sections like `<!-- NEW FEATURE - DESIGN THIS -->`
 - **DO** create pixel-perfect replica of current UI state
-- Valid formats:
-  - **Component-only**: isolated component with enough markup to show core UX/states
-  - **Full page**: replica of page where component operates (shows surrounding context)
-- Save to: `.superdesign/playgrounds/<name>.html`
+- Save to: `.superdesign/replica_html_template/<name>.html`
 
 ### Naming & Reuse
 
-**Naming convention** — Name playgrounds for reusability:
-- **Full page**: Use the page route (e.g., `home.html`, `settings-profile.html`, `dashboard.html`)
-- **Component**: Use the component name (e.g., `sidebar-nav.html`, `pricing-card.html`)
+**Naming convention** 
+Name replica_html_template for reusability: Use the page route (e.g., `home.html`, `settings-profile.html`, `dashboard.html`)
+This makes it easy to identify if a page_template already exists.
 
-This makes it easy to identify if a playground already exists for the same page/component.
-
-**Before creating a playground:**
-1. Check if `.superdesign/playgrounds/` already contains a matching file
-2. If exists: **update** the existing file instead of creating a new one
-3. If not exists: create the new playground file
+**Before creating a replica_html_template:**
+1. Check if `.superdesign/replica_html_template/` already contains a matching file
+2. If exists: reuse it or update to reflect the latest existing UI
+3. If not exists: create the neww file
 
 ### Example: Adding a "Book Demo" section to home page
 
 **BAD approach:**
 
 ```html
-<!-- playground includes a sketched Book Demo section -->
+<!-- replica_html_template includes a sketched Book Demo section -->
 <section class="book-demo">
   <!-- DESIGN THIS - Add CTA here -->
   <h3>Book a Demo</h3>
@@ -106,15 +100,12 @@ This makes it easy to identify if a playground already exists for the same page/
 **GOOD approach:**
 
 ```html
-<!-- playground is pure replica of existing home page (hero + projects) -->
-<!-- NO book demo section in HTML -->
+<!-- replica_html_template is pure replica of existing home page (hero + projects) -->
 ```
 
 Then in the iterate command:
-
-```bash
---prompt "Add a Book Demo section between the hero and projects sections. Requirements: minimal card style, horizontal layout..."
-```
+1/ create project passing this replica html
+2/ create design draft based on design draft id
 
 ---
 
@@ -172,14 +163,14 @@ Use canvas when direction is uncertain or multiple options are needed.
 ### Canvas workflow — Add feature to existing page
 
 1. Ensure `.superdesign/design-system.md` exists (setup if missing)
-2. Build prototype HTML playground (simplified + pixel-perfect enough):
-   - `.superdesign/playgrounds/<page>-<feature>.html`
+2. Identify page most relevant, and build a pixel-perfect replica in replica_html_template:
+   - `.superdesign/replica_html_template/<page>-<feature>.html`
 3. Ask targeted questions (`askQuestion`) about requirements + taste
-4. Create project with playground HTML (returns `draftId`):
+4. Create project with replica_html_template (returns `draftId`):
    ```bash
    superdesign create-project \
      --title "<feature>" \
-     --html-file .superdesign/playgrounds/<file>.html \
+     --html-file .superdesign/replica_html_template/<file>.html \
      --prompt-file .superdesign/design-system.md \
      --json
    ```
@@ -197,39 +188,18 @@ Use canvas when direction is uncertain or multiple options are needed.
 
 ### Canvas workflow — Add new page
 
-Same as above, but playground should include shared UI shell:
-
+Same as above, but replica_html_template should include shared UI shell:
 - nav, layout container, spacing rhythm, shared components
 
 ### Canvas workflow — Improve current UI
-
 1. Investigate product + current UI states
 2. Ensure design system exists
 3. Propose improvement options:
    - big restructure
    - style uplift
    - low-hanging polish
-4. Pick one → build playground → create project (prompt-file design system) → branch drafts
+4. Pick one → build replica_html_template → create project (prompt-file design system) → branch drafts
 5. Share `previewUrl` → iterate
-
-### When to use create-design-draft
-
-Only use `create-design-draft` when creating from scratch (no HTML baseline).
-
-**Required in prompt:**
-
-- Full page structure (header, sidebar, main content areas)
-- Component environment/surroundings
-- Layout context (what's above/below/beside)
-
-```bash
-superdesign create-design-draft \
-  --project-id <id> \
-  --title "Feature X" \
-  --prompt "Page has: fixed header 64px, left sidebar 240px, main content area. Design a settings panel in the main content area with..." \
-  --device desktop \
-  --json
-```
 
 ---
 
