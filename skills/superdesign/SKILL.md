@@ -23,3 +23,11 @@ https://raw.githubusercontent.com/superdesigndev/superdesign-skill/main/skills/s
 ```
 
 Action accordingly based on instruction in the guidelines
+
+# Superdesign CLI
+
+```
+npm install -g @superdesign/cli@latest
+superdesign login
+superdesign --help
+```
