@@ -1,5 +1,19 @@
 SuperDesign helps you (1) find design inspirations/styles and (2) generate/iterate design drafts on an infinite canvas.
 
+## SOP
+1. Investigate existing UI, workflow
+2. Setup design system file if not exist yet
+3. Requirements gathering: use askQuestion tool to clarify requirements with users (Optionally use Inspiration tool to find inspiration when needed)
+4. Ask user whether ready to design in superdesign OR implement UI directly
+5. If yes to superdesign
+  5.1 Create/update a pixel perfect html replica of current UI of page that we will design on top of in `.superdesign/replica_html_template/<name>.html` (html should only contain & reflect how UI look now, the actual design should be handled by superdesign agent)
+  - if improve current page, replicate the page current UI
+  - if adding new feature, replicate the page where this feature will be used
+  - if updating component, replicate the page where this component is used
+  - Basically you should almost always create a contextual prototype playground
+  5.2 Create project with this replica html + design system guide
+  5.3 Start desigining by iterating & branching design draft based on designDraft ID returned from project
+
 ---
 
 ## Tooling overview
@@ -11,9 +25,9 @@ Use these to discover style direction, references, and brand context:
 - **Search prompt library** (style/components/pages)
 
   ```bash
-  superdesign search-prompts --keyword "<keyword>" --json
+  superdesign search-prompts --query "<query>" --json
   superdesign search-prompts --tags "style" --json
-  superdesign search-prompts --tags "style" --keyword "<style keyword>" --json
+  superdesign search-prompts --tags "style" --query "<style query>" --json
   ```
 
 - **Get full prompt details**
@@ -30,23 +44,13 @@ Use these to discover style direction, references, and brand context:
 ### B) Canvas Design Tools
 
 Use design agent to generate high quality design drafts:
-- Create project (supports prompt / prompt file / HTML)
+- Create project (auto-detects `.superdesign/design-system.md` as prompt)
 - Create design draft
 - Iterate design draft (replace / branch)
 - Plan flow pages → execute flow pages
 - Fetch specific design draft
 
 ---
-
-## Overall SOP for designing features on top of existing app:
-1. Investigate existing UI, workflow
-2. Setup design system file if not exist yet
-3. Requirements gathering: use askQuestion tool to clarify requirements with users (Optionally use Inspiration tool to find inspiration when needed)
-4. Ask user whether ready to design in superdesign OR implement UI directly
-5. If yes to superdesign
-  5.1 Create/update a pixel perfect html replica of current UI of page that we will design on top of in `.superdesign/replica_html_template/<name>.html` (html should only contain & reflect how UI look now, the actual design should be handled by superdesign agent)
-  5.2 Create project with this replica html + design system guide
-  5.3 Start desigining by iterating & branching design draft based on designDraft ID returned from project
 
 
 ## Always-on rules
@@ -73,7 +77,7 @@ Actual design will be done via superdesign agent, by passing the prompt
 The replica_html_template must contain **ONLY UI that currently exists in the codebase**. 
 - **DO NOT** design or improve anything in the replica_html_template
 - **DO NOT** add placeholder sections like `<!-- NEW FEATURE - DESIGN THIS -->`
-- **DO** create pixel-perfect replica of current UI state
+- **DO** create pixel-perfect replica of current UI state or page
 - Save to: `.superdesign/replica_html_template/<name>.html`
 
 ### Naming & Reuse
@@ -158,11 +162,11 @@ Then in the iterate command:
     ```bash
     superdesign create-project \
       --title "<feature>" \
-      --html-file .superdesign/replica_html_template/<file>.html \
-      --set-project-prompt-file .superdesign/design-system.md \
+      --template .superdesign/replica_html_template/<file>.html \
       --json
     ```
     → Note: `draftId` in response is the baseline draft
+    → Auto-detects `.superdesign/design-system.md` as project prompt
   3.4 Branch designs from baseline (use `draftId` from step 3.3)
     ```bash
     superdesign iterate-design-draft \
@@ -192,7 +196,7 @@ superdesign execute-flow-pages \
 #### Get HTML reference from a draft
 
 ```bash
-superdesign get-design --draft-id <draftId> --output ./design.html
+superdesign get-design --draft-id <draftId>
 ```
 
 ---
@@ -201,16 +205,14 @@ superdesign get-design --draft-id <draftId> --output ./design.html
 
 ```bash
 # Inspirations
-superdesign search-prompts --keyword "<keyword>" --json
+superdesign search-prompts --query "<query>" --json
 superdesign search-prompts --tags "style" --json
 superdesign get-prompts --slugs "<slug1,slug2>" --json
 superdesign extract-brand-guide --url https://example.com --json
 
-# Canvas - Create project
-# Options: -s/--set-project-prompt (inline), --set-project-prompt-file (from file)
-superdesign create-project --title "X" --set-project-prompt "..." --json
-superdesign create-project --title "X" --set-project-prompt-file .superdesign/design-system.md --json
-superdesign create-project --title "X" --html-file ./index.html --set-project-prompt-file .superdesign/design-system.md --json
+# Canvas - Create project (auto-detects .superdesign/design-system.md as prompt)
+superdesign create-project --title "X" --json
+superdesign create-project --title "X" --template ./index.html --json
 
 # Iterate: replace mode (single variation, updates in place)
 superdesign iterate-design-draft --draft-id <id> -p "..." --mode replace --json
