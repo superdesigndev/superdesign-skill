@@ -16,43 +16,6 @@ SuperDesign helps you (1) find design inspirations/styles and (2) generate/itera
 
 ---
 
-## Tooling overview
-
-### A) Inspiration & Style Tools (generic, always available)
-
-Use these to discover style direction, references, and brand context:
-
-- **Search prompt library** (style/components/pages)
-
-  ```bash
-  superdesign search-prompts --query "<query>" --json
-  superdesign search-prompts --tags "style" --json
-  superdesign search-prompts --tags "style" --query "<style query>" --json
-  ```
-
-- **Get full prompt details**
-
-  ```bash
-  superdesign get-prompts --slugs "<slug1,slug2,...>" --json
-  ```
-
-- **Extract brand guide from a URL**
-  ```bash
-  superdesign extract-brand-guide --url https://example.com --json
-  ```
-
-### B) Canvas Design Tools
-
-Use design agent to generate high quality design drafts:
-- Create project (auto-detects `.superdesign/design-system.md` as prompt)
-- Create design draft
-- Iterate design draft (replace / branch)
-- Plan flow pages → execute flow pages
-- Fetch specific design draft
-
----
-
-
 ## Always-on rules
 - Design system should live at: `.superdesign/design-system.md`
 - If `.superdesign/design-system.md` is missing, run **Design System Setup** first.
@@ -201,6 +164,42 @@ superdesign get-design --draft-id <draftId>
 
 ---
 
+## Tooling overview
+
+### A) Inspiration & Style Tools (generic, always available)
+
+Use these to discover style direction, references, and brand context:
+
+- **Search prompt library** (style/components/pages)
+
+  ```bash
+  superdesign search-prompts --query "<query>" --json
+  superdesign search-prompts --tags "style" --json
+  superdesign search-prompts --tags "style" --query "<style query>" --json
+  ```
+
+- **Get full prompt details**
+
+  ```bash
+  superdesign get-prompts --slugs "<slug1,slug2,...>" --json
+  ```
+
+- **Extract brand guide from a URL**
+  ```bash
+  superdesign extract-brand-guide --url https://example.com --json
+  ```
+
+### B) Canvas Design Tools
+
+Use design agent to generate high quality design drafts:
+- Create project (auto-detects `.superdesign/design-system.md` as prompt)
+- Create design draft
+- Iterate design draft (replace / branch)
+- Plan flow pages → execute flow pages
+- Fetch specific design draft
+
+---
+
 ## Quick reference (key commands)
 
 ```bash
@@ -210,15 +209,14 @@ superdesign search-prompts --tags "style" --json
 superdesign get-prompts --slugs "<slug1,slug2>" --json
 superdesign extract-brand-guide --url https://example.com --json
 
-# Canvas - Create project (auto-detects .superdesign/design-system.md as prompt)
-superdesign create-project --title "X" --json
-superdesign create-project --title "X" --template ./index.html --json
-
-# Iterate: replace mode (single variation, updates in place)
-superdesign iterate-design-draft --draft-id <id> -p "..." --mode replace --json
+# Canvas - Create project with template replica playground
+superdesign create-project --title "X" --template .superdesign/replica_html_template/home-page.html --json
 
 # Iterate: Explore multiple versions & variations (each prompt = one variation, prompt should be just directional, do not specify color, style, let superdesign design expert fill in details, you just give direction)
 superdesign iterate-design-draft --draft-id <id> -p "dark theme" -p "minimal" -p "bold" --mode branch --json
+
+# Iterate: replace mode (single variation, mainly for small tweaks)
+superdesign iterate-design-draft --draft-id <id> -p "..." --mode replace --json
 
 # Iterate: Auto explore (only give exploration direction, and let Superdesign fill in details, e.g. explore different styles; Default do not use this)
 superdesign iterate-design-draft --draft-id <id> -p "..." --mode branch --count 3 --json
