@@ -11,7 +11,7 @@ SuperDesign helps you (1) find design inspirations/styles and (2) generate/itera
   - if adding new feature, replicate the page where this feature will be used
   - if updating component, replicate the page where this component is used
   - Basically you should almost always create a contextual prototype playground
-  5.2 Create project with this replica html + design system guide
+  5.2 Create project with this replica html
   5.3 Start desigining by iterating & branching design draft based on designDraft ID returned from project
 
 ---
