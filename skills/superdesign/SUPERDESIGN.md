@@ -185,7 +185,6 @@ Execute:
 ```bash
 superdesign execute-flow-pages \
   --draft-id <draftId> \
-  --source-node-id <nodeId> \
   --pages '[{"title":"Signup","prompt":"..."},{"title":"Payment","prompt":"..."}]' \
   --json
 ```
