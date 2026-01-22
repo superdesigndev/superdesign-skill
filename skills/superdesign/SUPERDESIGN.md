@@ -227,7 +227,7 @@ superdesign extract-brand-guide --url https://example.com --json
 
 # Canvas - Create project (auto-detects .superdesign/design-system.md as prompt)
 superdesign create-project --title "X" --json
-superdesign create-project --title "X" --template ./index.html --json
+superdesign create-project --title "X" --template .superdesign/replica_html_template/home.html --json
 
 # Iterate: replace mode (single variation, updates in place)
 superdesign iterate-design-draft --draft-id <id> -p "..." --mode replace --json
@@ -235,7 +235,7 @@ superdesign iterate-design-draft --draft-id <id> -p "..." --mode replace --json
 # Iterate: Explore multiple versions & variations (each prompt = one variation, prompt should be just directional, do not specify color, style, let superdesign design expert fill in details, you just give direction)
 superdesign iterate-design-draft --draft-id <id> -p "dark theme" -p "minimal" -p "bold" --mode branch --json
 
-# Iterate: Auto explore (only give exploration direction, and let Superdesign fill in details, e.g. explore different styles; Default do not use this)
+# Iterate: Auto explore (only give exploration direction, and let Superdesign fill in details, e.g. explore different styles; Default do NOT use auto explore mode)
 superdesign iterate-design-draft --draft-id <id> -p "..." --mode branch --count 3 --json
 
 # Fetch & get designs
