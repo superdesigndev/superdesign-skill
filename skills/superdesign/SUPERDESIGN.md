@@ -103,7 +103,8 @@ Assistant:
 - Design system file path is fixed: .superdesign/design-system.md
 - replica_html_template path is fixed: .superdesign/replica_html_template/<route-like-name>.html
 - replica_html_template = BEFORE state ONLY (current UI). DO NOT add new UI, placeholders, or improvements.
-- Prefer editing existing files over creating new ones.
+- Prefer iterating existing design draft over creating new ones.
+- MUST use replica_html_template when asked to improve design for existing UI to set enough context for superdesign (check if any template exist already, if so, use/update it, if not, create one)
 
 -----
 
