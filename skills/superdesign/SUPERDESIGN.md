@@ -9,11 +9,17 @@ IMPORTANT: MUST use Task tool for those 2 below
 
 Task 1.1 - UI Source Context:
 Superdesign agent has no context of our codebase and current UI, so first step is to identify and read the most relevant source files to pass as context;
-- Identify the most relevant UI source files (components, pages, layouts) where the design work happens
-   - If design task is redesign profile page, identify the profile page component and its key sub-components
-   - If design task is add new button to side panel, identify the side panel component and the page it lives on
-- Read and collect the file paths of these relevant source files (typically 3-8 files)
+- Identify ALL visible UI source files on the target page, including:
+   - The page/route component itself
+   - Key sub-components used on that page
+   - **Shared/global layout components**: navigation bar, sidebar, header, footer, top bar, breadcrumb, app shell/layout wrapper
+   - Any relevant context providers or layout HOCs that affect the page structure
+- Think about what the user SEES on screen — every visible region needs its source file collected
+   - If design task is redesign profile page, collect: profile page, its sub-components, AND the sidebar/nav/header that surround it
+   - If design task is add new button to side panel, collect: side panel component, the page it lives on, AND the nav/layout wrapper
+- Read and collect the file paths of these relevant source files (typically 5-12 files)
 - These files will be passed via `--context-file` flags to give SuperDesign real codebase context
+- ⚠️ Missing shared components (nav, sidebar, layout) is the #1 cause of inaccurate reproductions. When in doubt, include more files.
 
 Task 1.2 - Design system:
 - Ensure .superdesign/design-system.md exists
@@ -27,8 +33,11 @@ For existing project, for visual approach only ask if they want to keep the same
 
 Step 3 — Design in Superdesign
 - Create project (IMPORTANT - MUST create project first unless project id is given by user): `superdesign create-project --title "<X>"`
-- Create initial draft with source context (⚠️ single -p only — combine all directions into one prompt): `superdesign create-design-draft --project-id <id> --title "<X>" -p "<all design directions in one prompt>" --context-file src/components/Foo.tsx --context-file src/pages/Bar.tsx`
-- Iterate using BRANCH mode with source context: `superdesign iterate-design-draft --draft-id <id> -p "<v1>" -p "<v2>" -p "<v3>" --mode branch --context-file src/components/Foo.tsx --context-file src/pages/Bar.tsx`
+- **Step 3a — Faithful reproduction (ground truth)**: First, create a draft that ACCURATELY reproduces the current UI as-is. The prompt should describe the existing page layout faithfully — do NOT introduce any design changes yet. This serves as the baseline for iteration.
+  `superdesign create-design-draft --project-id <id> --title "Current <X>" -p "Faithfully reproduce the current page exactly as it is based on the provided source code context. Keep all existing layout, components, styles, navigation, and content structure identical." --context-file src/layouts/AppLayout.tsx --context-file src/components/Nav.tsx --context-file src/components/Sidebar.tsx --context-file src/pages/Target.tsx ...`
+  ⚠️ Include ALL shared layout files (nav, sidebar, header, footer, layout wrapper) — not just the target component.
+- **Step 3b — Iterate with changes**: Use the draft from 3a as the base, then iterate with design changes using BRANCH mode:
+  `superdesign iterate-design-draft --draft-id <id> -p "<variation 1 with specific changes>" -p "<variation 2>" -p "<variation 3>" --mode branch --context-file src/layouts/AppLayout.tsx --context-file src/components/Nav.tsx --context-file src/pages/Target.tsx ...`
 - Present URL & title to user and ask for feedback
 - Before further iteration, MUST read the design first: `superdesign get-design --draft-id <id>`
 
@@ -111,6 +120,8 @@ Assistant:
 - Use --context-file to pass relevant UI source files for codebase context
 - Prefer iterating existing design draft over creating new ones.
 - When designing for existing UI, MUST pass relevant source files via --context-file to give SuperDesign real codebase context
+- **GROUND TRUTH FIRST**: For existing UI, ALWAYS create a faithful reproduction draft before making design changes. Never skip straight to redesign — the reproduction is the baseline that ensures iterations stay grounded.
+- **COMPLETE CONTEXT**: Always include shared/global layout files (nav, sidebar, header, footer, layout wrapper) in --context-file, not just the target component. The AI needs to see the full visible page to reproduce it accurately.
 
 -----
 
