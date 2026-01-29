@@ -27,7 +27,7 @@ For existing project, for visual approach only ask if they want to keep the same
 
 Step 3 — Design in Superdesign
 - Create project (IMPORTANT - MUST create project first unless project id is given by user): `superdesign create-project --title "<X>"`
-- Create initial draft with source context: `superdesign create-design-draft --project-id <id> --title "<X>" -p "<direction>" --context-file src/components/Foo.tsx --context-file src/pages/Bar.tsx`
+- Create initial draft with source context (⚠️ single -p only — combine all directions into one prompt): `superdesign create-design-draft --project-id <id> --title "<X>" -p "<all design directions in one prompt>" --context-file src/components/Foo.tsx --context-file src/pages/Bar.tsx`
 - Iterate using BRANCH mode with source context: `superdesign iterate-design-draft --draft-id <id> -p "<v1>" -p "<v2>" -p "<v3>" --mode branch --context-file src/components/Foo.tsx --context-file src/pages/Bar.tsx`
 - Present URL & title to user and ask for feedback
 - Before further iteration, MUST read the design first: `superdesign get-design --draft-id <id>`
@@ -50,7 +50,7 @@ Step 2 — Design system setup (MUST follow Section B):
 
 Step 3 — Design in SuperDesign:
 - Create project: `superdesign create-project --title "<X>"`
-- Create initial draft (only for brand new): `superdesign create-design-draft --project-id <id> --title "<X>" -p "<direction>"`
+- Create initial draft (only for brand new, ⚠️ single -p only): `superdesign create-design-draft --project-id <id> --title "<X>" -p "<all design directions in one prompt>"`
 - Present URL(s), gather feedback, iterate.
 - Iterate in BRANCH mode;
 
@@ -63,7 +63,11 @@ Design system should provides full context across:
 - motion/animation patterns
 - Specific project requirements
 
-## ITERATION PROMPT RULE
+## PROMPT RULE
+⚠️ create-design-draft accepts ONLY ONE -p. Write one comprehensive prompt containing all design directions.
+iterate-design-draft accepts MULTIPLE -p (each -p = one variation/branch).
+Do NOT use multiple -p with create-design-draft — only the last -p will be kept, all others are silently lost.
+
 When using iterate-design-draft with multiple -p prompts:
 - Each -p must describe ONE distinct direction (e.g. "conversion-focused hero", "editorial storytelling", "dense power-user layout").
 - Do NOT specify exact colors/typography unless the user explicitly requests.
@@ -116,6 +120,9 @@ Assistant:
   - branch: must include --mode branch, can include multiple -p, optional --context-file
   - replace: must include --mode replace, should include exactly one -p, optional --context-file
   - NEVER pass "count" or any unrelated params
-- create-design-draft: only --project-id, --title, -p, optional --context-file # Only use this for creating purely new design from scratch
+- create-design-draft: only --project-id, --title, -p (SINGLE prompt only), optional --context-file
+  - ⚠️ ONLY accepts ONE -p flag. Multiple -p flags will silently drop all but the last one.
+  - Combine all design directions into a single -p string.
+  - Only use this for creating purely new design from scratch.
 - execute-flow-pages: only --draft-id, --pages, optional --context-file
 - get-design: only --draft-id
