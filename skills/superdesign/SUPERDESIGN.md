@@ -155,6 +155,7 @@ Assistant:
 - **GROUND TRUTH FIRST**: For existing UI, ALWAYS create a faithful reproduction draft (Step 3a) before making design changes (Step 3b). Never skip straight to redesign. Never combine reproduction and design changes in one command.
 - **TWO-STEP WORKFLOW**: Step 3a = `create-design-draft` with reproduction-only prompt → Step 3b = `iterate-design-draft --mode branch` with variation prompts. These are ALWAYS two separate commands.
 - **COMPLETE CONTEXT**: Always include shared/global layout files (nav, sidebar, header, footer, layout wrapper) in --context-file, not just the target component. The AI needs to see the full visible page to reproduce it accurately.
+- **CLI VERSION**: If `--context-file` flag is not recognized or unavailable, the CLI is outdated. Auto-update by running `npm install -g @superdesign/cli@latest` before retrying.
 
 -----
 
