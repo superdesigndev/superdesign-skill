@@ -25,10 +25,21 @@ https://raw.githubusercontent.com/superdesigndev/superdesign-skill/main/skills/s
 
 Action accordingly based on instruction in the guidelines
 
-# Superdesign CLI
+# Superdesign CLI (MUST run before any command)
 
-```
-npm install -g @superdesign/cli@latest
-superdesign login
-superdesign --help
-```
+**IMPORTANT: Before running ANY superdesign command, you MUST ensure the CLI is installed and logged in.**
+
+Follow these steps in order — do NOT skip any step:
+
+1. Install (or update) the CLI:
+   ```
+   npm install -g @superdesign/cli@latest
+   ```
+2. Check login status by running any command (e.g. `superdesign --help`). If you see an auth/login error, run:
+   ```
+   superdesign login
+   ```
+   Wait for login to complete successfully before proceeding.
+3. Only after login succeeds, run your intended superdesign commands.
+
+> **Never assume the user is already logged in.** Always verify login first.
