@@ -33,13 +33,44 @@ For existing project, for visual approach only ask if they want to keep the same
 
 Step 3 — Design in Superdesign
 - Create project (IMPORTANT - MUST create project first unless project id is given by user): `superdesign create-project --title "<X>"`
-- **Step 3a — Faithful reproduction (ground truth)**: First, create a draft that ACCURATELY reproduces the current UI as-is. The prompt should describe the existing page layout faithfully — do NOT introduce any design changes yet. This serves as the baseline for iteration.
-  `superdesign create-design-draft --project-id <id> --title "Current <X>" -p "Faithfully reproduce the current page exactly as it is based on the provided source code context. Keep all existing layout, components, styles, navigation, and content structure identical." --context-file src/layouts/AppLayout.tsx --context-file src/components/Nav.tsx --context-file src/components/Sidebar.tsx --context-file src/pages/Target.tsx ...`
+
+- **Step 3a — Faithful reproduction (ground truth) — MANDATORY, DO NOT SKIP**:
+  Before ANY design changes, FIRST create a draft that ACCURATELY reproduces the current UI as-is.
+  The prompt should describe the existing page layout faithfully — do NOT introduce any design changes yet.
+  This serves as the baseline for iteration.
+  ```
+  superdesign create-design-draft --project-id <id> --title "Current <X>" \
+    -p "Faithfully reproduce the current page exactly as it is based on the provided source code context. Keep all existing layout, components, styles, navigation, and content structure identical." \
+    --context-file src/layouts/AppLayout.tsx \
+    --context-file src/components/Nav.tsx \
+    --context-file src/components/Sidebar.tsx \
+    --context-file src/pages/Target.tsx
+  ```
   ⚠️ Include ALL shared layout files (nav, sidebar, header, footer, layout wrapper) — not just the target component.
-- **Step 3b — Iterate with changes**: Use the draft from 3a as the base, then iterate with design changes using BRANCH mode:
-  `superdesign iterate-design-draft --draft-id <id> -p "<variation 1 with specific changes>" -p "<variation 2>" -p "<variation 3>" --mode branch --context-file src/layouts/AppLayout.tsx --context-file src/components/Nav.tsx --context-file src/pages/Target.tsx ...`
+  ⚠️ This step produces ONE draft with ONE -p. The -p must ONLY ask for faithful reproduction, NO design changes.
+
+- **Step 3b — Iterate with design variations using BRANCH mode — SEPARATE STEP**:
+  AFTER Step 3a completes and you have a draft-id, use `iterate-design-draft` with `--mode branch` to create design variations.
+  Each -p is ONE distinct variation. Do NOT combine multiple variations into a single -p.
+  ```
+  superdesign iterate-design-draft --draft-id <draft-id-from-3a> \
+    -p "<variation 1: specific design change>" \
+    -p "<variation 2: different design change>" \
+    -p "<variation 3: another direction>" \
+    --mode branch \
+    --context-file src/layouts/AppLayout.tsx \
+    --context-file src/components/Nav.tsx \
+    --context-file src/pages/Target.tsx
+  ```
+
 - Present URL & title to user and ask for feedback
 - Before further iteration, MUST read the design first: `superdesign get-design --draft-id <id>`
+
+⛔ COMMON MISTAKES — DO NOT DO THESE:
+- ❌ Skipping Step 3a and jumping straight to design changes
+- ❌ Putting multiple design variations into a single create-design-draft -p (create-design-draft only accepts ONE -p, and it should be reproduction only)
+- ❌ Using create-design-draft for variations — use iterate-design-draft --mode branch instead
+- ❌ Combining "reproduce current UI + try 4 new designs" in one step — these are ALWAYS two separate steps
 
 Extension after approval:
 - If user wants to design more relevant pages or whole user journey based on a design, use execute-flow-pages: `superdesign execute-flow-pages --draft-id <draftId> --pages '[...]' --context-file src/components/Foo.tsx`
@@ -73,9 +104,10 @@ Design system should provides full context across:
 - Specific project requirements
 
 ## PROMPT RULE
-⚠️ create-design-draft accepts ONLY ONE -p. Write one comprehensive prompt containing all design directions.
-iterate-design-draft accepts MULTIPLE -p (each -p = one variation/branch).
+⚠️ create-design-draft accepts ONLY ONE -p. For existing UI, this single -p must be a faithful reproduction prompt — NO design changes.
+iterate-design-draft accepts MULTIPLE -p (each -p = one variation/branch). This is the ONLY way to create design variations.
 Do NOT use multiple -p with create-design-draft — only the last -p will be kept, all others are silently lost.
+Do NOT put multiple design variations into one -p string — each variation MUST be its own -p flag on iterate-design-draft.
 
 When using iterate-design-draft with multiple -p prompts:
 - Each -p must describe ONE distinct direction (e.g. "conversion-focused hero", "editorial storytelling", "dense power-user layout").
@@ -120,7 +152,8 @@ Assistant:
 - Use --context-file to pass relevant UI source files for codebase context
 - Prefer iterating existing design draft over creating new ones.
 - When designing for existing UI, MUST pass relevant source files via --context-file to give SuperDesign real codebase context
-- **GROUND TRUTH FIRST**: For existing UI, ALWAYS create a faithful reproduction draft before making design changes. Never skip straight to redesign — the reproduction is the baseline that ensures iterations stay grounded.
+- **GROUND TRUTH FIRST**: For existing UI, ALWAYS create a faithful reproduction draft (Step 3a) before making design changes (Step 3b). Never skip straight to redesign. Never combine reproduction and design changes in one command.
+- **TWO-STEP WORKFLOW**: Step 3a = `create-design-draft` with reproduction-only prompt → Step 3b = `iterate-design-draft --mode branch` with variation prompts. These are ALWAYS two separate commands.
 - **COMPLETE CONTEXT**: Always include shared/global layout files (nav, sidebar, header, footer, layout wrapper) in --context-file, not just the target component. The AI needs to see the full visible page to reproduce it accurately.
 
 -----
