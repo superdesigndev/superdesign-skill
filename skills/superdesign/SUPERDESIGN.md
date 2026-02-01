@@ -40,27 +40,28 @@ Step 3 — Design in Superdesign
   This serves as the baseline for iteration.
   ```
   superdesign create-design-draft --project-id <id> --title "Current <X>" \
-    -p "Faithfully reproduce the current page exactly as it is based on the provided source code context. Keep all existing layout, components, styles, navigation, and content structure identical." \
     --context-file src/layouts/AppLayout.tsx \
     --context-file src/components/Nav.tsx \
     --context-file src/components/Sidebar.tsx \
-    --context-file src/pages/Target.tsx
+    --context-file src/pages/Target.tsx \
+    -p "Faithfully reproduce the current page exactly as it is based on the provided source code context. Keep all existing layout, components, styles, navigation, and content structure identical." \
   ```
   ⚠️ Include ALL shared layout files (nav, sidebar, header, footer, layout wrapper) — not just the target component.
   ⚠️ This step produces ONE draft with ONE -p. The -p must ONLY ask for faithful reproduction, NO design changes.
+  ⚠️ Pass actual source code files (.tsx, .ts, .jsx, .js...) as --context-file arguments. DO NOT create markdown summaries that refer contex-file path, the ONLY way to pass context is passing raw source code file directly via --context-file
 
 - **Step 3b — Iterate with design variations using BRANCH mode — SEPARATE STEP**:
   AFTER Step 3a completes and you have a draft-id, use `iterate-design-draft` with `--mode branch` to create design variations.
   Each -p is ONE distinct variation. Do NOT combine multiple variations into a single -p.
   ```
   superdesign iterate-design-draft --draft-id <draft-id-from-3a> \
+    --context-file src/layouts/AppLayout.tsx \
+    --context-file src/components/Nav.tsx \
+    --context-file src/pages/Target.tsx \
     -p "<variation 1: specific design change>" \
     -p "<variation 2: different design change>" \
     -p "<variation 3: another direction>" \
     --mode branch \
-    --context-file src/layouts/AppLayout.tsx \
-    --context-file src/components/Nav.tsx \
-    --context-file src/pages/Target.tsx
   ```
 
 - Present URL & title to user and ask for feedback
