@@ -47,7 +47,7 @@ Step 3 — Design in Superdesign
     -p "Faithfully reproduce the current page exactly as it is based on the provided source code context. Keep all existing layout, components, styles, navigation, and content structure identical." \
   ```
   ⚠️ Include ALL shared layout files (nav, sidebar, header, footer, layout wrapper) — not just the target component.
-  ⚠️ This step produces ONE draft with ONE -p. The -p must ONLY ask for faithful reproduction, NO design changes.
+  ⚠️ This step produces ONE draft with ONE -p. The -p MUST be exactly as listed above "Faithfully reproduce the ...", NO design changes. ALWAYS reproduce current UI exactly as-is first, and then do 3b
   ⚠️ Pass actual source code files (.tsx, .ts, .jsx, .js...) as --context-file arguments. DO NOT create markdown summaries that refer contex-file path, the ONLY way to pass context is passing raw source code file directly via --context-file
 
 - **Step 3b — Iterate with design variations using BRANCH mode — SEPARATE STEP**:
