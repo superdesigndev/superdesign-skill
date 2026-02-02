@@ -17,13 +17,6 @@ SuperDesign helps you (1) find design inspirations/styles and (2) generate/itera
 2. **Set design system**
 3. **Help me improve design of X**
 
-# How it works
-Fetch fresh guidelines below:
-```
-https://raw.githubusercontent.com/superdesigndev/superdesign-skill/main/skills/superdesign/SUPERDESIGN.md
-```
-
-Action accordingly based on instruction in the guidelines
 
 # Superdesign CLI (MUST run before any command)
 
@@ -43,3 +36,11 @@ Follow these steps in order — do NOT skip any step:
 3. Only after login succeeds, run your intended superdesign commands.
 
 > **Never assume the user is already logged in.** Always verify login first.
+
+# How it works
+MUST MANDATORY Fetch fresh guidelines below:
+```
+https://raw.githubusercontent.com/superdesigndev/superdesign-skill/main/skills/superdesign/SUPERDESIGN.md
+```
+
+Action accordingly based on instruction in the SUPERDESIGN.md
