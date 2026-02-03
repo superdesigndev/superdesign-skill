@@ -13,9 +13,33 @@ SuperDesign helps you (1) find design inspirations/styles and (2) generate/itera
 
 # Core scenarios (what this skill handles)
 
-1. **Help me design X** (feature/page/flow)
-2. **Set design system**
-3. **Help me improve design of X**
+1. **superdesign init** — Analyze the repo and build UI context to `.superdesign/init/`
+2. **Help me design X** (feature/page/flow)
+3. **Set design system**
+4. **Help me improve design of X**
+
+# Init: Repo Analysis
+
+When `.superdesign/init/` directory doesn't exist or is empty, you MUST automatically:
+1. Create the `.superdesign/init/` directory
+2. Fetch the init prompt from the URL below
+3. Follow the prompt instructions to analyze the repo and write context files
+
+```
+https://raw.githubusercontent.com/superdesigndev/superdesign-skill/main/skills/superdesign/INIT.md
+```
+
+Do NOT ask the user to do this manually — just do it.
+
+# MANDATORY: Read Init Files Every Time
+
+**CRITICAL**: When `.superdesign/init/` exists, you MUST read ALL files in this directory at the START of every design task:
+- `components.md` — shared UI primitives inventory
+- `layouts.md` — full source code of layout components
+- `routes.md` — route/page mapping
+- `theme.md` — design tokens, CSS variables, Tailwind config
+
+These files contain pre-analyzed codebase context that is ESSENTIAL for accurate design reproduction. Reading them is NOT optional — it's mandatory for every design task.
 
 
 # Superdesign CLI (MUST run before any command)
