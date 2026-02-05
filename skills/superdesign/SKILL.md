@@ -1,7 +1,7 @@
 ---
 name: superdesign
 description: >
-  Superdesign is a design agent specialized in frontend UI/UX design. Use this skill before implementing any UI that requires design thinking. Common commands: superdesign create-project --title "X" (setup project), superdesign create-design-draft --project-id <id> --title "Current UI" -p "Faithfully reproduce..." --context-file src/Component.tsx (faithful reproduction), superdesign iterate-design-draft --draft-id <id> -p "dark theme" -p "minimal" --mode branch --context-file src/Component.tsx (design variations), superdesign execute-flow-pages --draft-id <id> --pages '[...]' --context-file src/Component.tsx (extend to more pages)
+  Superdesign is a design agent specialized in frontend UI/UX design. Use this skill before implementing any UI that requires design thinking. Common commands: superdesign create-project --title "X" (setup project), superdesign create-design-draft --project-id <id> --title "Current UI" -p "Faithfully reproduce..." --context-file src/Component.tsx (faithful reproduction), superdesign iterate-design-draft --draft-id <id> -p "dark theme" -p "minimal" --mode branch --context-file src/Component.tsx (design variations), superdesign execute-flow-pages --draft-id <id> --pages '[...]' --context-file src/Component.tsx (extend to more pages). Supports line ranges: --context-file path:startLine:endLine
 metadata:
   author: superdesign
   version: "0.0.1"
@@ -48,10 +48,15 @@ These files contain pre-analyzed codebase context that is ESSENTIAL for accurate
 
 Follow these steps in order — do NOT skip any step:
 
-1. Install (or update) the CLI:
+1. Check if CLI is already installed:
    ```
-   npm install -g @superdesign/cli@latest
+   superdesign --version
    ```
+   - If the command succeeds (prints a version), **skip installation** and go to step 2.
+   - If the command fails (not found), install the CLI:
+     ```
+     npm install -g @superdesign/cli@latest
+     ```
 2. Check login status by running any command (e.g. `superdesign --help`). If you see an auth/login error, run:
    ```
    superdesign login
