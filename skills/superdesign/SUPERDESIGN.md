@@ -51,11 +51,12 @@ SuperDesign needs ALL UI-related code to achieve pixel-perfect reproduction. Do 
    - Design token constants
    - Icon components if custom
 
-⚠️ **INCLUDE ALL UI CODE.** Missing files = broken pixel-perfect reproduction.
+⚠️ **ZERO FILE OMISSION POLICY: You MUST NOT skip, omit, or "summarize away" ANY UI-related file.** Every single file that touches UI must be collected. Missing even ONE file = broken pixel-perfect reproduction.
 ⚠️ Include .tsx, .css, .scss, .module.css, config files — NOT just .md documentation.
-⚠️ When in doubt, INCLUDE the file. If it touches UI in any way, include it.
+⚠️ When in doubt, INCLUDE the file. If it touches UI in any way, include it. Over-inclusion is always safer than under-inclusion.
 ⚠️ **Goal is 100% pixel-perfect reproduction** — every file matters for accurate colors, sizes, spacing.
-⚠️ **CRITICAL: Include ALL CSS definition files for every class name used.** If a component uses a class like `.container`, `.card-header`, or any custom class, you MUST include the CSS file where that class is defined. Missing CSS definitions = broken styles.
+⚠️ **CRITICAL — COMPLETE CSS COVERAGE: Include ALL CSS/style files for EVERY class name used across ALL components.** If a component uses a class like `.container`, `.card-header`, `.sidebar-nav`, or ANY custom class, you MUST include the CSS/SCSS/module file where that class is defined. This means: trace every `className` in every component → find the file where that class's styles are declared → include it. Missing even a single CSS class definition = broken styles and failed pixel-perfect reproduction.
+⚠️ **CSS AUDIT CHECKLIST**: Before finalizing context collection, verify: (1) Every `.className` used in JSX/TSX has its CSS definition file included. (2) Every `@import` or `@use` chain is followed to the source file. (3) Global styles, CSS variables, and inherited styles are all accounted for.
 
 Task 1.2 - Design system:
 - Ensure .superdesign/design-system.md exists
@@ -118,15 +119,21 @@ Step 3 — Design in Superdesign
     --context-file src/lib/cn.ts
   ```
 
-  ⚠️ **PIXEL-PERFECT means 100% visual match** — sizes, colors, spacing, fonts, everything.
-  ⚠️ **Include ALL UI code files** — layouts, components, sub-components, base UI primitives, CSS, config.
-  ⚠️ **DO NOT be selective** — if a file touches UI, include it. More is always better.
-  ⚠️ **Include CSS files for EVERY class name used** — if a component uses `.foo` class, include the CSS file defining `.foo`. Missing CSS = broken styles.
+  ⚠️ **PIXEL-PERFECT means 100% visual match** — sizes, colors, spacing, fonts, border-radius, shadows, opacity, z-index, transitions — EVERYTHING must be identical.
+  ⚠️ **ZERO OMISSION: Include ALL UI code files** — layouts, components, sub-components, base UI primitives, CSS, config. Do NOT skip any file.
+  ⚠️ **DO NOT be selective** — if a file touches UI, include it. More is always better. Missing one file can break the entire reproduction.
+  ⚠️ **COMPLETE STYLE COVERAGE: Include CSS files for EVERY class name used** — if a component uses `.foo` class, you MUST include the CSS file defining `.foo`. Trace EVERY className → find its definition file → include it. Missing CSS = visually broken output.
   ⚠️ This step produces ONE draft with ONE -p. The -p must ONLY ask for pixel-perfect reproduction, NO design changes.
 
 - **Step 3b — Iterate with design variations using BRANCH mode — SEPARATE STEP**:
   AFTER Step 3a completes and you have a draft-id, use `iterate-design-draft` with `--mode branch` to create design variations.
   Each -p is ONE distinct variation. Do NOT combine multiple variations into a single -p.
+
+  **VARIANT COUNT RULE**:
+  - Default: generate exactly **2** variations (2 `-p` flags) unless the user specifies otherwise.
+  - If the user explicitly requests or describes only **1** variation, generate exactly **1** `-p`. Do NOT invent extra variations the user didn't ask for.
+  - Only generate 3+ variations if the user explicitly asks for more.
+
   ```
   superdesign iterate-design-draft --draft-id <draft-id-from-3a> \
     --context-file src/layouts/AppLayout.tsx \
@@ -134,7 +141,6 @@ Step 3 — Design in Superdesign
     --context-file src/pages/Target.tsx \
     -p "<variation 1: specific design change>" \
     -p "<variation 2: different design change>" \
-    -p "<variation 3: another direction>" \
     --mode branch \
     --context-file src/layouts/AppLayout.tsx \
     --context-file src/components/Nav.tsx \
@@ -158,6 +164,7 @@ Step 3 — Design in Superdesign
 - ❌ **Being selective with context files** — include ALL UI code, not just "relevant" ones. Every omitted file hurts pixel-perfect accuracy
 - ❌ **Passing only 5-10 files** — you should pass 20-40+ files for accurate reproduction
 - ❌ **Missing CSS definition files** — if a component uses `.card-header` class, you MUST include the CSS file where `.card-header` is defined. Missing CSS = broken styles
+- ❌ **Generating too many or too few variants** — default is 2 variants in branch mode; only 1 if the user describes a single direction; 3+ only if user explicitly asks
 
 Extension after approval:
 - If user wants to design more relevant pages or whole user journey based on a design, use execute-flow-pages: `superdesign execute-flow-pages --draft-id <draftId> --pages '[...]' --context-file src/components/Foo.tsx`
@@ -197,6 +204,7 @@ Do NOT use multiple -p with create-design-draft — only the last -p will be kep
 Do NOT put multiple design variations into one -p string — each variation MUST be its own -p flag on iterate-design-draft.
 
 When using iterate-design-draft with multiple -p prompts:
+- Default to **2** `-p` prompts. If the user specifies only 1 direction, use exactly **1** `-p`. Only use 3+ if the user explicitly asks.
 - Each -p must describe ONE distinct direction (e.g. "conversion-focused hero", "editorial storytelling", "dense power-user layout").
 - Do NOT specify exact colors/typography unless the user explicitly requests.
 - Prompt should specify which to changes/explore, which parts to keep the same
@@ -223,7 +231,6 @@ Assistant:
 - Let me ideate a few other ways to position the banner based on this:
 iterate-design-draft --draft-id <id>
 --prompt "Move the book demo banner sticky at the top, remain anything else the same"
---prompt "Make book demo banner floating and reduce the width, remain anything else the same"
 --prompt "Remove banner for book demo, instead add a card near the template project cards for book demo, remain anything else the same"
 --mode branch
 --context-file src/components/Banner.tsx
@@ -259,8 +266,9 @@ Assistant:
   - ALL styling files (globals.css, component CSS, CSS modules, tailwind.config)
   - ALL theme/token files, utility functions (cn, classnames)
   - Icon components if custom
-  - **ALL CSS files where class names are defined** — every `.className` used must have its CSS definition included
-- **DO NOT be selective with context files.** Pass 20-40+ files. Every missing file degrades pixel-perfect accuracy. Missing CSS definitions = broken styles.
+  - **ALL CSS files where class names are defined** — for EVERY `.className` used in any component, trace it back to its CSS/SCSS/module definition file and include that file. This is non-negotiable. Missing even one class definition = visually broken reproduction
+- **ZERO FILE OMISSION: DO NOT be selective with context files.** Pass 20-40+ files. Every missing file degrades pixel-perfect accuracy. Missing CSS definitions = broken styles. Trace every className to its definition file and include it.
+- **VARIANT COUNT**: Default to **2** variations in branch mode. If the user describes only **1** direction, generate exactly **1**. Only generate 3+ if the user explicitly requests more. Never invent extra variations.
 - Prefer iterating existing design draft over creating new ones.
 - When designing for existing UI, MUST pass relevant source files via --context-file to give SuperDesign real codebase context
 - **PIXEL-PERFECT GROUND TRUTH FIRST**: For existing UI, ALWAYS create a 100% pixel-perfect reproduction draft (Step 3a) before making design changes (Step 3b). The reproduction must match EXACTLY — sizes, colors, spacing, fonts, shadows, border-radius. Never skip straight to redesign. Never combine reproduction and design changes in one command.
@@ -271,15 +279,38 @@ Assistant:
 
 -----
 
+## CONTEXT FILE LINE RANGES
+
+`--context-file` supports an optional `:startLine:endLine` suffix to include only specific portions of a file:
+
+| Syntax | Meaning |
+|---|---|
+| `--context-file src/App.tsx` | Full file (default) |
+| `--context-file src/App.tsx:10:50` | Lines 10-50 only (1-based, inclusive) |
+| `--context-file src/App.tsx:10` | From line 10 to end of file |
+
+Multiple ranges from the same file are automatically merged into a single context entry with omission markers between non-contiguous ranges.
+
+**When to use line ranges:**
+- Large files where only a specific section is relevant (e.g., a single component in a barrel file)
+- Reducing context size when passing many files
+- Focusing on a specific function or block
+
+**When to use full files (no range):**
+- Default for most cases — full file gives the best reproduction accuracy
+- When the entire file is relevant to the design task
+
+-----
+
 ## COMMAND CONTRACT (DO NOT HALLUCINATE FLAGS)
 - create-project: only --title
 - iterate-design-draft:
-  - branch: must include --mode branch, can include multiple -p, optional --context-file
-  - replace: must include --mode replace, should include exactly one -p, optional --context-file
+  - branch: must include --mode branch, can include multiple -p, optional --context-file (supports path:startLine:endLine)
+  - replace: must include --mode replace, should include exactly one -p, optional --context-file (supports path:startLine:endLine)
   - NEVER pass "count" or any unrelated params
-- create-design-draft: only --project-id, --title, -p (SINGLE prompt only), optional --context-file
+- create-design-draft: only --project-id, --title, -p (SINGLE prompt only), optional --context-file (supports path:startLine:endLine)
   - ⚠️ ONLY accepts ONE -p flag. Multiple -p flags will silently drop all but the last one.
   - Combine all design directions into a single -p string.
   - Only use this for creating purely new design from scratch.
-- execute-flow-pages: only --draft-id, --pages, optional --context-file
+- execute-flow-pages: only --draft-id, --pages, optional --context-file (supports path:startLine:endLine)
 - get-design: only --draft-id
