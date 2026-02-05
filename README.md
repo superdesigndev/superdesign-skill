@@ -20,6 +20,17 @@ Install skills for any coding agent
 npx skills add superdesigndev/superdesign-skill
 ```
 
+Or use [SkillKit](https://github.com/rohitg00/skillkit) for 32+ AI agents:
+```
+npx skillkit install superdesign
+```
+
+Translate to your preferred agent:
+```
+npx skillkit translate superdesign --agent cursor
+npx skillkit translate superdesign --agent codex
+```
+
 Prompt in any agent
 ```
 /superdesign help me design X
