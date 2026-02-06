@@ -21,6 +21,7 @@ SuperDesign helps you (1) find design inspirations/styles and (2) generate/itera
 # Init: Repo Analysis
 
 When `.superdesign/init/` directory doesn't exist or is empty, you MUST automatically:
+
 1. Create the `.superdesign/init/` directory
 2. Fetch the init prompt from the URL below
 3. Follow the prompt instructions to analyze the repo and write context files
@@ -31,16 +32,17 @@ https://raw.githubusercontent.com/superdesigndev/superdesign-skill/main/skills/s
 
 Do NOT ask the user to do this manually — just do it.
 
-# MANDATORY: Read Init Files Every Time
+# Mandatory Init Files
 
-**CRITICAL**: When `.superdesign/init/` exists, you MUST read ALL files in this directory at the START of every design task:
-- `components.md` — shared UI primitives inventory
-- `layouts.md` — full source code of layout components
-- `routes.md` — route/page mapping
+If `.superdesign/init/` exists, you MUST read ALL files in this directory FIRST before any design task:
+
+- `components.md` — shared UI primitives with full source code
+- `layouts.md` — shared layout components (nav, sidebar, header, footer)
+- `routes.md` — page/route mapping
 - `theme.md` — design tokens, CSS variables, Tailwind config
+- `pages.md` — page component dependency trees (which files each page needs)
 
-These files contain pre-analyzed codebase context that is ESSENTIAL for accurate design reproduction. Reading them is NOT optional — it's mandatory for every design task.
-
+**When designing for an existing page**: First check `pages.md` for the page's complete dependency tree. Every file in that tree MUST be passed as `--context-file`. Then also add globals.css, tailwind.config, and design-system.md.
 
 # Superdesign CLI (MUST run before any command)
 
@@ -49,14 +51,17 @@ These files contain pre-analyzed codebase context that is ESSENTIAL for accurate
 Follow these steps in order — do NOT skip any step:
 
 1. Check if CLI is already installed:
+
    ```
    superdesign --version
    ```
+
    - If the command succeeds (prints a version), **skip installation** and go to step 2.
    - If the command fails (not found), install the CLI:
      ```
      npm install -g @superdesign/cli@latest
      ```
+
 2. Check login status by running any command (e.g. `superdesign --help`). If you see an auth/login error, run:
    ```
    superdesign login
@@ -67,7 +72,9 @@ Follow these steps in order — do NOT skip any step:
 > **Never assume the user is already logged in.** Always verify login first.
 
 # How it works
+
 MUST MANDATORY Fetch fresh guidelines below:
+
 ```
 https://raw.githubusercontent.com/superdesigndev/superdesign-skill/main/skills/superdesign/SUPERDESIGN.md
 ```
