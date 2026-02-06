@@ -11,33 +11,24 @@ IMPORTANT: MUST use Task tool for those 2 below
 Task 1.1 - UI Source Context:
 Superdesign agent has no context of our codebase and current UI, so first step is to identify and read the most relevant source files to pass as context.
 
-**MANDATORY FIRST STEP**: If `.superdesign/init/` exists, you MUST read ALL files in this directory FIRST:
+**MANDATORY FIRST STEP**: Check if `.superdesign/init/` exists with all 5 files (components.md, layouts.md, routes.md, theme.md, pages.md).
 
-- components.md - shared UI primitives inventory
-- layouts.md - full source code of layout components
-- routes.md - route/page mapping
-- theme.md - design tokens, CSS variables, Tailwind config
-  These files are pre-analyzed context and MUST be read every time before any design task.
+- **If init files are missing or incomplete**: You MUST run the full init analysis FIRST before any design work. Follow the INIT instructions from the skill to scan the repo and write all 5 files to `.superdesign/init/`. Do NOT proceed to Step 2 until init is complete.
+- **If init files exist**: Read ALL files in this directory:
+  - components.md - shared UI primitives inventory
+  - layouts.md - full source code of layout components
+  - routes.md - route/page mapping
+  - theme.md - design tokens, CSS variables, Tailwind config
+  - pages.md - page component dependency trees
+
+These files are pre-analyzed context and MUST be read every time before any design task.
 
 **CONTEXT COLLECTION PRINCIPLE: ALL UI CODE, STRIP ONLY LOGIC**
 SuperDesign needs ALL UI code for accurate reproduction. Include every piece of visual code — JSX/template, className, inline styles, props interfaces, CSS. Only strip pure business logic that has zero visual impact.
 
-**WHAT TO STRIP (non-UI logic only):**
-- Data fetching (useQuery, fetch, API calls, loaders)
-- State management logic (reducers, stores, complex useState chains)
-- Event handlers that don't affect visual output (onSubmit, onClick with API calls)
-- Authentication/authorization logic
-- Utility functions that don't touch styles (formatDate, parseUrl, etc.)
-
-**WHAT TO KEEP (ALL UI code — DO NOT strip these):**
-- ALL JSX/template markup — every single element
-- ALL className, style, css props — every visual attribute
-- ALL component props/interfaces that affect rendering
-- ALL conditional rendering logic (ternaries, &&, if blocks that show/hide UI)
-- ALL CSS/SCSS files — full files, not partial
-- ALL Tailwind config — full file
-- ALL CSS variables, theme tokens, design tokens
-- Import statements (needed for context)
+**Strip logic code, keep happy-path UI.** That's it.
+- Remove: data fetching, event handlers, API calls, auth checks, loading/error/empty guard returns
+- Keep: all JSX, styles, className, props, CSS, config — the complete happy-path UI as-is
 
 **HOW TO USE LINE RANGES:**
 Line ranges (`--context-file path:startLine:endLine`) should ONLY be used to **skip large blocks of pure logic** (e.g., a 100-line data-fetching hook at the top of a file). Do NOT use line ranges to trim CSS, JSX, or any visual code.
@@ -169,9 +160,9 @@ Step 3 — Design in Superdesign
 - ❌ Putting multiple design variations into a single create-design-draft -p (create-design-draft only accepts ONE -p, and it should be reproduction only)
 - ❌ Using create-design-draft for variations — use iterate-design-draft --mode branch instead
 - ❌ Combining "reproduce current UI + try 4 new designs" in one step — these are ALWAYS two separate steps
-- ❌ **Trimming CSS/JSX/config files with line ranges** — NEVER trim visual code. Only use line ranges to skip pure logic blocks
+- ❌ **Trimming CSS/JSX/config files with line ranges** — NEVER trim visual code. Only use line ranges to skip data-fetching blocks
 - ❌ **Missing key files** — trace imports to find all UI-touching files. Missing a layout or CSS file = broken reproduction
-- ❌ **Including business logic** — data fetching, API calls, reducers waste context. Use line ranges to skip these in large files
+- ❌ **Stripping conditional UI inside the main render** — `{x && <Y/>}` and ternaries are visual details, NOT edge cases. Keep them all
 - ❌ **Generating too many or too few variants** — default is 2 variants in branch mode; only 1 if the user describes a single direction; 3+ only if user explicitly asks
 
 Extension after approval:
@@ -290,13 +281,13 @@ Assistant:
 
 - Design system file path is fixed: .superdesign/design-system.md
 - design-system.md = ALL design specs
-- **MANDATORY INIT READ**: If `.superdesign/init/` exists, you MUST read ALL files (components.md, layouts.md, routes.md, theme.md, pages.md) at the START of every design task. This is NOT optional.
+- **MANDATORY INIT**: If `.superdesign/init/` is missing or incomplete, you MUST run the full init analysis FIRST (follow the INIT instructions from the skill). If it exists, you MUST read ALL files (components.md, layouts.md, routes.md, theme.md, pages.md) at the START of every design task. This is NOT optional.
 - **MANDATORY CONTEXT FILES on EVERY design command** (create-design-draft, iterate-design-draft, execute-flow-pages):
   - `--context-file .superdesign/design-system.md` — so the design agent knows the allowed fonts, colors, spacing
   - `--context-file <path-to-globals.css>` — so the design agent has the actual CSS tokens and variables
   - These two files are NON-NEGOTIABLE. Never skip them, even if they were already set as project prompt.
 - **DESIGN SYSTEM = HARD CONSTRAINT, NOT SUGGESTION**: Iteration prompts explore layout/structure/content direction, NOT visual style. The design system defines the visual style. Never let a -p prompt override the design system.
-- **ALL UI CODE, STRIP ONLY LOGIC**: Pass all UI-related files with complete visual code. Use line ranges ONLY to skip pure business logic or to extract from 1000+ line files.
+- **ALL UI CODE, STRIP ONLY DATA-FETCHING**: Pass all UI-related files with complete visual code. Use line ranges ONLY to skip data-fetching blocks or to extract from 1000+ line files. Keep ALL conditional rendering, state, props, and JSX.
 - **1000+ LINE FILES MUST USE LINE RANGES.** Extract only the sections relevant to the target page. This applies to large CSS files, large component libraries, and large configs.
 - **TRACE ALL UI FILES.** Use import tracing to find all files that touch UI. Include them with full UI code. For large mixed files (logic + UI), use line ranges to skip the logic portion only.
 - **VARIANT COUNT**: Default to **2** variations in branch mode. If the user describes only **1** direction, generate exactly **1**. Only generate 3+ if the user explicitly requests more. Never invent extra variations.
