@@ -68,12 +68,45 @@ Extract the design system / theme tokens. **Include FULL file contents**, not su
 - Full CSS variable definitions
 - Any design token files
 
+### 6. Write `pages.md`
+For each key page/route in the app (home, dashboard, main features — up to 10 pages), build a **complete component dependency tree** by tracing imports recursively.
+
+For each page:
+1. Start from the page component file
+2. Trace ALL local imports (relative `./Foo`, `../Bar`, alias `@/components/Baz` — skip node_modules)
+3. For each import, trace ITS imports recursively
+4. Present as an indented tree showing every file the page depends on
+
+Format:
+```
+## / (Home Page)
+Entry: src/app/(home)/home-page.tsx
+Dependencies:
+- src/components/home-ui/elegant-header.tsx
+  - src/components/team/create-team-modal.tsx
+- src/components/home-ui/elegant-hero-section.tsx
+  - src/components/home-ui/home-hero-input.tsx
+  - src/components/home-ui/persona-selector.tsx
+  - src/components/home-ui/dev-workflow-view.tsx
+  - src/components/home-ui/import-site-modal.tsx
+- src/components/home-ui/elegant-project-grid.tsx
+  - src/components/home-ui/elegant-project-card.tsx
+- src/app/(home)/components/template-browse-section.tsx
+  - src/app/(home)/components/template-card.tsx
+- src/components/layout/Footer.tsx
+```
+
+This tree is the **SINGLE SOURCE OF TRUTH** for which files to pass as `--context-file` when designing a page. If a file appears in the tree, it MUST be included.
+
+Prioritize the most important/complex pages (home, dashboard, settings, etc.). Skip trivial pages (404, offline, status).
+
 ## Format Guidelines
 - Use markdown with clear headings
 - Include file paths as code spans
 - **For `components.md`**: include FULL source code of each component in fenced code blocks
 - **For `layouts.md`**: include FULL file contents in fenced code blocks
 - **For `theme.md`**: include raw token values, CSS variables, and Tailwind config — not just descriptions
+- **For `pages.md`**: include complete dependency trees with indentation showing nesting depth
 - Keep descriptions concise — the goal is machine-readable context, not documentation
 
 ## Key Principle: INCLUDE ACTUAL CODE
