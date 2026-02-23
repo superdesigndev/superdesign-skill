@@ -297,7 +297,7 @@ Assistant:
 - **TWO-STEP WORKFLOW**: Step 3a = `create-design-draft` with reproduction-only prompt → Step 3b = `iterate-design-draft --mode branch` with variation prompts. These are ALWAYS two separate commands.
 - **COMPLETE CONTEXT**: Always include shared/global layout files (nav, sidebar, header, footer, layout wrapper) in --context-file, not just the target component.
 - **INCLUDE IMPLEMENTATION FILES**: Context files should be actual implementation (.tsx, .css, .ts) — not just documentation (.md). The AI needs real code to reproduce accurately.
-- **CLI VERSION**: If `--context-file` flag is not recognized or unavailable, the CLI is outdated. Auto-update by running `npm install -g @superdesign/cli@latest` before retrying.
+- **CLI VERSION**: If any flag is not recognized or unavailable, the CLI is outdated. Auto-update by running `npm install -g @superdesign/cli@latest` before retrying.
 
 ---
 
@@ -337,12 +337,15 @@ Multiple ranges from the same file are automatically merged into a single contex
 
 - create-project: only --title
 - iterate-design-draft:
-  - branch: must include --mode branch, can include multiple -p, optional --context-file (supports path:startLine:endLine)
-  - replace: must include --mode replace, should include exactly one -p, optional --context-file (supports path:startLine:endLine)
+  - branch: must include --mode branch, can include multiple -p, optional --context-file (supports path:startLine:endLine), optional --model
+  - replace: must include --mode replace, should include exactly one -p, optional --context-file (supports path:startLine:endLine), optional --model
   - NEVER pass "count" or any unrelated params
-- create-design-draft: only --project-id, --title, -p (SINGLE prompt only), optional --context-file (supports path:startLine:endLine)
+- create-design-draft: only --project-id, --title, -p (SINGLE prompt only), optional --context-file (supports path:startLine:endLine), optional --model
   - ⚠️ ONLY accepts ONE -p flag. Multiple -p flags will silently drop all but the last one.
   - Combine all design directions into a single -p string.
   - Only use this for creating purely new design from scratch.
-- execute-flow-pages: only --draft-id, --pages, optional --context-file (supports path:startLine:endLine)
+- execute-flow-pages: only --draft-id, --pages, optional --context-file (supports path:startLine:endLine), optional --model
 - get-design: only --draft-id
+
+**Supported --model values**: gemini-3-flash, gemini-3-pro, gemini-3.1-pro, claude-haiku-4-5, claude-sonnet-4-5, claude-opus-4-5, claude-opus-4-6, gpt-5.2, gpt-5.2-thinking, gpt-5-mini, kimi-k2.5
+If --model is omitted, the backend uses the default model. Only pass --model when the user explicitly requests a specific model.
