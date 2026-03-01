@@ -100,6 +100,50 @@ This tree is the **SINGLE SOURCE OF TRUTH** for which files to pass as `--contex
 
 Prioritize the most important/complex pages (home, dashboard, settings, etc.). Skip trivial pages (404, offline, status).
 
+### 7. Write `extractable-components.md`
+Catalog UI components from the codebase that **can be extracted** as reusable SuperDesign `DraftComponent` entities. These are components that appear on multiple pages or define shared UI patterns (navigation, cards, headers, footers).
+
+Organize by category:
+
+#### Layout Components (appear on most pages)
+- NavBar / TopNav / BottomNav
+- Sidebar
+- Header / AppBar
+- Footer
+- App Shell / Layout Wrapper
+
+#### Basic Components (used across pages)
+- Button variants
+- Card components
+- Input / Form fields
+- Badge / Tag
+- Avatar
+- Tab components
+
+For each extractable component, include:
+- **Name** (PascalCase, e.g., `NavBar`, `HeroSection`)
+- **Source file path** (e.g., `src/components/layout/NavBar.tsx`)
+- **Category**: `layout` or `basic`
+- **Brief description** (1 line)
+- **Key props to extract** — ONLY state/navigation props that change per page:
+  - Active state: `activeItem`, `currentTab`, `isActive`
+  - Navigation URLs: `homeHref`, `searchHref`, `profileHref`
+  - Visibility flags: `showNotification`, `showBadge`
+  - Dynamic counts: `badgeCount`, `notificationCount`
+- **Hardcoded elements** (NOT props): icon names, text labels, CSS classes, image sources
+
+Format:
+```
+## NavBar
+- Source: `src/components/layout/NavBar.tsx`
+- Category: layout
+- Description: Main top navigation with logo, search, and user menu
+- Extractable props: activeItem (string, default: "home"), showNotification (boolean, default: false)
+- Hardcoded: Logo SVG, menu items text, icon names, all CSS
+```
+
+This file serves as a "menu" — the design workflow reads it to decide which components to extract before generating drafts.
+
 ## Format Guidelines
 - Use markdown with clear headings
 - Include file paths as code spans
@@ -107,6 +151,7 @@ Prioritize the most important/complex pages (home, dashboard, settings, etc.). S
 - **For `layouts.md`**: include FULL file contents in fenced code blocks
 - **For `theme.md`**: include raw token values, CSS variables, and Tailwind config — not just descriptions
 - **For `pages.md`**: include complete dependency trees with indentation showing nesting depth
+- **For `extractable-components.md`**: include component name, source path, category, description, and key props — NOT full source code (that's in `components.md` and `layouts.md`)
 - Keep descriptions concise — the goal is machine-readable context, not documentation
 
 ## Key Principle: INCLUDE ACTUAL CODE

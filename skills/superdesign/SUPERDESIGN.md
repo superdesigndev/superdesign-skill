@@ -87,6 +87,36 @@ Use askQuestion to clarify requirements. Ask only non-obvious, high-signal quest
 Do multiple rounds if answers introduce new ambiguity.
 For existing project, for visual approach only ask if they want to keep the same as now OR create new design style
 
+Step 2.5 — Component Extraction (BEFORE creating drafts):
+
+After requirements gathering, extract reusable components so they are available as `<sd-component>` tags in design drafts. This ensures UI consistency across all generated pages.
+
+1. **Read `extractable-components.md`** from `.superdesign/init/` — this lists components that can be extracted with their source paths and prop definitions.
+2. **Create project first** (if not already created): `superdesign create-project --title "<X>"`
+3. **Check existing components**: `superdesign list-components --project-id <id> --json`
+4. **For each needed component that doesn't exist yet**:
+   a. Read the React source code from the path listed in `extractable-components.md`
+   b. Convert to Petite-Vue HTML template following the **Petite-Vue Template Spec** below
+   c. Write the HTML to a temp file
+   d. Create the component:
+      ```
+      superdesign create-component --project-id <id> \
+        --name "NavBar" \
+        --html-file /tmp/navbar-component.html \
+        --description "Main navigation bar" \
+        --props '[{"name":"activeItem","type":"string","defaultValue":"home"}]' \
+        --json
+      ```
+5. **Focus on layout components first** (NavBar, Sidebar, Footer, Header) — these appear on every page and benefit most from extraction.
+6. **Skip basic UI primitives** (Button, Input, Card) — these are too simple to warrant extraction and are better as inline HTML in drafts.
+
+After extraction, proceed to Step 3. The draft generation agent will automatically see these components via `buildComponentContext()` and use `<sd-component>` tags in the generated HTML.
+
+**When to skip Step 2.5:**
+- Brand new projects with no existing UI components
+- When the user explicitly says they don't want component extraction
+- When `extractable-components.md` doesn't exist or lists no layout components
+
 Step 3 — Design in Superdesign
 
 - Create project (IMPORTANT - MUST create project first unless project id is given by user): `superdesign create-project --title "<X>"`
@@ -281,7 +311,7 @@ Assistant:
 
 - Design system file path is fixed: .superdesign/design-system.md
 - design-system.md = ALL design specs
-- **MANDATORY INIT**: If `.superdesign/init/` is missing or incomplete, you MUST run the full init analysis FIRST (follow the INIT instructions from the skill). If it exists, you MUST read ALL files (components.md, layouts.md, routes.md, theme.md, pages.md) at the START of every design task. This is NOT optional.
+- **MANDATORY INIT**: If `.superdesign/init/` is missing or incomplete, you MUST run the full init analysis FIRST (follow the INIT instructions from the skill). If it exists, you MUST read ALL files (components.md, layouts.md, routes.md, theme.md, pages.md, extractable-components.md) at the START of every design task. This is NOT optional.
 - **MANDATORY CONTEXT FILES on EVERY design command** (create-design-draft, iterate-design-draft, execute-flow-pages):
   - `--context-file .superdesign/design-system.md` — so the design agent knows the allowed fonts, colors, spacing
   - `--context-file <path-to-globals.css>` — so the design agent has the actual CSS tokens and variables
@@ -333,6 +363,80 @@ Multiple ranges from the same file are automatically merged into a single contex
 
 ---
 
+## PETITE-VUE TEMPLATE SPEC (for component extraction)
+
+When converting React components to Petite-Vue HTML templates for `create-component`:
+
+### What to HARDCODE in the template (NOT props):
+- Icon names and SVG markup
+- Text labels, menu item names
+- Image sources and alt text
+- CSS classes and all styling
+- Structural HTML and layout
+- Color values, font sizes, spacing
+
+### What to EXTRACT as props (ONLY these categories):
+- **Active state**: `activeItem`, `isActive`, `currentTab` — indicates which page/section is selected
+- **Navigation URLs**: `homeHref`, `searchHref`, `profileHref` — link destinations
+- **Conditional visibility**: `showNotification`, `showBadge`, `isExpanded` — toggle elements
+- **Dynamic counts**: `badgeCount`, `notificationCount` — numeric values that change
+
+### Allowed Petite-Vue syntax:
+- `{{ propName }}` — text interpolation
+- `:href="propName"` — attribute binding
+- `v-if="propName"` / `v-show="propName"` — conditional rendering
+- `:class="{ 'active': activeItem === 'home' }"` — dynamic class binding
+- `@click="$emit('name', payload)"` — event emission
+
+### NOT allowed:
+- `v-for` for navigation items (hardcode each item instead)
+- `v-model` (no two-way binding)
+- `v-html` (no raw HTML injection)
+- Complex JavaScript expressions in templates
+
+### Every prop MUST have a non-empty `defaultValue`.
+
+### Output requirements:
+- Valid HTML with Tailwind CSS classes
+- Replace all CSS modules / styled-components with Tailwind utilities or inline styles
+- Use Lucide icon CDN or inline SVGs for icons
+- Include reasonable `previewWidth` and `previewHeight` estimates in the component description
+
+### Example conversion:
+
+**React source:**
+```tsx
+function NavBar({ activeItem = 'home' }) {
+  return (
+    <nav className="flex items-center gap-4 px-6 py-3 bg-white border-b">
+      <Logo />
+      <Link to="/" className={cn("text-sm", activeItem === 'home' && "font-bold")}>Home</Link>
+      <Link to="/explore" className={cn("text-sm", activeItem === 'explore' && "font-bold")}>Explore</Link>
+    </nav>
+  );
+}
+```
+
+**Petite-Vue template:**
+```html
+<nav class="flex items-center gap-4 px-6 py-3 bg-white border-b">
+  <svg class="w-6 h-6"><!-- actual logo SVG --></svg>
+  <a :href="homeHref" :class="{ 'font-bold': activeItem === 'home' }" class="text-sm">Home</a>
+  <a :href="exploreHref" :class="{ 'font-bold': activeItem === 'explore' }" class="text-sm">Explore</a>
+</nav>
+```
+
+**Props:**
+```json
+[
+  {"name": "activeItem", "type": "string", "defaultValue": "home"},
+  {"name": "homeHref", "type": "string", "defaultValue": "#"},
+  {"name": "exploreHref", "type": "string", "defaultValue": "#"}
+]
+```
+
+---
+
 ## COMMAND CONTRACT (DO NOT HALLUCINATE FLAGS)
 
 - create-project: only --title
@@ -346,6 +450,9 @@ Multiple ranges from the same file are automatically merged into a single contex
   - Only use this for creating purely new design from scratch.
 - execute-flow-pages: only --draft-id, --pages, optional --context-file (supports path:startLine:endLine), optional --model
 - get-design: only --draft-id
+- create-component: --project-id (required), --name (required, PascalCase), --html or --html-file (required, one of), optional --description, optional --props (JSON array), optional --slots (JSON array), optional --events (JSON array), optional --css-imports (JSON array), optional --json
+- update-component: --component-id (required), optional --name, optional --html or --html-file, optional --description, optional --props (JSON array), optional --slots (JSON array), optional --events (JSON array), optional --css-imports (JSON array), optional --json
+- list-components: --project-id (required), optional --json
 
 **Supported --model values**: gemini-3-flash, gemini-3-pro, gemini-3.1-pro, claude-haiku-4-5, claude-sonnet-4-5, claude-opus-4-5, claude-opus-4-6, gpt-5.2, gpt-5.2-thinking, gpt-5-mini, kimi-k2.5
 If --model is omitted, the backend uses the default model. Only pass --model when the user explicitly requests a specific model.
