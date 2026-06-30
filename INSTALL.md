@@ -64,10 +64,15 @@ the superdesign design SOP here — the project and design are created in Step 4
 
 ## Step 4 — Wait for `init`, then generate
 
-Once the user has picked, send ONE short message — make it clear you're waiting on the one-time extraction:
+Once the user has picked, send ONE short status message that makes clear what's done, what you're waiting on,
+and what happens next. Fill in their actual choice. Template:
 
-> "On it — extracting your repo's design system now. First run takes ~3–5 min (instant after that). I'll send
-> your design draft the moment it's ready."
+> Here's where we are:
+> ✅ Superdesign skill installed + logged in
+> ⏳ Extracting your repo's design system now — this is the one-time slow step (~3–5 min; instant on every run after)
+> ⏭️ The moment it finishes, I'll generate **\<the design they picked\>** and send you the canvas preview link
+>
+> Nothing for you to do — I'll ping you when your draft is ready.
 
 Then **wait for the background `init` to finish**. ONLY after `.superdesign/init/` is complete, run the
 create flow for the chosen design (create the project → generate the first draft) and return the
