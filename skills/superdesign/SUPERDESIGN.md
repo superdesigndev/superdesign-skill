@@ -70,6 +70,18 @@ Any file exceeding ~1000 lines MUST use line ranges — no exceptions. Extract o
 ⚠️ **DO NOT trim JSX/template code** in normal-sized files. Every element matters for pixel-perfect accuracy.
 ⚠️ **ONLY use line ranges to skip pure logic blocks** (data fetching, hooks, handlers) or to extract from 1000+ line files.
 
+**🚨 PAYLOAD BUDGET — BUDGET OR FAIL, NEVER THIN-RETRY (the #1 cause of garbage reproductions):**
+The design API rejects oversized context with a **400**. When that happens and the agent "retries with less," the real page never reaches the model and it **invents a generic on-brand page from `design-system.md`** — total garbage. Prevent it:
+
+1. **Budget BEFORE the call.** Sum the lines of your `--context-file` set. A big page often pulls in a 1000+ line shared header + the 1000+ line page + a 900+ line `globals.css` — that combination WILL 400. Keep the set lean:
+   - **Shared shell/header/nav (1000+ lines): line-range to its render section only** (e.g. the `<header>` JSX `:452:1247`, not the 1249-line whole file). Skip the hooks/handlers/menus above the render.
+   - **The target page (1000+ lines): line-range to the render branch that actually renders** (e.g. the desktop `!isMobile` block `:697:935`), not the whole multi-branch file.
+   - **`globals.css` (900+ lines): do NOT pass it whole.** Prefer `.superdesign/init/theme.md` (the token summary) for the values; or line-range globals to its `:root`/`.dark` token block only.
+2. **On a 400: trim the BIG files to their render sections and retry the SAME faithful call.** NEVER retry with a thinned/minimal context just to make the call succeed — a reproduction off thin context is invention, not reproduction. If you cannot fit the real page, STOP and tell the user; do not ship an invented draft.
+3. **Prefer a self-contained page when the user is flexible.** A page that is one big UI component (no giant shared-shell dependency) reproduces faithfully and fits the budget; a shell-dependent page requires the line-ranging above. (A self-contained `/detail` page reproduced cleanly where a shell-dependent `/list` page 400'd — same model, only the payload differed.)
+
+**REPRODUCTION PROMPT = STRUCTURE, NOT AESTHETIC (Step 3a only):** describe the target page's ACTUAL layout and content from the branch you READ (e.g. "two-pane: left = search + All/Public/My Team tabs + a vertical list of slim prompt rows; right = preview panel with device frame + Use prompt"). Do NOT fill a reproduction prompt with design-system adjectives ("premium", "amber→orange gradient", "elegant layered shadows", "Playfair display") — with any context gap the model will render those adjectives as a generic marketing page instead of your real page. Aesthetic language belongs in Step 3b variations, not 3a.
+
 **BRAND & ICON RULES:**
 
 1. **Brand assets (logo, brand marks)**: Scan the project for brand assets (logo SVGs, brand images). Pass logo SVG files as `--context-file` so the design reproduces the actual brand identity. Designs MUST reuse the project's real logo/brand — never replace with generic placeholders.

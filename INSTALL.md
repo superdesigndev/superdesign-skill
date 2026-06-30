@@ -67,27 +67,40 @@ to talk to the user:
 ⛔ This step is conversation ONLY. Do NOT run `superdesign create-project`, `create-design-draft`, or invoke
 the superdesign design SOP here — the project and design are created in Step 4, after init finishes.
 
-## Step 4 — Wait for `init`, then generate
+## Step 4 — Wait for `init` (prep silently), then generate
 
-Once the user has picked, send ONE short status message that makes clear what's done, what you're waiting on,
-and what happens next. Fill in their actual choice. Template:
+Once the user picks, send **EXACTLY this one short, calm standby message** — filled in with their choice, and
+**nothing else**. This is the whole message:
 
 > ✅ Superdesign skill installed + logged in
-> ⏳ Extracting your repo's design system now — this is the one-time slow step (~3–5 min; instant on every run after)
-> ⏭️ The moment it finishes, I'll generate **\<the design they picked\>** and send you the canvas preview link
+> ⏳ Building your repo's design-system context now — one-time, ~1–2 min (instant every run after)
+> ⏭️ The moment it's ready, I'll generate **\<the design they picked\>** and send you the canvas preview link
 >
-> Nothing for you to do — I'll ping you when your draft is ready.
+> Nothing needed from you — I'll ping you when your draft is ready.
 
-Then **wait for the background design-system `init` to finish**. ONLY after the design-system layer is complete,
-run the create flow for the chosen design:
+⛔ Do NOT append anything to that message: no "here's the plan", no list of files you traced, no `--context-file`
+set, no "two-step generation" breakdown, no target/context recap. All of that is INTERNAL. A rambling standby is
+a failure — the user should see only the four lines above.
 
-1. **Targeted page read (the fidelity step):** open the chosen page's real source and find the branch that
-   actually renders on that route (watch for responsive branches like `if (!isMobile) {…}` — pick the one that
-   renders, not a fallback). Trace its imports; build the exact `--context-file` list; pass COMPLETE files
-   (line-range only to skip pure logic or slice a >1000-line file to its render section). NEVER pass a line
-   range you haven't read — a wrong branch is the #1 cause of a wrong reproduction.
-2. **Create the project → pixel-perfect reproduction draft → branch variations**, then return the
-   **preview / canvas URL**.
+**While you wait, do the targeted page prep SILENTLY** (do not narrate it): open the chosen page's real source,
+find the branch that actually renders on that route (watch for responsive branches like `if (!isMobile) {…}` —
+pick the one that renders, not a fallback), trace its imports, and assemble the exact `--context-file` list.
+NEVER pass a line range you haven't read — a wrong branch is the #1 cause of a wrong reproduction.
 
-If a generate fails, retry once with a simpler prompt, then report the exact error. Never stop silently, and
+**🚨 BUDGET THE PAYLOAD (the #1 cause of garbage):** the design API 400s on oversized context. A shell-dependent
+page can pull in a 1000+ line header + 1000+ line page + 900+ line `globals.css` — that WILL 400. So **line-range
+every >1000-line file to its render section** (header → its `<header>` JSX block; page → the render branch you
+chose; and prefer `.superdesign/init/theme.md` over the whole `globals.css`). Pass complete files only for
+normal-sized ones.
+
+ONLY after the design-system layer is complete: **create the project → pixel-perfect reproduction draft →
+branch variations → return the preview / canvas URL.** The reproduction prompt must describe the page's REAL
+structure/content from the branch you read — NOT design-system adjectives ("premium / amber gradient / Playfair"),
+which make the model invent a generic page. Do not narrate intermediate steps; the next thing the user hears is
+the finished preview link (or a blocking question / error).
+
+**On a 400 / failure: trim the BIG files to their render sections and retry the SAME faithful call.** NEVER retry
+with a thinned/simpler-prompt/minimal context to force it through — a reproduction off thin context is invention,
+not reproduction, and produces a garbage on-brand page. If you genuinely cannot fit the real page, STOP and tell
+the user the exact error — do not ship an invented draft. Never stop silently, and
 never leave the user without the preview link.
