@@ -32,18 +32,18 @@ https://raw.githubusercontent.com/superdesigndev/superdesign-skill/main/skills/s
 
 Do NOT ask the user to do this manually — just do it.
 
-# Mandatory Design-System Layer
+# Mandatory Init Files
 
-Init builds ONLY the design-system layer (small, stable, reusable). Before any design task you MUST read these:
+If `.superdesign/init/` exists, you MUST read ALL files in this directory FIRST before any design task:
 
-- `theme.md` — design tokens (colors, fonts, radius, motion, shadows) — values, by path
-- `components.md` — UI primitive inventory with full variant value names
-- `extractable-components.md` — components extractable as reusable DraftComponents
-- `.superdesign/design-system.md` — concise design-system summary (auto-loaded by `create-project`)
+- `components.md` — shared UI primitives with full source code
+- `layouts.md` — shared layout components (nav, sidebar, header, footer)
+- `routes.md` — page/route mapping
+- `theme.md` — design tokens, CSS variables, Tailwind config
+- `pages.md` — page component dependency trees (which files each page needs)
+- `extractable-components.md` — components that can be extracted as reusable DraftComponents
 
-Init does NOT produce `pages.md` / `layouts.md` / `routes.md`. Page structure is read just-in-time per task.
-
-**When designing for an existing page**: do NOT rely on a pre-built dependency tree. (1) Confirm WHICH page (list vs detail etc.). (2) Open that page's real source and find the render branch that actually renders on the route (watch for responsive branches like `if (!isMobile) {…}` — pick the one that renders, not a fallback). (3) Trace its imports and pass every rendered UI file as `--context-file`, plus globals.css, tailwind.config, and `.superdesign/design-system.md`. NEVER pass a line range you haven't read.
+**When designing for an existing page**: First check `pages.md` for the page's complete dependency tree. Every file in that tree MUST be passed as `--context-file`. Then also add globals.css, tailwind.config, and design-system.md.
 
 # Superdesign CLI (MUST run before any command)
 

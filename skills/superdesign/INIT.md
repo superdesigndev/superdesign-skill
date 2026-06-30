@@ -1,105 +1,158 @@
-You are performing a **SuperDesign Init**.
-
-Init builds ONLY the **design-system layer** — the small, stable, reusable facts
-that are the same for every design task (tokens, component variants, conventions).
-
-Init does **NOT** analyze pages/layouts/routes. Page structure is gathered
-just-in-time at design time, scoped to the one page the user confirms (see
-"Layer B" at the bottom). This split is deliberate — see "Why two layers".
+You are performing a **SuperDesign Init** — analyzing this repository to build UI context files that SuperDesign agent will use for design tasks.
 
 ## Output Directory
-Write to `.superdesign/init/` in the project root (plus `.superdesign/design-system.md`).
+Write all files to `.superdesign/init/` in the project root.
 
-## Why two layers (read this first)
+## Analysis Steps
 
-Init bundles two kinds of knowledge with **opposite economics**:
+### 1. Detect Framework & Component Library
+Scan `package.json`, config files (`next.config.*`, `vite.config.*`, `rsbuild.config.*`, `nuxt.config.*`, etc.), and import patterns to determine:
+- Framework: React, Vue, Svelte, Angular, etc.
+- Meta-framework: Next.js, Nuxt, Remix, Astro, etc.
+- Component library: shadcn/ui, Ant Design, MUI, Chakra, Radix, custom, etc.
+- CSS approach: Tailwind, CSS Modules, styled-components, vanilla CSS, etc.
 
-| | Layer A — Design system (THIS init) | Layer B — Page/layout structure (deferred) |
-|---|---|---|
-| Reused across tasks? | Yes, same every time | No — you design one page at a time |
-| Safe to summarize? | **Yes, lossless** (a hex is a hex, a variant name is a variant name) | **No** — a lossy summary *mischaracterizes* layout |
-| Goes stale? | Slowly (weeks) | Fast (every code change) |
+### 2. Write `components.md`
+Identify the project's shared/reusable UI component directory (e.g., `src/components/ui/`, `components/`, `packages/ui/`).
 
-Precomputing Layer B broadly is the #1 cause of bad reproductions: it's mostly
-wasted (you only design one page), it goes stale, and **summarizing a layout
-loses or fabricates the dominant structure** (e.g. calling a 30/70 master-detail
-split a "card grid"). So init does Layer A only. Layer B is read fresh, from the
-real source, when the target is known.
+**IMPORTANT**: Include FULL source code for each component, not just descriptions. SuperDesign needs the actual implementation to reproduce accurately.
 
-## Hard rules for init (Layer A)
+For each component, include:
+- File path
+- Component name
+- Brief description (1 line)
+- Key props if obvious from the export
+- **FULL source code** in fenced code blocks
 
-1. **NO verbatim source dumps.** Do NOT paste full component/CSS/config file
-   bodies. Record token *values* and variant *names* — reference full files by path.
-   (The design CLI reads the real files fresh from disk via `--context-file`, so
-   copying source into the init files buys nothing and wastes generation.)
-2. **Extract from source, verify, never from memory.** Use `grep`/`sed`/`awk` to
-   read actual values out of the real files. A guessed token or variant is a defect.
-3. **Bounded sizes** (targets below). If a file runs long, tighten — don't pad.
-4. **Active app only.** Detect the real frontend; never analyze legacy/duplicate apps.
-5. You MAY build the two agents below **in parallel** (they touch different files).
+Focus on **shared UI primitives** (Button, Input, Dialog, Card, Select, Checkbox, Table, Tabs, etc.), not page-specific components.
 
-## File 1 — `theme.md`  (target 80–120 lines)
+⚠️ This file should contain the ACTUAL CODE of components, not just a list of names.
 
-Design tokens, extracted from the real token sources (e.g. `globals.css` /
-`index.css` and `tailwind.config.*`). Include, concisely:
+### 3. Write `layouts.md`
+Find and READ all shared layout components. These are the components that appear on every page or across multiple pages:
+- App shell / root layout
+- Navigation bar (top nav, bottom nav)
+- Sidebar
+- Header / top bar
+- Footer
+- Breadcrumb
+- Layout wrappers / HOCs
 
-- **Color tokens** — full light + dark table, in the real format (HSL/hex/oklch as
-  the source uses). Every semantic token: background, foreground, card, popover,
-  primary, secondary, muted, accent, destructive/success/warning/info, border,
-  input, ring, plus any sidebar/chart/skeleton sets and the `*-foreground` pairs.
-- **Radius** — base + scale + the framework mapping.
-- **Typography** — each font family + its CSS var + utility class.
-- **Motion** — durations, easings (the actual cubic-beziers), and the LIST of
-  animation names (names only — never paste keyframe bodies).
-- **Shadows / elevation** — named shadows + their values.
-- **Layout** — container width, padding.
-- **Source paths** to the token files, for `--context-file` at design time.
+For each, include:
+- File path
+- Full source code (copy the entire file content)
+- Brief description of what it renders
 
-Frame brand colors **precisely**: state what is core brand vs. what only appears
-as an accent/glow/status. Don't over-claim an accent as the brand.
+This is critical — SuperDesign needs the actual layout code to reproduce pages accurately.
 
-## File 2 — `design-system.md`  (at `.superdesign/`, NOT in init/, <55 lines)
+### 4. Write `routes.md`
+Map out the page/route structure:
+- For file-based routing (Next.js, Nuxt): list route files and their paths
+- For config-based routing (React Router, Vue Router): read the router config
+- For each route, include: URL path, component file path, layout used
+- Include the FULL router config file if it exists (e.g., `router/index.ts`, `routes.ts`)
 
-A concise, human-readable base-prompt summary (palette, fonts, radius, motion,
-component-style philosophy, conventions). `superdesign create-project` auto-loads
-this file as the project base prompt, so keep it tight and accurate. No code dumps.
+For key pages (home, dashboard, main features), include a brief summary of what the page renders.
 
-## File 3 — `components.md`  (≤150 lines)
+### 5. Write `theme.md`
+Extract the design system / theme tokens. **Include FULL file contents**, not summaries:
+- Read and include FULL CSS variable definitions (`:root`, `[data-theme]`, etc.)
+- Read and include FULL Tailwind config (`tailwind.config.*`) — especially `theme.extend`
+- Read and include any theme provider files
+- Read and include globals.css, index.css, or equivalent
+- Capture: colors, fonts, spacing scale, border radius, shadows, breakpoints
 
-Inventory of the shared UI primitive library + app-level shared components.
-Compact table, one row per component: name · path · purpose · **variant value
-names**.
+**IMPORTANT**: Include the COMPLETE raw files in fenced code blocks:
+- Full `tailwind.config.ts/js` content
+- Full `globals.css` / `index.css` content
+- Full CSS variable definitions
+- Any design token files
 
-**Accuracy bar — full variant sets, grep-extracted, verified:**
-- For every variant-driven primitive (e.g. CVA/`cva(...)`), list the COMPLETE set
-  of variant value names by reading the actual variant block, not from memory.
-- **CAUTION:** a `dark:` / `hover:` / `focus:` token inside a className string is a
-  utility prefix, NOT a variant key. Count only keys at the variant-object indent.
-  (Mis-reading `dark:` as a "dark variant" is a real, recurring bug.)
-- Separate variant-driven primitives from plain wrapper primitives.
+### 6. Write `pages.md`
+For each key page/route in the app (home, dashboard, main features — up to 10 pages), build a **complete component dependency tree** by tracing imports recursively.
 
-## File 4 — `extractable-components.md`  (≤90 lines)
+For each page:
+1. Start from the page component file
+2. Trace ALL local imports (relative `./Foo`, `../Bar`, alias `@/components/Baz` — skip node_modules)
+3. For each import, trace ITS imports recursively
+4. Present as an indented tree showing every file the page depends on
 
-Components extractable as reusable `DraftComponent`s (recurring layout/shared
-pieces — nav, cards, headers), with name · path · category · suggested extractable
-props (state/nav/visibility/count props only). Names + paths, no source bodies.
+Format:
+```
+## / (Home Page)
+Entry: src/app/(home)/home-page.tsx
+Dependencies:
+- src/components/home-ui/elegant-header.tsx
+  - src/components/team/create-team-modal.tsx
+- src/components/home-ui/elegant-hero-section.tsx
+  - src/components/home-ui/home-hero-input.tsx
+  - src/components/home-ui/persona-selector.tsx
+  - src/components/home-ui/dev-workflow-view.tsx
+  - src/components/home-ui/import-site-modal.tsx
+- src/components/home-ui/elegant-project-grid.tsx
+  - src/components/home-ui/elegant-project-card.tsx
+- src/app/(home)/components/template-browse-section.tsx
+  - src/app/(home)/components/template-card.tsx
+- src/components/layout/Footer.tsx
+```
 
----
+This tree is the **SINGLE SOURCE OF TRUTH** for which files to pass as `--context-file` when designing a page. If a file appears in the tree, it MUST be included.
 
-## Layer B — Targeted page analysis (DESIGN TIME, NOT during init)
+Prioritize the most important/complex pages (home, dashboard, settings, etc.). Skip trivial pages (404, offline, status).
 
-Do NOT produce `pages.md` / `layouts.md` / `routes.md` during init. When the user
-confirms a specific design target, the design workflow performs a focused pass on
-**that page only**:
+### 7. Write `extractable-components.md`
+Catalog UI components from the codebase that **can be extracted** as reusable SuperDesign `DraftComponent` entities. These are components that appear on multiple pages or define shared UI patterns (navigation, cards, headers, footers).
 
-1. **Confirm the target page first** (don't guess; a page can have list vs detail variants — design the right one).
-2. **Read the real page source** and **identify the correct render branch.** Many
-   components branch by responsive state (`if (!isMobile) {...}`), feature flag, or
-   route. Find the branch that actually renders on the target route — do NOT trust
-   a one-line description, and do NOT grab a line range you haven't read.
-3. **Trace imports** from that branch to the real sub-components actually rendered.
-4. **Build the exact `--context-file` list** and pass COMPLETE files (line-range
-   only to skip pure logic or to slice a >1000-line file down to its render section).
+Organize by category:
 
-This pass is fast (one page), always fresh (no staleness), and structurally
-faithful (read, never summarized). It is the right place to spend effort.
+#### Layout Components (appear on most pages)
+- NavBar / TopNav / BottomNav
+- Sidebar
+- Header / AppBar
+- Footer
+- App Shell / Layout Wrapper
+
+#### Basic Components (used across pages)
+- Button variants
+- Card components
+- Input / Form fields
+- Badge / Tag
+- Avatar
+- Tab components
+
+For each extractable component, include:
+- **Name** (PascalCase, e.g., `NavBar`, `HeroSection`)
+- **Source file path** (e.g., `src/components/layout/NavBar.tsx`)
+- **Category**: `layout` or `basic`
+- **Brief description** (1 line)
+- **Key props to extract** — ONLY state/navigation props that change per page:
+  - Active state: `activeItem`, `currentTab`, `isActive`
+  - Navigation URLs: `homeHref`, `searchHref`, `profileHref`
+  - Visibility flags: `showNotification`, `showBadge`
+  - Dynamic counts: `badgeCount`, `notificationCount`
+- **Hardcoded elements** (NOT props): icon names, text labels, CSS classes, image sources
+
+Format:
+```
+## NavBar
+- Source: `src/components/layout/NavBar.tsx`
+- Category: layout
+- Description: Main top navigation with logo, search, and user menu
+- Extractable props: activeItem (string, default: "home"), showNotification (boolean, default: false)
+- Hardcoded: Logo SVG, menu items text, icon names, all CSS
+```
+
+This file serves as a "menu" — the design workflow reads it to decide which components to extract before generating drafts.
+
+## Format Guidelines
+- Use markdown with clear headings
+- Include file paths as code spans
+- **For `components.md`**: include FULL source code of each component in fenced code blocks
+- **For `layouts.md`**: include FULL file contents in fenced code blocks
+- **For `theme.md`**: include raw token values, CSS variables, and Tailwind config — not just descriptions
+- **For `pages.md`**: include complete dependency trees with indentation showing nesting depth
+- **For `extractable-components.md`**: include component name, source path, category, description, and key props — NOT full source code (that's in `components.md` and `layouts.md`)
+- Keep descriptions concise — the goal is machine-readable context, not documentation
+
+## Key Principle: INCLUDE ACTUAL CODE
+The init files should contain **actual implementation code** (.tsx, .css, .ts), not just documentation or descriptions. SuperDesign needs real code to reproduce UI accurately. Be generous with the content — more context is always better than less.
