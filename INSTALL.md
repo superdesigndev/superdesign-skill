@@ -45,8 +45,7 @@ then run `superdesign login` (opens a browser — ask the user to click to authe
 Run the Superdesign init analysis — it scans the repo and writes the UI context files to `.superdesign/init/`
 (per the INIT skill). **This is the one-time slow step** (~3–5 min the first time; instant on every run after).
 
-You MAY run it as a background task so the terminal isn't frozen, but the ONLY thing you do next is Step 4
-(ask the user). Do NOT propose designs and do NOT start any design command while it runs.
+Then move to Step 4. Do NOT propose designs and do NOT start any design command until init is complete.
 
 ## Step 4 — Ask the user what they want to design
 
