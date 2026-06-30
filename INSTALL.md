@@ -7,19 +7,31 @@ concrete options for them.
 
 ## Step 1 — Install the Superdesign skill into yourself
 
-Detect which agent you are, then run (non-interactive):
+Run (non-interactive), substituting **your own agent's slug**:
 
 ```
-npx skills add superdesigndev/superdesign-skill -g -a <agent> -y
+npx skills add superdesigndev/superdesign-skill -g -a <your-agent-slug> -y
 ```
 
-- `<agent>` = `claude-code` | `cursor` | `codex`
-- `-g` persistent · `-a` target agent · `-y` skip prompts
+- `-g` persistent (global) · `-a` target agent · `-y` skip prompts.
+- The skills CLI ([vercel-labs/skills](https://github.com/vercel-labs/skills)) supports **70+ coding agents**
+  and writes the skill to the correct directory for each. Use the slug for the agent you are. Common slugs:
+  `claude-code`, `cursor`, `codex`, `opencode`, `cline`, `windsurf`, `gemini-cli`, `github-copilot`, `zed`,
+  `aider`, `continue`, `amp`, `warp`, `kilo`, `goose`, `crush`, `droid`, `junie`, `trae`, `qoder`, `devin`,
+  `augment`, `roo`. Full list: <https://github.com/vercel-labs/skills#supported-agents>. (You can pass
+  several with repeated `-a`.)
 
-If `npx skills` is unavailable or fails, fall back: fetch
-`https://raw.githubusercontent.com/superdesigndev/superdesign-skill/main/skills/superdesign/SKILL.md`
-and write it to your skills directory (`~/.claude/skills/superdesign/SKILL.md` for Claude Code; the
-equivalent `.agents/` path for Cursor/Codex).
+**Fallback** — if `npx skills` is unavailable or fails, install manually. Fetch **all three** skill files and
+write them into a `superdesign/` folder inside your agent's skills directory:
+
+- `https://raw.githubusercontent.com/superdesigndev/superdesign-skill/main/skills/superdesign/SKILL.md`
+- `https://raw.githubusercontent.com/superdesigndev/superdesign-skill/main/skills/superdesign/INIT.md`
+- `https://raw.githubusercontent.com/superdesigndev/superdesign-skill/main/skills/superdesign/SUPERDESIGN.md`
+
+Typical skills dirs: `~/.claude/skills/superdesign/` (Claude Code) · `.agents/skills/superdesign/` or
+`~/.agents/skills/superdesign/` (Cursor, Codex, Cline, Gemini CLI, GitHub Copilot, Zed, Warp) · or your
+agent's documented skills path. (`SKILL.md` also self-fetches `INIT.md` + `SUPERDESIGN.md` at runtime, so it
+works even if you only have `SKILL.md` — but writing all three is more robust.)
 
 ## Step 2 — Bootstrap (the skill handles this)
 
