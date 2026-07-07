@@ -1,4 +1,43 @@
-SuperDesign helps you (1) find design inspirations/styles and (2) generate/iterate design drafts on an infinite canvas.
+# Superdesign: the design skill for Claude Code, Cursor and any coding agent
+
+**Stop shipping AI-slop UI.** Coding agents write great code and mediocre interfaces: generic layouts, default shadcn everything, no taste. Superdesign is the skill that gives your agent design judgment, so the UI it ships actually looks considered.
+
+Install it once and your agent (Claude Code, Cursor, Codex, and 70+ others) can find real design direction, set up a design system, and generate + iterate high-quality UI drafts on an infinite canvas, all without leaving your terminal.
+
+> Powered by [superdesign.dev](https://superdesign.dev), the AI product design agent.
+
+---
+
+## Install
+
+```
+npx skills add superdesigndev/superdesign-skill
+```
+
+This works for any of the [70+ supported coding agents](https://github.com/vercel-labs/skills#supported-agents). Then install the CLI it drives:
+
+```
+npm install -g @superdesign/cli@latest
+superdesign login
+```
+
+## Use it
+
+Just talk to your agent:
+
+```
+/superdesign help me redesign this settings page so it doesn't look like default AI slop
+```
+
+```
+/superdesign set up a design system from my current codebase
+```
+
+```
+/superdesign improve the design of my dashboard
+```
+
+The skill handles the rest: it reads your code for context, gathers real style references, and produces design drafts you can branch and refine.
 
 ---
 
@@ -6,26 +45,7 @@ SuperDesign helps you (1) find design inspirations/styles and (2) generate/itera
 
 1. **Help me design X** (feature/page/flow)
 2. **Set design system**
-3. **Help me improve design of X**
-
-# Quickstart
-
-Install CLI
-```
-npm install -g @superdesign/cli@latest
-```
-
-Install skills for any coding agent
-```
-npx skills add superdesigndev/superdesign-skill
-```
-
-Prompt in any agent
-```
-/superdesign help me design X
-```
-
---
+3. **Help me improve design of X** (make it not look AI-generated)
 
 ## Tooling overview
 
@@ -253,3 +273,14 @@ superdesign get-design --draft-id <id> --json
 # Create new design from scracth without any reference - ONLY use this for creating brand new design, default NEVER use this
 superdesign create-design-draft --project-id <id> --title "X" -p "..." --json
 ```
+
+---
+
+## Links
+
+- Web app: [superdesign.dev](https://superdesign.dev)
+- Skill install for 70+ agents: [vercel-labs/skills](https://github.com/vercel-labs/skills)
+
+## License
+
+MIT. See [LICENSE](./LICENSE).
