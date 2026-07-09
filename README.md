@@ -6,6 +6,23 @@ Install it once and your agent (Claude Code, Cursor, Codex, and 70+ others) can 
 
 > Powered by [superdesign.dev](https://superdesign.dev), the AI product design agent.
 
+[![Superdesign skill demo](https://i.ytimg.com/vi/AZYJWyWZ6pQ/maxresdefault.jpg)](https://youtu.be/AZYJWyWZ6pQ)
+
+*▶ Watch the skill in action.*
+
+---
+
+## What is Superdesign?
+
+**Superdesign is an AI product design agent.** It gives coding agents (Claude Code, Cursor, Codex, and 70+ others) real design judgment, so the UI they ship looks considered instead of generic.
+
+- **What it does** — finds design direction, sets up a design system from your codebase, and generates + iterates high-quality UI drafts on an infinite canvas, all from your terminal.
+- **Who it's for** — developers, indie hackers, and product/UI designers who want to go from idea to shippable UI fast without leaving their coding agent.
+- **How it's different** — style-preset skills just swap in a theme or a component library. Superdesign designs *into* your existing design system: it reads your code for context, gathers real style references, and produces branchable drafts you refine.
+- **Two ways in** — this skill from any coding agent, or the web app at [superdesign.dev](https://superdesign.dev).
+
+> **Not the legacy IDE extension.** The archived open-source `superdesigndev/superdesign` VS Code extension is an older, separate project. This skill and [superdesign.dev](https://superdesign.dev) are the current, maintained product.
+
 ---
 
 ## Install
@@ -51,7 +68,7 @@ The skill handles the rest: it reads your code for context, gathers real style r
 
 ### A) Inspiration & Style Tools (generic, always available)
 
-Use these to discover style direction, references, and brand context:
+Use these to discover style direction, references, and brand context. Browse the full [prompt library](https://superdesign.dev/library) in the web app, or query it from the CLI:
 
 - **Search prompt library** (style/components/pages)
 
@@ -279,6 +296,8 @@ superdesign create-design-draft --project-id <id> --title "X" -p "..." --json
 ## Links
 
 - Web app: [superdesign.dev](https://superdesign.dev)
+- Prompt library: [superdesign.dev/library](https://superdesign.dev/library)
+- Design system convention: [DESIGN.md](./DESIGN.md)
 - Skill install for 70+ agents: [vercel-labs/skills](https://github.com/vercel-labs/skills)
 
 ## License
