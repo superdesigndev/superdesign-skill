@@ -103,7 +103,7 @@ Use design agent to generate high quality design drafts:
 ## Overall SOP for designing features on top of existing app:
 1. Investigate existing UI, workflow
 2. Setup design system file if not exist yet
-3. Requirements gathering: use askQuestion tool to clarify requirements with users (Optionally use Inspiration tool to find inspiration when needed)
+3. Requirements gathering: ask the user using the session's available user-input mechanism; if none is available, ask in chat (optionally use Inspiration tools when needed)
 4. Ask user whether ready to design in superdesign OR implement UI directly
 5. If yes to superdesign
   5.1 Create/update a pixel perfect html replica of current UI of page that we will design on top of in `.superdesign/replica_html_template/<name>.html` (html should only contain & reflect how UI look now, the actual design should be handled by superdesign agent)
@@ -114,7 +114,7 @@ Use design agent to generate high quality design drafts:
 ## Always-on rules
 - Design system should live at: `.superdesign/design-system.md`
 - If `.superdesign/design-system.md` is missing, run **Design System Setup** first.
-- Use `askQuestion` to ask high-signal questions (constraints, taste, tradeoffs).
+- Ask high-signal questions about constraints, taste, and tradeoffs using the session's available user-input mechanism; if none is available, ask in chat.
 - Always use `--json` for machine parsing.
 
 ---
@@ -200,7 +200,7 @@ Then in the iterate command:
    - `superdesign search-prompts --tags "style" --json`
    - `superdesign get-prompts --slugs ... --json`
    - optional: `superdesign extract-brand-guide --url ... --json`
-3. Interview user (`askQuestion`) to choose direction
+3. Ask the user to choose a direction using the session's available user-input mechanism; if none is available, ask in chat
 4. Write:
    - `.superdesign/design-system.md` (product context + UX flows + visual design, adapted to references)
 
@@ -210,7 +210,7 @@ Then in the iterate command:
 
 ### Example workflow - Add feature to existing page
 
-1. Investigate existing design and Ask targeted questions (`askQuestion`) about requirements + taste
+1. Investigate the existing design and ask targeted questions about requirements and taste using the session's available user-input mechanism; if none is available, ask in chat
 2. After clarifying, Ask user whether ready to design in superdesign OR implement UI directly
 3. If design in superdesign
   3.1 Ensure `.superdesign/design-system.md` exists (setup if missing)
