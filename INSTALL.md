@@ -25,12 +25,10 @@ npx skills add superdesigndev/superdesign-skill -g -a <your-agent-slug> -y
   `aider`, `continue`, `amp`, `warp`, `kilo`, `goose`, `crush`, `droid`, `junie`, `trae`, `qoder`, `devin`,
   `augment`, `roo`. Full list: <https://github.com/vercel-labs/skills#supported-agents>.
 
-**Fallback** — if `npx skills` is unavailable or fails, install manually. Fetch **all three** skill files and
-write them into a `superdesign/` folder inside your agent's skills directory:
-
-- `https://raw.githubusercontent.com/superdesigndev/superdesign-skill/main/skills/superdesign/SKILL.md`
-- `https://raw.githubusercontent.com/superdesigndev/superdesign-skill/main/skills/superdesign/INIT.md`
-- `https://raw.githubusercontent.com/superdesigndev/superdesign-skill/main/skills/superdesign/SUPERDESIGN.md`
+**Fallback** — if `npx skills` is unavailable or fails, install manually. Download or clone this repository,
+then copy the **entire** `skills/superdesign/` directory into a `superdesign/` folder inside your agent's
+skills directory. Preserve the directory structure, including `SKILL.md`, the `references/` directory, and
+the deprecated compatibility forwarder files at the skill root.
 
 Typical skills dirs: `~/.claude/skills/superdesign/` (Claude Code) · `.agents/skills/superdesign/` (Cursor,
 Codex, Cline, Gemini CLI, GitHub Copilot, Zed, Warp) · or your agent's documented skills path.
@@ -43,7 +41,7 @@ then run `superdesign login` (opens a browser — ask the user to click to authe
 ## Step 3 — Run `init` (the repo design-system extraction)
 
 Run the Superdesign init analysis — it scans the repo and writes the UI context files to `.superdesign/init/`
-(per the INIT skill). **This is the one-time slow step** (~3–5 min the first time; instant on every run after).
+(per `references/INIT.md` in the installed skill). **This is the one-time slow step** (~3–5 min the first time; instant on every run after).
 
 Then move to Step 4. Do NOT propose designs and do NOT start any design command until init is complete.
 
@@ -61,7 +59,8 @@ clarifying question to pin the exact target. Otherwise proceed.
 
 ## Step 5 — Design
 
-Once `init` is complete AND you have the user's target, follow the SuperDesign design SOP (see `SUPERDESIGN.md`):
+Once `init` is complete AND you have the user's target, follow the SuperDesign design SOP (see
+`references/SUPERDESIGN.md` in the installed skill):
 read the init files, gather the real source context for the target page (mind the payload budget — line-range
 1000+ line files to their render section; never thin-retry on a 400), create the project, produce the
 pixel-perfect reproduction, then branch variations. Return the **preview / canvas URL**.

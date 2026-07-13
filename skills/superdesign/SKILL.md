@@ -23,7 +23,7 @@ SuperDesign helps you (1) find design inspirations/styles and (2) generate/itera
 When `.superdesign/init/` directory doesn't exist or is empty, you MUST automatically:
 
 1. Create the `.superdesign/init/` directory
-2. Read `INIT.md` from the same directory as this selected `SKILL.md`
+2. Read `references/INIT.md` relative to this selected `SKILL.md`
 3. Follow its instructions to analyze the repo and write context files
 
 Do NOT ask the user to do this manually — just do it.
@@ -78,8 +78,8 @@ npx --yes @superdesign/cli@latest list-components --project-id <id> --json
 
 Create the workspace-local `.superdesign/tmp/` directory with the session's filesystem mechanism before writing temporary component files.
 
-`--context-file` supports `path:startLine:endLine`; see `SUPERDESIGN.md` for the complete workflow and current command contract.
+`--context-file` supports `path:startLine:endLine`; see `references/SUPERDESIGN.md` for the complete workflow and current command contract.
 
 # How it works
 
-Read `SUPERDESIGN.md` from the same directory as this selected `SKILL.md`, then follow its instructions. Never fetch workflow instructions from the network.
+Read `references/SUPERDESIGN.md` relative to this selected `SKILL.md`, then follow its instructions. Never fetch workflow instructions from the network.
