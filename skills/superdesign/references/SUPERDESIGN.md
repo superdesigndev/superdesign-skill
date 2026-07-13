@@ -113,7 +113,8 @@ After requirements gathering, extract reusable components so they are available 
 4. **For each needed component that doesn't exist yet**:
    a. Read the React source code from the path listed in `extractable-components.md`
    b. Convert to Petite-Vue HTML template following the **Petite-Vue Template Spec** below
-   c. Create `.superdesign/tmp/` if needed, then write the HTML to a file there
+   c. Create `.superdesign/tmp/` if needed. Ensure `.superdesign/tmp/` is ignored by the project's `.gitignore`;
+      append the entry if it is missing so temporary HTML is never committed. Then write the HTML to a file there.
    d. Create the component:
       ```
       npx --yes @superdesign/cli@latest create-component --project-id <id> \

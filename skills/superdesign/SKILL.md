@@ -77,6 +77,7 @@ npx --yes @superdesign/cli@latest list-components --project-id <id> --json
 ```
 
 Create the workspace-local `.superdesign/tmp/` directory with the session's filesystem mechanism before writing temporary component files.
+Ensure `.superdesign/tmp/` is ignored by the project's `.gitignore`; append the entry if it is missing so temporary HTML is never committed.
 
 `--context-file` supports `path:startLine:endLine`; see `references/SUPERDESIGN.md` for the complete workflow and current command contract.
 
