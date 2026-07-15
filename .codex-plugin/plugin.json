@@ -1,0 +1,42 @@
+{
+  "name": "superdesign",
+  "version": "0.1.0",
+  "description": "Superdesign adds a product-design skill to Codex.",
+  "author": {
+    "name": "Superdesign dev, Inc.",
+    "email": "support@superdesign.dev",
+    "url": "https://superdesign.dev"
+  },
+  "homepage": "https://superdesign.dev",
+  "repository": "https://github.com/superdesigndev/superdesign-skill",
+  "license": "MIT",
+  "keywords": [
+    "design",
+    "frontend",
+    "ui",
+    "ux"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Superdesign",
+    "shortDescription": "Create and iterate UI designs",
+    "longDescription": "Superdesign adds a product-design skill to Codex. Ask for a screen, a landing page, or a whole flow, and Codex drives the Superdesign CLI to generate polished UI design drafts you can open on an infinite canvas in your browser.\n\nExplore directions in parallel: give a few prompts like \"dark theme\", \"minimal\", \"bold\" and compare side-by-side variations. Iterate on the one you like, branch alternatives, and revert to any earlier version.\n\nTo keep results on-brand, it can extract brand guidelines from a website, extend existing design systems, search a community prompt library for inspiration, and reuse components across drafts.",
+    "developerName": "Superdesign",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://superdesign.dev",
+    "privacyPolicyURL": "https://superdesign.dev/privacy-policy",
+    "termsOfServiceURL": "https://superdesign.dev/terms-of-service",
+    "defaultPrompt": [
+      "Help me design a landing page for this project.",
+      "Explore three visual directions for this product—minimal, editorial, and bold—and show them side by side.",
+      "Turn this rough checkout screen into a polished end-to-end flow that feels native to our brand."
+    ],
+    "brandColor": "#000000",
+    "composerIcon": "./assets/superdesign-icon.png",
+    "logo": "./assets/superdesign-icon.png"
+  }
+}

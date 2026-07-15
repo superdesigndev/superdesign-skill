@@ -1,0 +1,4 @@
+interface:
+  display_name: "Superdesign"
+  short_description: "Create and iterate UI designs"
+  default_prompt: "Use $superdesign to design a landing page for this project."
