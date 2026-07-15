@@ -1,4 +1,4 @@
-You are performing a **SuperDesign Init** — analyzing this repository to build UI context files that SuperDesign agent will use for design tasks.
+You are performing a **Superdesign Init** — analyzing this repository to build UI context files that Superdesign agent will use for design tasks.
 
 ## Output Directory
 Write all files to `.superdesign/init/` in the project root.
@@ -15,7 +15,7 @@ Scan `package.json`, config files (`next.config.*`, `vite.config.*`, `rsbuild.co
 ### 2. Write `components.md`
 Identify the project's shared/reusable UI component directory (e.g., `src/components/ui/`, `components/`, `packages/ui/`).
 
-**IMPORTANT**: Include FULL source code for each component, not just descriptions. SuperDesign needs the actual implementation to reproduce accurately.
+**IMPORTANT**: Include FULL source code for each component, not just descriptions. Superdesign needs the actual implementation to reproduce accurately.
 
 For each component, include:
 - File path
@@ -43,7 +43,7 @@ For each, include:
 - Full source code (copy the entire file content)
 - Brief description of what it renders
 
-This is critical — SuperDesign needs the actual layout code to reproduce pages accurately.
+This is critical — Superdesign needs the actual layout code to reproduce pages accurately.
 
 ### 4. Write `routes.md`
 Map out the page/route structure:
@@ -101,7 +101,7 @@ This tree is the **SINGLE SOURCE OF TRUTH** for which files to pass as `--contex
 Prioritize the most important/complex pages (home, dashboard, settings, etc.). Skip trivial pages (404, offline, status).
 
 ### 7. Write `extractable-components.md`
-Catalog UI components from the codebase that **can be extracted** as reusable SuperDesign `DraftComponent` entities. These are components that appear on multiple pages or define shared UI patterns (navigation, cards, headers, footers).
+Catalog UI components from the codebase that **can be extracted** as reusable Superdesign `DraftComponent` entities. These are components that appear on multiple pages or define shared UI patterns (navigation, cards, headers, footers).
 
 Organize by category:
 
@@ -155,4 +155,4 @@ This file serves as a "menu" — the design workflow reads it to decide which co
 - Keep descriptions concise — the goal is machine-readable context, not documentation
 
 ## Key Principle: INCLUDE ACTUAL CODE
-The init files should contain **actual implementation code** (.tsx, .css, .ts), not just documentation or descriptions. SuperDesign needs real code to reproduce UI accurately. Be generous with the content — more context is always better than less.
+The init files should contain **actual implementation code** (.tsx, .css, .ts), not just documentation or descriptions. Superdesign needs real code to reproduce UI accurately. Be generous with the content — more context is always better than less.

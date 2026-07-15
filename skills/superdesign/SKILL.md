@@ -1,13 +1,9 @@
 ---
 name: superdesign
-description: >
-  Design or redesign frontend UI with the Superdesign canvas. Use for design-system extraction, faithful UI reproduction, visual variants, reusable design components, and multi-page flows. Do not use for implementation-only tasks that require no design exploration.
-metadata:
-  author: superdesign
-  version: "0.0.3"
+description: "Design or redesign frontend UI with the Superdesign canvas. Use for design-system extraction, faithful UI reproduction, visual variants, reusable design components, and multi-page flows. Do not use for implementation-only tasks that require no design exploration."
 ---
 
-SuperDesign helps you (1) find design inspirations/styles and (2) generate/iterate design drafts on an infinite canvas.
+Superdesign helps you (1) find design inspirations/styles and (2) generate/iterate design drafts on an infinite canvas.
 
 ---
 

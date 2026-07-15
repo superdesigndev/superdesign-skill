@@ -129,7 +129,7 @@ Overall process for designing features on top of existing app:
   - If design task is redesign profile page, then replicate current profile page UI pixel perfectly
   - If design task is add new button to side panel, identify which page side panel is using, then replicate that page UI pixel perfectly
 
-**replica_html_template = BEFORE state (what exists now).** It provides context for SuperDesign agent.
+**replica_html_template = BEFORE state (what exists now).** It provides context for Superdesign agent.
 Actual design will be done via superdesign agent, by passing the prompt
 
 The replica_html_template must contain **ONLY UI that currently exists in the codebase**. 
