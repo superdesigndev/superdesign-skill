@@ -67,12 +67,12 @@ npx --yes @superdesign/cli@latest create-project --title "X"
 npx --yes @superdesign/cli@latest create-design-draft --project-id <id> --title "Current UI" -p "Faithfully reproduce..." --context-file src/Component.tsx
 npx --yes @superdesign/cli@latest iterate-design-draft --draft-id <id> -p "dark theme" -p "minimal" --mode branch --context-file src/Component.tsx
 npx --yes @superdesign/cli@latest execute-flow-pages --draft-id <id> --pages '[...]' --context-file src/Component.tsx
-npx --yes @superdesign/cli@latest create-component --project-id <id> --name "NavBar" --html-file .superdesign/tmp/navbar.html --props '[...]' --json
-npx --yes @superdesign/cli@latest update-component --component-id <id> --html-file .superdesign/tmp/navbar.html --json
+npx --yes @superdesign/cli@latest create-component --project-id <id> --name "NavBar" --html-file .superdesign/tmp/navbar.html --props '[...]'
+npx --yes @superdesign/cli@latest update-component --component-id <id> --html-file .superdesign/tmp/navbar.html
 npx --yes @superdesign/cli@latest list-components --project-id <id>
 ```
 
-The CLI defaults to an agent-optimized output (compact TOON plus `help[]` next-step hints); add `--json` only when you need the full machine-readable payload. `create-component`/`update-component` keep `--json` so you capture the returned component id.
+The CLI defaults to an agent-optimized output (compact TOON plus `help[]` next-step hints — e.g. `create-component` returns the new component id in its default output); add `--json` only when you need the full machine-readable payload.
 
 Create the workspace-local `.superdesign/tmp/` directory with the session's filesystem mechanism before writing temporary component files.
 Ensure `.superdesign/tmp/` is ignored by the project's `.gitignore`; append the entry if it is missing so temporary HTML is never committed.

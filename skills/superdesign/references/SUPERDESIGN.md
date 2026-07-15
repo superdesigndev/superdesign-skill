@@ -120,9 +120,9 @@ After requirements gathering, extract reusable components so they are available 
         --name "NavBar" \
         --html-file .superdesign/tmp/navbar-component.html \
         --description "Main navigation bar" \
-        --props '[{"name":"activeItem","type":"string","defaultValue":"home"}]' \
-        --json
+        --props '[{"name":"activeItem","type":"string","defaultValue":"home"}]'
       ```
+      The default output returns the new `componentId` plus `help[]` next-step hints — add `--json` only if you need the full machine payload.
 5. **Focus on layout components first** (NavBar, Sidebar, Footer, Header) — these appear on every page and benefit most from extraction.
 6. **Skip basic UI primitives** (Button, Input, Card) — these are too simple to warrant extraction and are better as inline HTML in drafts.
 
