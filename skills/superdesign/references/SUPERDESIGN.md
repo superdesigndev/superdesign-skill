@@ -107,8 +107,8 @@ Step 2.5 — Component Extraction (BEFORE creating drafts):
 After requirements gathering, extract reusable components so they are available as `<sd-component>` tags in design drafts. This ensures UI consistency across all generated pages.
 
 1. **Read `extractable-components.md`** from `.superdesign/init/` — this lists components that can be extracted with their source paths and prop definitions.
-2. **Create project first** (if not already created): `npx --yes @superdesign/cli@latest create-project --title "<X>" --json`
-3. **Check existing components**: `npx --yes @superdesign/cli@latest list-components --project-id <id> --json`
+2. **Create project first** (if not already created): `npx --yes @superdesign/cli@latest create-project --title "<X>"`
+3. **Check existing components**: `npx --yes @superdesign/cli@latest list-components --project-id <id>`
 4. **For each needed component that doesn't exist yet**:
    a. Read the React source code from the path listed in `extractable-components.md`
    b. Convert to Petite-Vue HTML template following the **Petite-Vue Template Spec** below
@@ -135,7 +135,7 @@ After extraction, proceed to Step 3. The draft generation agent will automatical
 
 Step 3 — Design in Superdesign
 
-- Create project (IMPORTANT - MUST create project first unless project id is given by user): `npx --yes @superdesign/cli@latest create-project --title "<X>" --json`
+- Create project (IMPORTANT - MUST create project first unless project id is given by user): `npx --yes @superdesign/cli@latest create-project --title "<X>"`
 
 - **Step 3a — PIXEL-PERFECT reproduction (ground truth) — MANDATORY, DO NOT SKIP**:
   Before ANY design changes, FIRST create a draft that is a **100% pixel-perfect reproduction** of the current UI.
@@ -160,8 +160,7 @@ Step 3 — Design in Superdesign
     --context-file src/components/ui/Input.tsx \
     --context-file src/styles/globals.css \
     --context-file tailwind.config.ts \
-    --context-file src/lib/cn.ts \
-    --json
+    --context-file src/lib/cn.ts
   ```
 
   **Line range usage:**
@@ -185,6 +184,7 @@ Step 3 — Design in Superdesign
     -p "<variation 1: specific design change>" \
     -p "<variation 2: different design change>" \
     --mode branch \
+    --user-request "<the user's verbatim message for this round>" \
     --context-file .superdesign/design-system.md \
     --context-file src/layouts/AppLayout.tsx \
     --context-file src/components/Nav.tsx \
@@ -193,11 +193,11 @@ Step 3 — Design in Superdesign
     --context-file src/components/ui/Button.tsx \
     --context-file src/components/ui/Card.tsx \
     --context-file src/styles/globals.css \
-    --context-file tailwind.config.ts \
-    --json
+    --context-file tailwind.config.ts
   ```
 
   ⚠️ Pass the SAME context files as Step 3a to maintain consistency.
+  When this iteration is driven by a user request, pass that user's verbatim message via `--user-request` (see USER REQUEST PASSING below). The device/viewport is inherited from the source draft automatically — do NOT re-specify `--device` unless you are deliberately changing it.
 
 - Present URL & title to user and ask for feedback
 - Before further iteration, MUST read the design first: `npx --yes @superdesign/cli@latest get-design --draft-id <id> --json`
@@ -215,7 +215,7 @@ Step 3 — Design in Superdesign
 
 Extension after approval:
 
-- If user wants to design more relevant pages or whole user journey based on a design, use execute-flow-pages: `npx --yes @superdesign/cli@latest execute-flow-pages --draft-id <draftId> --pages '[...]' --context-file src/components/Foo.tsx --json`
+- If user wants to design more relevant pages or whole user journey based on a design, use execute-flow-pages: `npx --yes @superdesign/cli@latest execute-flow-pages --draft-id <draftId> --pages '[...]' --context-file src/components/Foo.tsx`
 - IMPORTANT: Use execute-flow-pages instead of create-design-draft for extend more pages based on existing design, create-design-draft is ONLY used for creating brand new design
 
 ## SOP: BRAND NEW PROJECT
@@ -224,17 +224,19 @@ Step 1 — Requirements gathering: ask the user using the session's available us
 
 Step 2 — Design system setup (MUST follow Section B):
 
-- Run: `npx --yes @superdesign/cli@latest search-prompts --tags "style" --json`
+- Run: `npx --yes @superdesign/cli@latest search-prompts --tags "style"`
 - Pick the most suitable style prompt ONLY from returned results (do not do further search).
-- Fetch prompt details: `npx --yes @superdesign/cli@latest get-prompts --slugs "<slug>" --json`
-- Optional: `npx --yes @superdesign/cli@latest extract-brand-guide --url "<user-provided-url>" --json`
+- Fetch prompt details in TWO steps (do NOT blanket-fetch full bodies):
+  1. Index first with the default output to confirm the slug(s) and their size: `npx --yes @superdesign/cli@latest get-prompts --slugs "<slug>"`
+  2. Then fetch the full body ONLY for the chosen slug(s) right before writing design-system.md: `npx --yes @superdesign/cli@latest get-prompts --slugs "<slug>" --full`
+- Optional: `npx --yes @superdesign/cli@latest extract-brand-guide --url "<user-provided-url>"`
 - Write .superdesign/design-system.md adapted to:
   product context + UX flows + visual direction
 
 Step 3 — Design in Superdesign:
 
-- Create project: `npx --yes @superdesign/cli@latest create-project --title "<X>" --json`
-- Create initial draft (only for brand new, ⚠️ single -p only): `npx --yes @superdesign/cli@latest create-design-draft --project-id <id> --title "<X>" -p "<all design directions in one prompt>" --json`
+- Create project: `npx --yes @superdesign/cli@latest create-project --title "<X>"`
+- Create initial draft (only for brand new, ⚠️ single -p only): `npx --yes @superdesign/cli@latest create-design-draft --project-id <id> --title "<X>" -p "<all design directions in one prompt>" --user-request "<the user's verbatim request>"`
 - Present URL(s), gather feedback, iterate.
 - Iterate in BRANCH mode;
 
@@ -301,6 +303,7 @@ npx --yes @superdesign/cli@latest iterate-design-draft --draft-id <id>
 --prompt "Move the book demo banner sticky at the top, remain anything else the same"
 --prompt "Remove banner for book demo, instead add a card near the template project cards for book demo, remain anything else the same"
 --mode branch
+--user-request "I don't like the book demo banner's position, help me figure out a few other ways"
 --context-file .superdesign/design-system.md
 --context-file src/components/Banner.tsx
 --context-file src/pages/Home.tsx:40
@@ -311,7 +314,6 @@ npx --yes @superdesign/cli@latest iterate-design-draft --draft-id <id>
 --context-file src/components/ui/Card.tsx
 --context-file src/styles/globals.css
 --context-file tailwind.config.ts
---json
 ...
 User: great I like the card version, help me design the full book demo flow
 Assistant:
@@ -323,9 +325,24 @@ Assistant:
   --context-file src/components/ui/Button.tsx \
   --context-file src/components/ui/Input.tsx \
   --context-file src/components/ui/Card.tsx \
-  --context-file src/styles/globals.css \
-  --json
+  --context-file src/styles/globals.css
 </example>
+
+## USER REQUEST PASSING
+
+When you run `create-design-draft` or `iterate-design-draft` on behalf of a user request, you SHOULD pass the user's verbatim message for that round via `--user-request "<text>"`.
+
+- Pass the user's ACTUAL words for this round (not your paraphrase, not the design-system-fidelity boilerplate). This is the caller-side signal the design backend uses to improve generation quality.
+- This is separate from `-p`/`--prompt`: `-p` is the directional design instruction(s) you author; `--user-request` is the raw human ask that motivated them.
+- Transparency: the text is shared with SuperDesign and stored server-side to improve generation. Keep it to the round's request; the field is capped at 16KB (truncate if longer).
+- It is optional. Omit it for agent-initiated steps that no user directly asked for (e.g. the Step 3a pixel-perfect reproduction).
+
+## VERSION HISTORY & REVERT
+
+Every draft keeps a version history. The CLI's default output already self-discloses version anchoring (`currentVersion`/`versions` plus `help[]` hints), so discover version numbers with `get-design` rather than tracking them by hand.
+
+- **Iterate from an earlier version**: `iterate-design-draft ... --from-version <n>` starts from a specific historical version instead of the current head.
+- **Revert to an earlier version** (no generation): `npx --yes @superdesign/cli@latest revert-design-draft --draft-id <id> --to-version <n>` restores a prior version as the current head. The revert is itself reversible — the current head is snapshotted into history first — so it is always safe to try. Use `get-design` to find the version number to restore.
 
 ## ALWAYS-ON RULES
 
@@ -348,6 +365,9 @@ Assistant:
 - **COMPLETE CONTEXT**: Always include shared/global layout files (nav, sidebar, header, footer, layout wrapper) in --context-file, not just the target component.
 - **INCLUDE IMPLEMENTATION FILES**: Context files should be actual implementation (.tsx, .css, .ts) — not just documentation (.md). The AI needs real code to reproduce accurately.
 - **CLI VERSION**: Always invoke the current CLI with `npx --yes @superdesign/cli@latest`. If a flag is not recognized, inspect `npx --yes @superdesign/cli@latest <command> --help` and follow the command contract below; never install or upgrade the CLI globally.
+- **DEFAULT OUTPUT IS FOR AGENTS**: Every command's default output is already agent-optimized (compact TOON plus `help[]` next-step hints). Read it directly; add `--json` only when you genuinely need the full machine-readable payload, and `--full` only to expand truncated fields (e.g. a chosen prompt body). Do NOT reflexively append `--json`/`--full`.
+- **USER REQUEST PASSING**: When a `create-design-draft`/`iterate-design-draft` call is driven by a user request, pass the user's verbatim round message via `--user-request "<text>"` (see USER REQUEST PASSING above).
+- **DEVICE/VIEWPORT INHERITANCE**: `iterate-design-draft` inherits the device/viewport from the source draft automatically. Do NOT re-specify `--device`/`--width`/`--height` on iterate chains unless you are deliberately changing the viewport.
 
 ---
 
@@ -502,21 +522,30 @@ For marketing assets, MUST confirm with the user the dimension before creating, 
 
 ## COMMAND CONTRACT (DO NOT HALLUCINATE FLAGS)
 
+Every command supports `--json` for the full machine-readable payload; the default output is agent-optimized (TOON + `help[]`). Only the flags below `--json` (e.g. `--full`, `--user-request`) are per-command.
+
 - create-project: required `--title`; optional `--template <path>`, `--device <mobile|tablet|desktop>` (default: desktop), `--extend-from <projectId>`, `--json`
 - iterate-design-draft:
-  - required `--draft-id`, `-p`/`--prompt`, and `--mode <branch|replace>`; optional `--context-file` (one or more paths; supports `path:startLine:endLine`), `--model`, `--json`
+  - required `--draft-id`, `-p`/`--prompt`, and `--mode <branch|replace>`; optional `--context-file` (one or more paths; supports `path:startLine:endLine`), `--model`, `--user-request <text>`, `--json`
   - branch: can include multiple `-p` prompts; optional `--count <1-4>` is valid only with a single prompt
   - replace: use exactly one `-p`; do not use `--count`
-- create-design-draft: required `--project-id`, `--title`, and `-p` (SINGLE prompt only); optional `--device <mobile|tablet|desktop|custom>` (default: desktop), `--width <pixels>`, `--height <pixels>`, `--context-file` (one or more paths; supports `path:startLine:endLine`), `--model`, `--json`
+  - `--from-version <n>`: iterate from a specific historical version instead of the current head (discover version numbers via `get-design`)
+  - `--device <mobile|tablet|desktop|custom>` / `--width <pixels>` / `--height <pixels>`: OVERRIDE the viewport. Defaults to the source draft's device — omit unless deliberately changing it. `--width`/`--height` require `--device custom`.
+- create-design-draft: required `--project-id`, `--title`, and `-p` (SINGLE prompt only); optional `--device <mobile|tablet|desktop|custom>` (default: desktop), `--width <pixels>`, `--height <pixels>`, `--context-file` (one or more paths; supports `path:startLine:endLine`), `--model`, `--user-request <text>`, `--json`
   - ⚠️ ONLY accepts ONE -p flag. Multiple -p flags will silently drop all but the last one.
   - Combine all design directions into a single -p string.
   - Only use this for creating purely new design from scratch.
   - --device custom requires both --width and --height (min 20px each). Providing --width/--height auto-sets --device to custom.
+- revert-design-draft: required `--draft-id`, `--to-version <n>`; optional `--json`. Restores a prior version as the current head with NO generation; reversible (the current head is snapshotted into history first). Discover version numbers via `get-design`.
 - execute-flow-pages: required `--draft-id`, `--pages`; optional `--context`, `--context-file` (one or more paths; supports `path:startLine:endLine`), `--model`, `--json`
 - get-design: required `--draft-id`; optional `--json`, `--output <path>`
 - create-component: required `--project-id`, `--name` (PascalCase), and exactly one of `--html` or `--html-file`; optional `--description`, `--props` (JSON array), `--slots` (JSON array), `--events` (JSON array), `--css-imports` (JSON array), `--json`
 - update-component: required `--component-id`; optional `--name`, `--html` or `--html-file` (not both), `--description`, `--props` (JSON array), `--slots` (JSON array), `--events` (JSON array), `--css-imports` (JSON array), `--json`
-- list-components: required `--project-id`; optional `--json`
+- list-components: required `--project-id`; optional `--full`, `--json`
+- list-design-systems: no required flags; optional `--full`, `--json`. Lists default design systems and projects available to `create-project --extend-from`.
+- search-prompts: no required flags; optional `--query <text>`, `--tags <csv>`, `--limit <n>` (default 20, max 100), `--offset <n>`, `--full`, `--json`
+- get-prompts: required `--slugs <csv>`; optional `--full` (print full prompt bodies instead of the compact index), `--json`. Index first with the default output, then re-run with `--full` for the chosen slug(s) only.
+- extract-brand-guide: required `--url <url>`; optional `--output-dir <path>` (default `.superdesign/brand_styles/<domain>`), `--json`
 
 **Supported --model values**: gemini-3-flash, gemini-3.1-pro, claude-haiku-4-5, claude-sonnet-5, claude-opus-4-8, gpt-5.6-sol, gpt-5.6-terra, gpt-5.6-luna, gpt-5.5, gpt-5.4, gpt-5.4-mini, gpt-5-mini, grok-4.5, kimi-k2.6, deepseek-v4-pro, deepseek-v4-flash, glm-5.2
 If --model is omitted, the backend uses the default model. Only pass --model when the user explicitly requests a specific model.
