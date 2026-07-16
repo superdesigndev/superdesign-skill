@@ -215,7 +215,7 @@ Step 3 — Design in Superdesign
 
 Extension after approval:
 
-- If user wants to design more relevant pages or whole user journey based on a design, use execute-flow-pages: `npx --yes @superdesign/cli@latest execute-flow-pages --draft-id <draftId> --pages '[...]' --context-file src/components/Foo.tsx`
+- If user wants to design more relevant pages or whole user journey based on a design, use execute-flow-pages: `npx --yes @superdesign/cli@latest execute-flow-pages --draft-id <draftId> --pages '[{"title":"Details","prompt":"Create the details page"}]' --context-file src/components/Foo.tsx`
 - IMPORTANT: Use execute-flow-pages instead of create-design-draft for extend more pages based on existing design, create-design-draft is ONLY used for creating brand new design
 
 ## SOP: BRAND NEW PROJECT
