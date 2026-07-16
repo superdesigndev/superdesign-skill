@@ -66,11 +66,13 @@ Always use the full on-demand runner prefix:
 npx --yes @superdesign/cli@latest create-project --title "X"
 npx --yes @superdesign/cli@latest create-design-draft --project-id <id> --title "Current UI" -p "Faithfully reproduce..." --context-file src/Component.tsx
 npx --yes @superdesign/cli@latest iterate-design-draft --draft-id <id> -p "dark theme" -p "minimal" --mode branch --context-file src/Component.tsx
-npx --yes @superdesign/cli@latest execute-flow-pages --draft-id <id> --pages '[{"title":"Details","prompt":"Create the details page"}]' --context-file src/Component.tsx
+npx --yes @superdesign/cli@latest execute-flow-pages --draft-id <id> --pages '[{"title":"Product Details","prompt":"Product detail page with image gallery, specs and add-to-cart"},{"title":"Checkout","prompt":"Checkout page with cart summary and payment form"}]' --context-file src/Component.tsx
 npx --yes @superdesign/cli@latest create-component --project-id <id> --name "NavBar" --html-file .superdesign/tmp/navbar.html --props '[{"name":"activeItem","type":"string","defaultValue":"home"}]'
 npx --yes @superdesign/cli@latest update-component --component-id <id> --html-file .superdesign/tmp/navbar.html
 npx --yes @superdesign/cli@latest list-components --project-id <id>
 ```
+
+Each item in the `execute-flow-pages` `--pages` array generates one new page styled after the source draft (1-10 pages per call).
 
 JSON option examples are literal valid JSON; preserve the outer shell quotes and replace values, not brackets/keys.
 
