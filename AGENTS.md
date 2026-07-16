@@ -10,6 +10,10 @@ A published agent **skill** (`skills/superdesign/`) that drives the SuperDesign 
 - `skills/superdesign/references/INIT.md` - repo-analysis (init) instructions
 - `skills/superdesign/{SUPERDESIGN,INIT}.md` - deprecated compatibility forwarders (do not add content)
 
+## Skill flow invariant: two entry paths
+
+`SKILL.md` branches on Step 1 into a **real-codebase path** (repo init is mandatory) and a **no-codebase path** (empty/scratch/sandbox workspace with no frontend code - skip init, gather design context conversationally, design via `SUPERDESIGN.md` "SOP: BRAND NEW PROJECT"). Any init/hard-gate rule you edit must stay scoped to the real-codebase path so it does not block the no-codebase path (see the HARD GATE and MANDATORY INIT rules in `SUPERDESIGN.md`). A separate Step 0 preflight halts when shell execution is unavailable (e.g. ChatGPT Chat mode) - distinct from the auth/login path, where the CLI actually ran.
+
 ## Ground truth for CLI behavior
 
 The skill invokes `npx --yes @superdesign/cli@latest`. When editing any command example or the `COMMAND CONTRACT`, verify against the **published** CLI - do not trust memory. `@beta` is what `@latest` becomes, so use it to check upcoming surface:

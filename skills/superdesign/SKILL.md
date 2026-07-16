@@ -14,9 +14,31 @@ Superdesign helps you (1) find design inspirations/styles and (2) generate/itera
 3. **Set design system**
 4. **Help me improve design of X**
 
-# Init: Repo Analysis
+# Step 0 — Environment preflight (BEFORE any CLI step)
 
-When `.superdesign/init/` directory doesn't exist or is empty, you MUST automatically:
+Superdesign runs entirely through its CLI, so you must be able to execute shell commands. Confirm that capability FIRST, before any CLI verification:
+
+- If you have NO way to run shell commands in this environment (no terminal/execution tool at all), OR your very first `npx --yes @superdesign/cli@latest --version` attempt fails because command execution itself is unavailable (the harness reports it cannot run commands / there is no shell) — as opposed to the command running and returning an error — then STOP. Do NOT keep retrying or improvise workarounds.
+- Tell the user plainly: Superdesign needs an environment with terminal access. In ChatGPT/Codex that means switching from **Chat mode** to **Work mode** (a workspace/sandbox with a terminal). Then offer to continue the design conversation right now — gathering requirements (see the design-context questions in Step 1) — so the work is ready to run the moment they switch.
+- **Do NOT confuse this with an auth/login error.** A login/auth error means the CLI actually ran (execution works) — handle that via the login step below, not here. This branch is ONLY for when command execution itself is unavailable. ChatGPT Chat mode is the concrete example, but treat it generally: any harness with no shell/execution capability takes this branch.
+
+# Step 1 — Is there a codebase to analyze?
+
+Two entry paths. Choose one with this cheap, deterministic check BEFORE any init or design work.
+
+**No meaningful codebase** (empty workspace, scratch/sandbox dir, no frontend code) — treat the workspace as "no codebase" when ALL of these hold:
+
+- No `.superdesign/init/` files already exist, AND
+- No dependency manifest with frontend deps (no `package.json`, or a `package.json` whose deps include no frontend framework/UI library — react, vue, svelte, angular, next, nuxt, astro, etc.), AND
+- No frontend source found (a quick scan for `.tsx`/`.jsx`/`.vue`/`.svelte` files, or a `src/`/`app/`/`components/` dir with UI files, turns up nothing).
+
+→ SKIP repo init entirely. Do NOT "analyze" an empty sandbox, and do NOT ask the user to point you at a repo they don't have. Instead, gather design context conversationally FIRST: ask what they want to build, the target audience/platform, style/brand preferences, and any reference designs or inspirations. Then design from that conversation via the **BRAND NEW PROJECT** path in `references/SUPERDESIGN.md`.
+
+**Real codebase present** (any frontend code, or an existing `.superdesign/init/`) — the repo-init path below is MANDATORY; run the full analysis before designing.
+
+# Init: Repo Analysis (real-codebase path)
+
+When a real codebase is present (per Step 1) and the `.superdesign/init/` directory doesn't exist or is empty, you MUST automatically:
 
 1. Create the `.superdesign/init/` directory
 2. Read `references/INIT.md` relative to this selected `SKILL.md`
@@ -82,6 +104,12 @@ Create the workspace-local `.superdesign/tmp/` directory with the session's file
 Ensure `.superdesign/tmp/` is ignored by the project's `.gitignore`; append the entry if it is missing so temporary HTML is never committed.
 
 `--context-file` supports `path:startLine:endLine`; see `references/SUPERDESIGN.md` for the complete workflow and current command contract.
+
+# Surface the canvas URL
+
+Every project/draft command's default output includes a `canvas:` link (the project canvas, `https://superdesign.dev/teams/<teamId>/projects/<projectId>`) and, for drafts, a `preview:` link (`https://superdesign.dev/preview/draft/<draftId>`). Read these from the command output — do NOT hand-construct them (the ids are server-generated).
+
+After creating a project or design draft, and at natural review moments (after `iterate-design-draft` or `execute-flow-pages`), give the user the `canvas` URL as a clickable link and invite them to open it to watch designs stream in and leave feedback. Adding `?live=1` to the canvas URL opens the live view where drafts appear as they generate.
 
 # How it works
 
