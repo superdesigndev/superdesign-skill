@@ -30,7 +30,7 @@ Two entry paths. Choose one with this cheap, deterministic check BEFORE any init
 
 - No `.superdesign/init/` files already exist, AND
 - No dependency manifest with frontend deps (no `package.json`, or a `package.json` whose deps include no frontend framework/UI library — react, vue, svelte, angular, next, nuxt, astro, etc.), AND
-- No frontend source found (a quick scan for `.tsx`/`.jsx`/`.vue`/`.svelte` files, or a `src/`/`app/`/`components/` dir with UI files, turns up nothing).
+- No frontend source found (a quick scan for `.tsx`/`.jsx`/`.vue`/`.svelte` files, any `.html`/`.css` files such as a root `index.html` + `style.css`, or a `src/`/`app/`/`components/` dir with UI files, turns up nothing).
 
 → SKIP repo init entirely. Do NOT "analyze" an empty sandbox, and do NOT ask the user to point you at a repo they don't have. Instead, gather design context conversationally FIRST: ask what they want to build, the target audience/platform, style/brand preferences, and any reference designs or inspirations. Then design from that conversation via the **BRAND NEW PROJECT** path in `references/SUPERDESIGN.md`.
 
