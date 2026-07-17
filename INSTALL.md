@@ -7,8 +7,10 @@ preview link. Do NOT stop at login.
 The flow is simple and sequential: **install → log in → init → ask what to design → design.** Do NOT
 propose design ideas, and do NOT run things in parallel — just init, then ask the user what they want.
 
-> ⛔ **Hard gate:** do NOT create a project, create a draft, or run ANY `superdesign` design command until
-> `init` has finished (`.superdesign/init/` written with all files).
+> ⛔ **Hard gate (real-codebase path):** do NOT create a project, create a draft, or run ANY `superdesign`
+> design command until `init` has finished (`.superdesign/init/` written with all files). This flow assumes a
+> real codebase to init; for an empty/scratch/sandbox workspace there is nothing to init — see the no-codebase
+> branch in `skills/superdesign/SKILL.md` (Step 1).
 
 ## Step 1 — Install the Superdesign skill into yourself
 
