@@ -12,15 +12,16 @@ Collect the two workstreams below in parallel when the current agent environment
 Task 1.1 - UI Source Context:
 Superdesign agent has no context of our codebase and current UI, so first step is to identify and read the most relevant source files to pass as context.
 
-**MANDATORY FIRST STEP**: Check if `.superdesign/init/` exists with all 5 files (components.md, layouts.md, routes.md, theme.md, pages.md).
+**MANDATORY FIRST STEP**: Check if `.superdesign/init/` exists with all 6 files (components.md, layouts.md, routes.md, theme.md, pages.md, extractable-components.md).
 
-- **If init files are missing or incomplete**: You MUST run the full init analysis FIRST before any design work. Follow the INIT instructions from the skill to scan the repo and write all 5 files to `.superdesign/init/`. Do NOT proceed to Step 2 until init is complete.
+- **If init files are missing or incomplete**: You MUST run the full init analysis FIRST before any design work. Follow the INIT instructions from the skill to scan the repo and write all 6 files to `.superdesign/init/`. Do NOT proceed to Step 2 until init is complete.
 - **If init files exist**: Read ALL files in this directory:
   - components.md - shared UI primitives inventory
   - layouts.md - full source code of layout components
   - routes.md - route/page mapping
   - theme.md - design tokens, CSS variables, Tailwind config
   - pages.md - page component dependency trees
+  - extractable-components.md - reusable component candidates with source paths and props
 
 These files are pre-analyzed context and MUST be read every time before any design task.
 
@@ -236,7 +237,7 @@ Step 2 — Design system setup (MUST follow Section B):
 Step 3 — Design in Superdesign:
 
 - Create project: `npx --yes @superdesign/cli@latest create-project --title "<X>"`
-- Create initial draft (only for brand new, ⚠️ single -p only): `npx --yes @superdesign/cli@latest create-design-draft --project-id <id> --title "<X>" -p "<all design directions in one prompt>" --user-request "<the user's verbatim request>"`
+- Create initial draft (only for brand new, ⚠️ single -p only): `npx --yes @superdesign/cli@latest create-design-draft --project-id <id> --title "<X>" -p "<all design directions in one prompt>" --user-request "<the user's verbatim request>" --context-file .superdesign/design-system.md`
 - Present the `canvas` URL(s) from the command output as clickable links; invite the user to open the canvas to watch designs stream in and leave feedback, then gather feedback and iterate.
 - Iterate in BRANCH mode;
 
@@ -350,9 +351,9 @@ Every draft keeps a version history. The CLI's default output already self-discl
 - design-system.md = ALL design specs
 - **MANDATORY INIT (real-codebase path)**: When a real codebase is present, if `.superdesign/init/` is missing or incomplete you MUST run the full init analysis FIRST (follow the INIT instructions from the skill); if it exists, you MUST read ALL files (components.md, layouts.md, routes.md, theme.md, pages.md, extractable-components.md) at the START of every design task. This is NOT optional. On the no-codebase path (empty/scratch/sandbox workspace, no frontend code — see SKILL.md Step 1), there is nothing to init: skip it and gather design context conversationally instead.
 - **MANDATORY CONTEXT FILES on EVERY design command** (create-design-draft, iterate-design-draft, execute-flow-pages):
-  - `--context-file .superdesign/design-system.md` — so the design agent knows the allowed fonts, colors, spacing
-  - `--context-file <path-to-globals.css>` — so the design agent has the actual CSS tokens and variables
-  - These two files are NON-NEGOTIABLE. Never skip them, even if they were already set as project prompt.
+  - Always pass `--context-file .superdesign/design-system.md` so the design agent knows the allowed fonts, colors, and spacing.
+  - On the real-codebase path, also pass `--context-file <path-to-globals.css>` when that file exists so the design agent has the actual CSS tokens and variables.
+  - On the no-codebase path, `globals.css` is not required; do not invent one solely to satisfy this rule.
 - **DESIGN SYSTEM = HARD CONSTRAINT, NOT SUGGESTION**: Iteration prompts explore layout/structure/content direction, NOT visual style. The design system defines the visual style. Never let a -p prompt override the design system.
 - **ALL UI CODE, STRIP ONLY DATA-FETCHING**: Pass all UI-related files with complete visual code. Use line ranges ONLY to skip data-fetching blocks or to extract from 1000+ line files. Keep ALL conditional rendering, state, props, and JSX.
 - **1000+ LINE FILES MUST USE LINE RANGES.** Extract only the sections relevant to the target page. This applies to large CSS files, large component libraries, and large configs.
