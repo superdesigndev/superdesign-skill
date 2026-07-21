@@ -228,14 +228,19 @@ Step 1 — Requirements gathering: ask the user using the session's available us
 
 Step 2 — Design system setup (MUST follow Section B):
 
-- Run: `npx --yes @superdesign/cli@latest search-prompts --tags "style"`
-- Pick the most suitable style prompt ONLY from returned results (do not do further search).
-- Fetch prompt details in TWO steps (do NOT blanket-fetch full bodies):
-  1. Index first with the default output to confirm the slug(s) and their size: `npx --yes @superdesign/cli@latest get-prompts --slugs "<slug>"`
-  2. Then fetch the full body ONLY for the chosen slug(s) right before writing design-system.md: `npx --yes @superdesign/cli@latest get-prompts --slugs "<slug>" --full`
-- Optional: `npx --yes @superdesign/cli@latest extract-brand-guide --url "<user-provided-url>"`
-- Write .superdesign/design-system.md adapted to:
-  product context + UX flows + visual direction
+- **Pick ONE primary style source — do NOT blend two competing styles:**
+  - **If the user named a reference site** ("… in the style of `<site>`", "use `<site>`'s design"): that site's extracted `design.md` is the style source (extract step below). `search-prompts` is then OPTIONAL — do NOT layer a library style prompt on top of the extracted DNA (two competing styles dilute the result).
+  - **Otherwise** (no reference site) use a library style prompt:
+    1. `npx --yes @superdesign/cli@latest search-prompts --tags "style"` — pick the most suitable ONLY from returned results (do not do further search).
+    2. Index first to confirm the slug(s) and size: `npx --yes @superdesign/cli@latest get-prompts --slugs "<slug>"`
+    3. Then fetch the full body ONLY for the chosen slug(s), right before writing design-system.md: `npx --yes @superdesign/cli@latest get-prompts --slugs "<slug>" --full`
+- Extract a reference site's style (when one was named): `npx --yes @superdesign/cli@latest extract-website --url "<user-provided-url>" --design-md` (writes `.superdesign/website/<domain>/design.md`; add `--brand` for logo/colors). Read it, then decide how it flows into `design-system.md`:
+  - **If a `design-system.md` already exists → ALWAYS ask the user first** (via the session's user-input mechanism, else in chat). NEVER silently overwrite it.
+  - If the intent is unclear, ask. If the workspace is fresh and the user clearly wants the site's look, proceed without asking. The three modes:
+    - **Create from it** — `design-system.md` = the extracted site's DNA, adopted faithfully (user wants "make it look like `<site>`").
+    - **Inspired by it** — blend the site's DNA with the product context + visual direction (cues from the site, but it stays the user's own brand). This is the default when unspecified.
+    - **Update the existing** — merge the newly-extracted DNA into the current `design-system.md`, resolving conflicts thoughtfully (adding/refreshing a reference, or iterating on an existing system).
+- Write .superdesign/design-system.md per the chosen mode (adapted to product context + UX flows + visual direction).
 
 Step 3 — Design in Superdesign:
 
@@ -543,7 +548,21 @@ Every command supports `--json` for the full machine-readable payload; the defau
 - list-design-systems: no required flags; optional `--full`, `--json`. Lists default design systems and projects available to `create-project --extend-from`.
 - search-prompts: no required flags; optional `--query <text>`, `--tags <csv>`, `--limit <n>` (default 20, max 100), `--offset <n>`, `--full`, `--json`
 - get-prompts: required `--slugs <csv>`; optional `--full` (print full prompt bodies instead of the compact index), `--json`. Index first with the default output, then re-run with `--full` for the chosen slug(s) only.
-- extract-brand-guide: required `--url <url>`; optional `--output-dir <path>` (default `.superdesign/brand_styles/<domain>`), `--json`
+- extract-website: required `--url <url>`; optional payload selectors `--design-md` (portable style guide → design.md; the default when no selector is given), `--tokens` (raw design tokens → tokens.json), `--content-structure` (content/section map → content-structure.md), `--brand` (brand metadata → brand.json), `--website-copy` (marketing copy → website-copy.md; best-effort — may come back empty), `--all` (fetch every payload; note: still pass `--clone` to actually write the clone HTML); `--brand-assets` (also download brand binaries — best logo, screenshot, page images — into `<out>/brand/`; implies `--brand`); `--clone [dir]` (save the frozen page HTML; default `<out>/clone/index.html`, pass a dir to override; assets are served from Superdesign's bucket); `--out <path>` (default `.superdesign/website/<domain>`); `--json`. An extract crawls the page server-side and can take ~60–120s. Supersedes the older `extract-brand-guide`.
 
 **Supported --model values**: gemini-3-flash, gemini-3.1-pro, claude-haiku-4-5, claude-sonnet-5, claude-opus-4-8, gpt-5.6-sol, gpt-5.6-terra, gpt-5.6-luna, gpt-5.5, gpt-5.4, gpt-5.4-mini, gpt-5-mini, grok-4.5, kimi-k2.6, deepseek-v4-pro, deepseek-v4-flash, glm-5.2
 If --model is omitted, the backend uses the default model. Only pass --model when the user explicitly requests a specific model.
+
+---
+
+## EXTRACT-WEBSITE — RECIPES & SCOPE
+
+`extract-website` pulls a live site's design DNA into `.superdesign/website/<domain>/` as files. It hands you inputs — it does NOT reproduce, merge, or place designs. Feed the outputs into the normal Superdesign flow:
+
+- **Borrow a site's style** (e.g. "design … in the style of linear.app"): `extract-website --url <site> --design-md` → read `design.md` (a portable style guide) and fold it into `.superdesign/design-system.md` (Step 2 — choose **create-from / inspired-by / update-existing**; if a `design-system.md` already exists, ASK before overwriting), then design as usual. Add `--brand` for logo/colors/fonts (`brand.json`), and `upload-asset` the logo into the project if you want it used.
+- **Restyle / recombination** (e.g. "redesign framer.com in apple.com's style", "clickup's page structure with raycast's aesthetic"): extract `--content-structure` from the CONTENT site (read `content-structure.md` and use it to shape your `-p` draft prompt or the `execute-flow-pages` page list) and `--design-md` from the STYLE site (adapt into design-system.md). The result is a style-informed rebuild, not a pixel copy.
+- **Merge multiple styles** (e.g. "merge stripe.com and vercel.com"): extract `--design-md` from each and blend them into one design-system.md, then design.
+- **Design tokens**: `--tokens` → `tokens.json`, for wiring into your own Tailwind/CSS if you're building in a codebase.
+- **Reference clone**: `--clone` → `clone/index.html` (static; assets served from Superdesign's bucket) — a visual reference to look at while you build. It is NOT editable and NOT a generation input.
+
+**Scope boundary (do not overpromise):** faithful pixel-recreation of a site and *editable* on-canvas clones — freezing the real page as a draft you can edit, plus governing-style pinning and deliberate multi-site merges — run in the **Superdesign canvas app** (superdesign.dev), which has the full extraction-and-placement pipeline. Through the CLI, a user's "recreate this site" or "clone this page" is a **style-informed rebuild**, not a copy. Deliver that honestly, and point users to the app when they need a true clone.
