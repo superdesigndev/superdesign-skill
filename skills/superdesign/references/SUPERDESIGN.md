@@ -31,6 +31,7 @@ These files are pre-analyzed context and MUST be read every time before any desi
 Superdesign needs ALL UI code for accurate reproduction. Include every piece of visual code — JSX/template, className, inline styles, props interfaces, CSS. Only strip pure business logic that has zero visual impact.
 
 **Strip logic code, keep happy-path UI.** That's it.
+
 - Remove: data fetching, event handlers, API calls, auth checks, loading/error/empty guard returns
 - Keep: all JSX, styles, className, props, CSS, config — the complete happy-path UI as-is
 
@@ -64,6 +65,7 @@ If `.superdesign/init/pages.md` exists, use it as the starting point — it pre-
 
 **⚠️ 1000+ LINE FILE RULE (MANDATORY):**
 Any file exceeding ~1000 lines MUST use line ranges — no exceptions. Extract only the sections relevant to the target page:
+
 - **Large CSS files (1000+ lines)**: extract ONLY the selectors/variables actually used by the target page's components. Trace each className → find its CSS definition lines → include only those sections.
 - **Large component files with many variants**: extract ONLY the variant/branch being used on the target page, skip unused variants.
 - **Large config files**: extract only the relevant config sections.
@@ -114,22 +116,23 @@ After requirements gathering, extract reusable components so they are available 
    a. Read the React source code from the path listed in `extractable-components.md`
    b. Convert to Petite-Vue HTML template following the **Petite-Vue Template Spec** below
    c. Create `.superdesign/tmp/` if needed. Ensure `.superdesign/tmp/` is ignored by the project's `.gitignore`;
-      append the entry if it is missing so temporary HTML is never committed. Then write the HTML to a file there.
+   append the entry if it is missing so temporary HTML is never committed. Then write the HTML to a file there.
    d. Create the component:
-      ```
-      npx --yes @superdesign/cli@latest create-component --project-id <id> \
-        --name "NavBar" \
-        --html-file .superdesign/tmp/navbar-component.html \
-        --description "Main navigation bar" \
-        --props '[{"name":"activeItem","type":"string","defaultValue":"home"}]'
-      ```
-      The default output returns the new `componentId` plus `help[]` next-step hints — add `--json` only if you need the full machine payload.
+   ```
+   npx --yes @superdesign/cli@latest create-component --project-id <id> \
+     --name "NavBar" \
+     --html-file .superdesign/tmp/navbar-component.html \
+     --description "Main navigation bar" \
+     --props '[{"name":"activeItem","type":"string","defaultValue":"home"}]'
+   ```
+   The default output returns the new `componentId` plus `help[]` next-step hints — add `--json` only if you need the full machine payload.
 5. **Focus on layout components first** (NavBar, Sidebar, Footer, Header) — these appear on every page and benefit most from extraction.
 6. **Skip basic UI primitives** (Button, Input, Card) — these are too simple to warrant extraction and are better as inline HTML in drafts.
 
 After extraction, proceed to Step 3. The draft generation agent will automatically see these components via `buildComponentContext()` and use `<sd-component>` tags in the generated HTML.
 
 **When to skip Step 2.5:**
+
 - Brand new projects with no existing UI components
 - When the user explicitly says they don't want component extraction
 - When `extractable-components.md` doesn't exist or lists no layout components
@@ -246,6 +249,7 @@ Step 3 — Design in Superdesign:
 ## DESIGN SYSTEM SETUP
 
 Design system should provides full context across:
+
 - Product context, key pages & architecture, key features, JTBD
 - Branding & styling: color, font, spacing, shadow, layout structure, etc.
 - motion/animation patterns
@@ -409,6 +413,7 @@ Multiple ranges from the same file are automatically merged into a single contex
 When converting React components to Petite-Vue HTML templates for `create-component`:
 
 ### What to HARDCODE in the template (NOT props):
+
 - Icon names and SVG markup
 - Text labels, menu item names
 - Image sources and alt text
@@ -417,12 +422,14 @@ When converting React components to Petite-Vue HTML templates for `create-compon
 - Color values, font sizes, spacing
 
 ### What to EXTRACT as props (ONLY these categories):
+
 - **Active state**: `activeItem`, `isActive`, `currentTab` — indicates which page/section is selected
 - **Navigation URLs**: `homeHref`, `searchHref`, `profileHref` — link destinations
 - **Conditional visibility**: `showNotification`, `showBadge`, `isExpanded` — toggle elements
 - **Dynamic counts**: `badgeCount`, `notificationCount` — numeric values that change
 
 ### Allowed Petite-Vue syntax:
+
 - `{{ propName }}` — text interpolation
 - `:href="propName"` — attribute binding
 - `v-if="propName"` / `v-show="propName"` — conditional rendering
@@ -430,6 +437,7 @@ When converting React components to Petite-Vue HTML templates for `create-compon
 - `@click="$emit('name', payload)"` — event emission
 
 ### NOT allowed:
+
 - `v-for` for navigation items (hardcode each item instead)
 - `v-model` (no two-way binding)
 - `v-html` (no raw HTML injection)
@@ -438,6 +446,7 @@ When converting React components to Petite-Vue HTML templates for `create-compon
 ### Every prop MUST have a non-empty `defaultValue`.
 
 ### Output requirements:
+
 - Valid HTML with Tailwind CSS classes
 - Replace all CSS modules / styled-components with Tailwind utilities or inline styles
 - Use Lucide icon CDN or inline SVGs for icons
@@ -446,77 +455,63 @@ When converting React components to Petite-Vue HTML templates for `create-compon
 ### Example conversion:
 
 **React source:**
+
 ```tsx
-function NavBar({ activeItem = 'home' }) {
+function NavBar({ activeItem = "home" }) {
   return (
     <nav className="flex items-center gap-4 px-6 py-3 bg-white border-b">
       <Logo />
-      <Link to="/" className={cn("text-sm", activeItem === 'home' && "font-bold")}>Home</Link>
-      <Link to="/explore" className={cn("text-sm", activeItem === 'explore' && "font-bold")}>Explore</Link>
+      <Link
+        to="/"
+        className={cn("text-sm", activeItem === "home" && "font-bold")}
+      >
+        Home
+      </Link>
+      <Link
+        to="/explore"
+        className={cn("text-sm", activeItem === "explore" && "font-bold")}
+      >
+        Explore
+      </Link>
     </nav>
   );
 }
 ```
 
 **Petite-Vue template:**
+
 ```html
 <nav class="flex items-center gap-4 px-6 py-3 bg-white border-b">
   <svg class="w-6 h-6"><!-- actual logo SVG --></svg>
-  <a :href="homeHref" :class="{ 'font-bold': activeItem === 'home' }" class="text-sm">Home</a>
-  <a :href="exploreHref" :class="{ 'font-bold': activeItem === 'explore' }" class="text-sm">Explore</a>
+  <a
+    :href="homeHref"
+    :class="{ 'font-bold': activeItem === 'home' }"
+    class="text-sm"
+    >Home</a
+  >
+  <a
+    :href="exploreHref"
+    :class="{ 'font-bold': activeItem === 'explore' }"
+    class="text-sm"
+    >Explore</a
+  >
 </nav>
 ```
 
 **Props:**
+
 ```json
 [
-  {"name": "activeItem", "type": "string", "defaultValue": "home"},
-  {"name": "homeHref", "type": "string", "defaultValue": "#"},
-  {"name": "exploreHref", "type": "string", "defaultValue": "#"}
+  { "name": "activeItem", "type": "string", "defaultValue": "home" },
+  { "name": "homeHref", "type": "string", "defaultValue": "#" },
+  { "name": "exploreHref", "type": "string", "defaultValue": "#" }
 ]
 ```
 
 ---
 
 <marketing_assets_dimension_guidelines>
-| Category  | Platform               | Asset Type            | Aspect Ratio | Recommended Size (px) |
-| --------- | ---------------------- | --------------------- | ------------ | --------------------- |
-| Feed      | Instagram              | Feed Post (Square)    | 1:1          | 1080 × 1080 (default) |
-| Feed      | Instagram              | Feed Post (Portrait)  | 4:5          | 1080 × 1350           |
-| Feed      | Instagram              | Feed Post (Landscape) | 1.91:1       | 1080 × 566            |
-| Feed      | Facebook               | Feed Post             | 1.91:1       | 1200 × 630            |
-| Feed      | LinkedIn               | Feed Post             | 1:1          | 1200 × 1200 (default) |
-| Feed      | LinkedIn               | Feed Post (Landscape) | 1.91:1       | 1200 × 627            |
-| Feed      | X / Twitter            | Post Image            | 16:9         | 1200 × 675            |
-| Feed      | Threads                | Post Image            | 1:1          | 1080 × 1080           |
-| Vertical  | Instagram              | Story                 | 9:16         | 1080 × 1920           |
-| Vertical  | Instagram              | Reel Cover            | 9:16         | 1080 × 1920           |
-| Vertical  | TikTok                 | Video / Cover         | 9:16         | 1080 × 1920           |
-| Vertical  | YouTube                | Shorts                | 9:16         | 1080 × 1920           |
-| Carousel  | Instagram              | Carousel Slide        | 4:5          | 1080 × 1350           |
-| Carousel  | LinkedIn               | Carousel (PDF slides) | 1:1          | 1080 × 1080           |
-| Cover     | LinkedIn               | Profile Cover         | 4:1          | 1584 × 396            |
-| Cover     | Facebook               | Page Cover            | ~1.9:1       | 1640 × 856            |
-| Cover     | X / Twitter            | Header                | 3:1          | 1500 × 500            |
-| Cover     | YouTube                | Channel Art           | 16:9         | 2560 × 1440           |
-| Thumbnail | YouTube                | Video Thumbnail       | 16:9         | 1280 × 720            |
-| Ads       | Google Display Ads     | Medium Rectangle      | 4:3          | 300 × 250             |
-| Ads       | Google Display Ads     | Large Rectangle       | 336 × 280    |                       |
-| Ads       | Google Display Ads     | Leaderboard           | 728 × 90     |                       |
-| Ads       | Google Display Ads     | Large Leaderboard     | 970 × 90     |                       |
-| Ads       | Google Display Ads     | Billboard             | 970 × 250    |                       |
-| Ads       | Google Display Ads     | Half Page             | 300 × 600    |                       |
-| Ads       | Google Display Ads     | Large Mobile Banner   | 320 × 100    |                       |
-| Ads       | Google Display Ads     | Mobile Banner         | 320 × 50     |                       |
-| Ads       | Google Display Ads     | Square                | 250 × 250    |                       |
-| Ads       | Google Display Ads     | Small Square          | 200 × 200    |                       |
-| Ads       | Google Performance Max | Landscape Image       | 1.91:1       | 1200 × 628            |
-| Ads       | Google Performance Max | Square Image          | 1:1          | 1200 × 1200           |
-| Ads       | Google Performance Max | Portrait Image        | 4:5          | 960 × 1200            |
-| Ads       | Google App Ads         | App Landscape         | 1.91:1       | 1200 × 628            |
-| Ads       | Google App Ads         | App Square            | 1:1          | 1200 × 1200           |
-
-For marketing assets, MUST confirm with the user the dimension before creating, do NOT assume the dimension
+Marketing assets (feed posts, stories, covers, thumbnails, ad creatives) are static fixed-canvas artworks: generate them via the graphic workflow in `references/GRAPHIC.md` (`--kind graphic`), which carries the platform dimension table. MUST confirm the dimension with the user before creating — do NOT assume it.
 </marketing_assets_dimension_guidelines>
 
 ---
@@ -532,11 +527,13 @@ Every command supports `--json` for the full machine-readable payload; the defau
   - replace: use exactly one `-p`; do not use `--count`
   - `--from-version <n>`: iterate from a specific historical version instead of the current head (discover version numbers via `get-design`)
   - `--device <mobile|tablet|desktop|custom>` / `--width <pixels>` / `--height <pixels>`: OVERRIDE the viewport. Defaults to the source draft's device — omit unless deliberately changing it. `--width`/`--height` require `--device custom`.
-- create-design-draft: required `--project-id`, `--title`, and `-p` (SINGLE prompt only); optional `--device <mobile|tablet|desktop|custom>` (default: desktop), `--width <pixels>`, `--height <pixels>`, `--context-file` (one or more paths; supports `path:startLine:endLine`), `--model`, `--user-request <text>`, `--json`
+- create-design-draft: required `--project-id`, `--title`, and `-p` (SINGLE prompt only); optional `--device <mobile|tablet|desktop|custom>` (default: desktop), `--width <pixels>`, `--height <pixels>`, `--kind <page|graphic>` (default: page), `--context-file` (one or more paths; supports `path:startLine:endLine`), `--model`, `--user-request <text>`, `--json`
   - ⚠️ ONLY accepts ONE -p flag. Multiple -p flags will silently drop all but the last one.
   - Combine all design directions into a single -p string.
   - Only use this for creating purely new design from scratch.
   - --device custom requires both --width and --height (min 20px each). Providing --width/--height auto-sets --device to custom.
+  - --kind graphic switches generation to the fixed-canvas graphic branch (static artwork, no responsive layout) and keeps iterations in graphic mode; pair it with --width/--height. See `references/GRAPHIC.md`.
+- upload-asset: required `<file>` positional (png/jpeg/webp/gif, max 10MB) and `--project-id`; optional `--no-canvas`, `--json`. Uploads a project image asset and returns a public `url` to reference from create/iterate prompts (e.g. a poster key visual). By default the asset is also placed on the project canvas as an image node (response includes its `nodeId`); pass `--no-canvas` to skip.
 - revert-design-draft: required `--draft-id`, `--to-version <n>`; optional `--json`. Restores a prior version as the current head with NO generation; reversible (the current head is snapshotted into history first). Discover version numbers via `get-design`.
 - execute-flow-pages: required `--draft-id`, `--pages`; optional `--context`, `--context-file` (one or more paths; supports `path:startLine:endLine`), `--model`, `--json`
 - get-design: required `--draft-id`; optional `--json`, `--output <path>`

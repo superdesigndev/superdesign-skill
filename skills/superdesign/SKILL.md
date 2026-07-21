@@ -1,6 +1,6 @@
 ---
 name: superdesign
-description: "Design or redesign frontend UI with the Superdesign canvas. Use for design-system extraction, faithful UI reproduction, visual variants, reusable design components, and multi-page flows. Do not use for implementation-only tasks that require no design exploration."
+description: "Design or redesign frontend UI with the Superdesign canvas. Use for design-system extraction, faithful UI reproduction, visual variants, reusable design components, multi-page flows, and static posters/flyers/cover art/social graphics composed on a fixed canvas. Do not use for implementation-only tasks that require no design exploration."
 ---
 
 Superdesign helps you (1) find design inspirations/styles and (2) generate/iterate design drafts on an infinite canvas.
@@ -13,6 +13,7 @@ Superdesign helps you (1) find design inspirations/styles and (2) generate/itera
 2. **Help me design X** (feature/page/flow)
 3. **Set design system**
 4. **Help me improve design of X**
+5. **Make a poster / marketing asset** (flyer, cover art, social feed post, story, channel cover, thumbnail, ad creative) — a static artwork, not a page. Skip repo init/analysis; read `references/GRAPHIC.md` relative to this `SKILL.md` and follow it (you generate the key visual with your own image tool, upload it, then compose the artwork on a fixed canvas; platform dimension table included).
 
 # Step 0 — Environment preflight (BEFORE any CLI step)
 
@@ -92,6 +93,8 @@ npx --yes @superdesign/cli@latest execute-flow-pages --draft-id <id> --pages '[{
 npx --yes @superdesign/cli@latest create-component --project-id <id> --name "NavBar" --html-file .superdesign/tmp/navbar.html --props '[{"name":"activeItem","type":"string","defaultValue":"home"}]'
 npx --yes @superdesign/cli@latest update-component --component-id <id> --html-file .superdesign/tmp/navbar.html
 npx --yes @superdesign/cli@latest list-components --project-id <id>
+npx --yes @superdesign/cli@latest upload-asset ./key-visual.png --project-id <id>
+npx --yes @superdesign/cli@latest create-design-draft --project-id <id> --title "Launch Poster" --kind graphic --width 900 --height 1200 -p "Design a static poster..."
 ```
 
 Each item in the `execute-flow-pages` `--pages` array generates one new page styled after the source draft (1-10 pages per call).
