@@ -111,7 +111,7 @@ If the user provides their own image file, skip generation and continue with upl
 npx --yes @superdesign/cli@latest upload-asset <file> --project-id <projectId>
 ```
 
-Accepts png/jpeg/webp/gif up to 10MB and prints a public `url` — that URL is what goes into the poster prompt. Upload each asset once and reuse the URL across drafts/iterations.
+Accepts png/jpeg/webp/gif up to 10MB and prints a public `url` — that URL is what goes into the poster prompt. Upload each asset once and reuse the URL across drafts/iterations. The asset also appears on the project canvas as an image node next to the posters (pass `--no-canvas` to skip that).
 
 ## Step 4 — Generate the poster
 

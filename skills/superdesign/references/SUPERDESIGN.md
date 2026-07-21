@@ -533,7 +533,7 @@ Every command supports `--json` for the full machine-readable payload; the defau
   - Only use this for creating purely new design from scratch.
   - --device custom requires both --width and --height (min 20px each). Providing --width/--height auto-sets --device to custom.
   - --kind poster switches generation to the fixed-canvas poster branch (static artwork, no responsive layout) and keeps iterations in poster mode; pair it with --width/--height. See `references/POSTER.md`.
-- upload-asset: required `<file>` positional (png/jpeg/webp/gif, max 10MB) and `--project-id`; optional `--json`. Uploads a project image asset and returns a public `url` to reference from create/iterate prompts (e.g. a poster key visual).
+- upload-asset: required `<file>` positional (png/jpeg/webp/gif, max 10MB) and `--project-id`; optional `--no-canvas`, `--json`. Uploads a project image asset and returns a public `url` to reference from create/iterate prompts (e.g. a poster key visual). By default the asset is also placed on the project canvas as an image node (response includes its `nodeId`); pass `--no-canvas` to skip.
 - revert-design-draft: required `--draft-id`, `--to-version <n>`; optional `--json`. Restores a prior version as the current head with NO generation; reversible (the current head is snapshotted into history first). Discover version numbers via `get-design`.
 - execute-flow-pages: required `--draft-id`, `--pages`; optional `--context`, `--context-file` (one or more paths; supports `path:startLine:endLine`), `--model`, `--json`
 - get-design: required `--draft-id`; optional `--json`, `--output <path>`
