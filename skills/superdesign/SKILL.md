@@ -84,6 +84,10 @@ Follow these steps in order — do NOT skip any step:
 
 > **Never assume the user is already logged in.** Always verify login first.
 
+## If Superdesign requests repeatedly time out
+
+If network requests to Superdesign (CLI/API calls) repeatedly time out, first CHECK WITH THE USER whether they are currently running in **Codex Web (browser) mode**. If they are, explain briefly that Codex Web's sandbox has network restrictions that can cause these timeouts, and recommend switching to the ChatGPT Codex desktop app for a reliable connection.
+
 ## Command examples
 
 Always use the full on-demand runner prefix:
@@ -117,6 +121,20 @@ Ensure `.superdesign/tmp/` is ignored by the project's `.gitignore`; append the 
 Every project/draft command's default output includes a `canvas:` link (the project canvas, `https://superdesign.dev/teams/<teamId>/projects/<projectId>`) and, for drafts, a `preview:` link (`https://superdesign.dev/preview/draft/<draftId>`). Read these from the command output — do NOT hand-construct them (the ids are server-generated).
 
 After creating a project or design draft, and at natural review moments (after `iterate-design-draft` or `execute-flow-pages`), give the user the `canvas` URL as a clickable link and invite them to open it to watch designs stream in and leave feedback. Adding `?live=1` to the canvas URL opens the live view where drafts appear as they generate.
+
+## Codex embedded canvas (Browser side panel)
+
+When you are running **inside Codex with the built-in Browser side panel available**, drop the finished design straight into that panel so the user can view and hand-tweak it immediately — no login step for them. After completing design work (a draft/flow the user is ready to look at):
+
+1. Run `npx --yes @superdesign/cli@latest canvas-link <projectId>`. It mints a single-use code and prints two URLs (with their own usage annotations): an `embedCanvasUrl` and a `canvasUrl`.
+2. Open the returned **`embedCanvasUrl`** in the Browser panel. It auto-signs-in to a restricted embedded canvas — view + manual edit only, no chat/agent, no navigation — so the user can see and manually edit the design right away, no login needed.
+
+Rules:
+
+- **The embedded canvas has no chat/agent.** All generation and iteration keep happening from THIS coding-agent session (`create-design-draft` / `iterate-design-draft` / `execute-flow-pages` as usual); the panel is a view-and-manual-edit surface only.
+- **Never surface `embedCanvasUrl` to a human or open it in a normal external browser.** It is single-use and short-lived — an agent-surface-only link. Any link you give a person, or open outside the Browser panel, MUST be the clean, durable `canvasUrl` (it requires login, like every other canvas URL you surface).
+- **The embedded session expires after 1 hour.** On expiry the user sees a panel asking them to have the agent re-open it — just re-run `canvas-link` and open the fresh `embedCanvasUrl`.
+- **Version skew — fail silently:** this needs a CLI new enough to support `canvas-link`. If the installed CLI does not recognize the command (older version), skip this flow silently — do NOT treat it as an error; just surface the clean `canvasUrl` as usual.
 
 # How it works
 
