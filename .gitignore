@@ -1,3 +1,5 @@
 .claude
 .DS_Store
 dist/
+.superdesign/
+assets/generated/

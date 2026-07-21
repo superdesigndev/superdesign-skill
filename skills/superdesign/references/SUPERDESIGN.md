@@ -511,7 +511,7 @@ function NavBar({ activeItem = "home" }) {
 ---
 
 <marketing_assets_dimension_guidelines>
-Marketing assets (feed posts, stories, covers, thumbnails, ad creatives) are static fixed-canvas artworks: generate them via the poster workflow in `references/POSTER.md` (`--kind poster`), which carries the platform dimension table. MUST confirm the dimension with the user before creating — do NOT assume it.
+Marketing assets (feed posts, stories, covers, thumbnails, ad creatives) are static fixed-canvas artworks: generate them via the graphic workflow in `references/GRAPHIC.md` (`--kind graphic`), which carries the platform dimension table. MUST confirm the dimension with the user before creating — do NOT assume it.
 </marketing_assets_dimension_guidelines>
 
 ---
@@ -527,12 +527,12 @@ Every command supports `--json` for the full machine-readable payload; the defau
   - replace: use exactly one `-p`; do not use `--count`
   - `--from-version <n>`: iterate from a specific historical version instead of the current head (discover version numbers via `get-design`)
   - `--device <mobile|tablet|desktop|custom>` / `--width <pixels>` / `--height <pixels>`: OVERRIDE the viewport. Defaults to the source draft's device — omit unless deliberately changing it. `--width`/`--height` require `--device custom`.
-- create-design-draft: required `--project-id`, `--title`, and `-p` (SINGLE prompt only); optional `--device <mobile|tablet|desktop|custom>` (default: desktop), `--width <pixels>`, `--height <pixels>`, `--kind <page|poster>` (default: page), `--context-file` (one or more paths; supports `path:startLine:endLine`), `--model`, `--user-request <text>`, `--json`
+- create-design-draft: required `--project-id`, `--title`, and `-p` (SINGLE prompt only); optional `--device <mobile|tablet|desktop|custom>` (default: desktop), `--width <pixels>`, `--height <pixels>`, `--kind <page|graphic>` (default: page), `--context-file` (one or more paths; supports `path:startLine:endLine`), `--model`, `--user-request <text>`, `--json`
   - ⚠️ ONLY accepts ONE -p flag. Multiple -p flags will silently drop all but the last one.
   - Combine all design directions into a single -p string.
   - Only use this for creating purely new design from scratch.
   - --device custom requires both --width and --height (min 20px each). Providing --width/--height auto-sets --device to custom.
-  - --kind poster switches generation to the fixed-canvas poster branch (static artwork, no responsive layout) and keeps iterations in poster mode; pair it with --width/--height. See `references/POSTER.md`.
+  - --kind graphic switches generation to the fixed-canvas graphic branch (static artwork, no responsive layout) and keeps iterations in graphic mode; pair it with --width/--height. See `references/GRAPHIC.md`.
 - upload-asset: required `<file>` positional (png/jpeg/webp/gif, max 10MB) and `--project-id`; optional `--no-canvas`, `--json`. Uploads a project image asset and returns a public `url` to reference from create/iterate prompts (e.g. a poster key visual). By default the asset is also placed on the project canvas as an image node (response includes its `nodeId`); pass `--no-canvas` to skip.
 - revert-design-draft: required `--draft-id`, `--to-version <n>`; optional `--json`. Restores a prior version as the current head with NO generation; reversible (the current head is snapshotted into history first). Discover version numbers via `get-design`.
 - execute-flow-pages: required `--draft-id`, `--pages`; optional `--context`, `--context-file` (one or more paths; supports `path:startLine:endLine`), `--model`, `--json`

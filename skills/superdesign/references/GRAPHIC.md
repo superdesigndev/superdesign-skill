@@ -1,17 +1,17 @@
-# Poster Generation Workflow
+# Graphic Generation Workflow (posters, covers, social & marketing assets)
 
 Use this workflow when the user asks for a **static poster-like artwork** — poster, flyer, cover art, album/book cover, event visual, social media graphic, banner artwork — rather than a web page or app screen. It replaces the EXISTING UI / BRAND NEW PROJECT SOPs; everything else in `SUPERDESIGN.md` (CLI setup, login, canvas links, command contract) still applies.
 
-Core idea: **you** produce the key visual with your own image-generation tool, upload it to Superdesign, and let Superdesign compose the poster as pixel-perfect HTML on a fixed canvas. Text is always rendered by the poster layer, never baked into images — that is what keeps posters sharp, editable, and iterable.
+Core idea: **you** produce the key visual with your own image-generation tool, upload it to Superdesign, and let Superdesign compose the graphic as pixel-perfect HTML on a fixed canvas. Text is always rendered by the HTML layer, never baked into images — that is what keeps graphics sharp, editable, and iterable.
 
-A poster lives in a project like any draft. Reuse the current project or `create-project --title "<topic> Posters"` first.
+A graphic lives in a project like any draft. Reuse the current project or `create-project --title "<topic> Graphics"` first.
 
 ## Overview
 
 1. Confirm the brief (copy, canvas, layout, style, asset plan) — ONE confirmation round
 2. Generate the key visual with your own image tool (only if the layout needs one)
 3. `upload-asset` → public URL
-4. `create-design-draft --kind poster` with the assembled prompt
+4. `create-design-draft --kind graphic` with the assembled prompt
 5. Share the canvas link, iterate on feedback
 
 ## Step 1 — Confirm the brief (one round, not three)
@@ -101,7 +101,7 @@ Only for layouts that need one (see menu). Rules for the image prompt:
 - **ABSOLUTELY NO TEXT in the image**: no letters, words, logos, watermarks, or UI. Text belongs to the poster layer.
 - Use the aspect from the canvas table.
 
-Show the generated image to the user and offer one regenerate/adjust round (more only if they ask). While looking at the image, write yourself a short **visual description** — dominant colors (approximate hex), composition, where the negative space is. You will paste this into the poster prompt so the layout generator can match colors and place text without seeing the image.
+Show the generated image to the user and offer one regenerate/adjust round (more only if they ask). While looking at the image, write yourself a short **visual description** — dominant colors (approximate hex), composition, where the negative space is. You will paste this into the graphic prompt so the layout generator can match colors and place text without seeing the image.
 
 If the user provides their own image file, skip generation and continue with upload.
 
@@ -111,20 +111,20 @@ If the user provides their own image file, skip generation and continue with upl
 npx --yes @superdesign/cli@latest upload-asset <file> --project-id <projectId>
 ```
 
-Accepts png/jpeg/webp/gif up to 10MB and prints a public `url` — that URL is what goes into the poster prompt. Upload each asset once and reuse the URL across drafts/iterations. The asset also appears on the project canvas as an image node next to the posters (pass `--no-canvas` to skip that).
+Accepts png/jpeg/webp/gif up to 10MB and prints a public `url` — that URL is what goes into the graphic prompt. Upload each asset once and reuse the URL across drafts/iterations. The asset also appears on the project canvas as an image node next to the graphic drafts (pass `--no-canvas` to skip that).
 
-## Step 4 — Generate the poster
+## Step 4 — Generate the graphic
 
 ```bash
 npx --yes @superdesign/cli@latest create-design-draft --project-id <id> \
-  --title "<Poster title>" --kind poster --width <W> --height <H> \
+  --title "<Poster title>" --kind graphic --width <W> --height <H> \
   -p "<assembled prompt>"
 ```
 
 Assemble the single `-p` prompt from the confirmed brief:
 
 ```text
-Design a static poster. The canvas is EXACTLY <W>x<H>px — nothing may overflow or scroll.
+Design a static graphic. The canvas is EXACTLY <W>x<H>px — nothing may overflow or scroll.
 
 LAYOUT — <layout name>: <composition skeleton from the menu, expanded with your art direction>
 
@@ -141,14 +141,14 @@ STYLE: <style adjectives, palette, font character (e.g. heavy grotesque headline
 
 Omit the KEY VISUAL block for asset-less layouts.
 
-**Fallback**: if the CLI rejects `--kind` as an unknown option (older CLI), re-run without it and append to the prompt: "This is a POSTER, not a web page: no responsive prefixes (sm:/md:/lg:), no scrolling, no navigation bars, buttons, or forms."
+**Fallback**: if the CLI rejects `--kind` as an unknown option (older CLI), re-run without it and append to the prompt: "This is a static fixed-canvas GRAPHIC, not a web page: no responsive prefixes (sm:/md:/lg:), no scrolling, no navigation bars, buttons, or forms."
 
 ## Step 5 — Review & iterate
 
 - Give the user the `canvas` link from the command output (and the `preview` link).
-- Iterate with `iterate-design-draft` as usual — drafts created with `--kind poster` stay in poster mode server-side, so plain instructions like "make the headline bigger" are safe. If you used the no-`--kind` fallback, restate the poster constraints in EVERY iterate prompt.
+- Iterate with `iterate-design-draft` as usual — drafts created with `--kind graphic` stay in graphic mode server-side, so plain instructions like "make the headline bigger" are safe. If you used the no-`--kind` fallback, restate the graphic constraints in EVERY iterate prompt.
 - `--mode branch` works well for exploring 2-3 poster directions from the same brief and asset.
 
-## Poster series (multiple posters)
+## Series (multiple graphics)
 
 Never use flow pages for posters. One poster = one `create-design-draft` call; for a series, keep the copy per poster but reuse the same style direction and asset URLs so the set stays coherent, and generate the shared key visual once before the first poster.
