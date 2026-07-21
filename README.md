@@ -85,9 +85,9 @@ Use these to discover style direction, references, and brand context. Browse the
   superdesign get-prompts --slugs "<slug>" --full             # full body of the chosen slug(s)
   ```
 
-- **Extract brand guide from a URL**
+- **Extract a site's design DNA from a URL** (style guide, tokens, content, brand, clone)
   ```bash
-  superdesign extract-brand-guide --url https://example.com
+  superdesign extract-website --url https://example.com --design-md
   ```
 
 ### B) Canvas Design Tools
@@ -200,7 +200,7 @@ Then in the iterate command:
 2. Gather inspirations (generic tools):
    - `superdesign search-prompts --tags "style"`
    - `superdesign get-prompts --slugs ...` (index first; add `--full` for the chosen slug's full body)
-   - optional: `superdesign extract-brand-guide --url ...`
+   - optional: `superdesign extract-website --url ... --design-md` (style guide → design.md; add `--brand` for assets)
 3. Ask the user to choose a direction using the session's available user-input mechanism; if none is available, ask in chat
 4. Write:
    - `.superdesign/design-system.md` (product context + UX flows + visual design, adapted to references)
@@ -264,7 +264,7 @@ superdesign get-design --draft-id <draftId> --output ./design.html
 superdesign search-prompts --query "<keyword>"
 superdesign search-prompts --tags "style"
 superdesign get-prompts --slugs "<slug1,slug2>"          # index; add --full for full bodies
-superdesign extract-brand-guide --url https://example.com
+superdesign extract-website --url https://example.com --design-md   # style guide; add --brand/--tokens/--content-structure/--clone for more
 
 # Canvas - Create project
 # Optional --template <path> seeds the first (baseline) draft from an HTML file.

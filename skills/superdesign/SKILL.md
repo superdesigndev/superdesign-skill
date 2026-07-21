@@ -11,9 +11,10 @@ Superdesign helps you (1) find design inspirations/styles and (2) generate/itera
 
 1. **superdesign init** — Analyze the repo and build UI context to `.superdesign/init/`
 2. **Help me design X** (feature/page/flow)
-3. **Set design system**
+3. **Set design system** (optionally seed or refresh it from a live site via `extract-website --design-md` — you'll choose *create-from / inspired-by / update-existing*, asking first if a `design-system.md` already exists; see `references/SUPERDESIGN.md` Step 2)
 4. **Help me improve design of X**
 5. **Make a poster / marketing asset** (flyer, cover art, social feed post, story, channel cover, thumbnail, ad creative) — a static artwork, not a page. Skip repo init/analysis; read `references/GRAPHIC.md` relative to this `SKILL.md` and follow it (you generate the key visual with your own image tool, upload it, then compose the artwork on a fixed canvas; platform dimension table included).
+6. **Design from a live website / reference URL** (borrow a style, restyle, recombine, or plan a rebuild) — extract a reference site's design DNA (style guide, design tokens, content structure, brand assets, a static reference clone) with `extract-website`, then design with it. Follow "EXTRACT-WEBSITE — RECIPES & SCOPE" in `references/SUPERDESIGN.md`. Note: via the CLI a "recreate"/"clone" is a **style-informed rebuild** — faithful pixel-recreation and *editable* on-canvas clones are done in the Superdesign app (superdesign.dev), not the CLI.
 
 # Step 0 — Environment preflight (BEFORE any CLI step)
 
@@ -36,6 +37,8 @@ Two entry paths. Choose one with this cheap, deterministic check BEFORE any init
 → SKIP repo init entirely. Do NOT "analyze" an empty sandbox, and do NOT ask the user to point you at a repo they don't have. Instead, gather design context conversationally FIRST: ask what they want to build, the target audience/platform, style/brand preferences, and any reference designs or inspirations. Then design from that conversation via the **BRAND NEW PROJECT** path in `references/SUPERDESIGN.md`.
 
 **Real codebase present** (any frontend code, or an existing `.superdesign/init/`) — the repo-init path below is MANDATORY; run the full analysis before designing.
+
+**Exception — standalone extraction:** if the task is ONLY to extract a site's design DNA or set/refresh `design-system.md` from a URL (`extract-website` → `design-system.md`, no design generation), run it WITHOUT repo init — extracting an external site's style doesn't require analyzing the user's codebase. Init is still required before generating designs FOR the existing codebase's UI (reproducing/redesigning an existing page).
 
 # Init: Repo Analysis (real-codebase path)
 
@@ -87,6 +90,7 @@ Always use the full on-demand runner prefix:
 
 ```bash
 npx --yes @superdesign/cli@latest create-project --title "X"
+npx --yes @superdesign/cli@latest extract-website --url https://example.com --design-md
 npx --yes @superdesign/cli@latest create-design-draft --project-id <id> --title "Current UI" -p "Faithfully reproduce..." --context-file src/Component.tsx
 npx --yes @superdesign/cli@latest iterate-design-draft --draft-id <id> -p "dark theme" -p "minimal" --mode branch --context-file src/Component.tsx
 npx --yes @superdesign/cli@latest execute-flow-pages --draft-id <id> --pages '[{"title":"Product Details","prompt":"Product detail page with image gallery, specs and add-to-cart"},{"title":"Checkout","prompt":"Checkout page with cart summary and payment form"}]' --context-file src/Component.tsx
