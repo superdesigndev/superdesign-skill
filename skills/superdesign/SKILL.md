@@ -42,9 +42,9 @@ Two entry paths. Choose one with this cheap, deterministic check BEFORE any init
 
 # Default: diverge first on simple, open-ended requests
 
-When the user makes a simple, open-ended design request — one sentence, no strong constraints (the classic case: "Make me a tourism poster for Kanazawa, Japan") — do NOT generate immediately. First propose THREE genuinely distinct creative directions and confirm the choice with the user:
+When the user makes a simple, open-ended design request — one sentence, no strong constraints — do NOT generate immediately. First propose THREE genuinely distinct creative directions and confirm the choice with the user:
 
-- Each direction is 1-2 lines: a named style/concept plus what sets it apart (art direction, mood, composition, key visual idea). The three MUST differ substantially — not three shades of one idea. For the Kanazawa poster, for example: a Japanese-minimal seasonal-garden direction; a retro travel-poster gold-leaf craft direction; a bold photographic street-and-food direction.
+- Each direction is 1-2 lines: a named style/concept plus what sets it apart (art direction, mood, composition, key visual idea). The three MUST differ substantially — not three shades of one idea.
 - Ask the user to pick one (or say "surprise me" / "all three"). Only generate after they choose. If they pick "all three", generate them as parallel variants for side-by-side comparison on the canvas.
 - When the request already carries detailed constraints or an explicit style, SKIP the divergence and follow the user's spec directly — this default is only for underspecified asks.
 
