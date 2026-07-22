@@ -4,6 +4,8 @@ Use this workflow when the user asks for a **static poster-like artwork** — po
 
 CLI setup and login live in `SKILL.md` (the "Superdesign CLI" and "When a command fails" sections) — follow those. From `SUPERDESIGN.md`, only these sections apply to graphics: the COMMAND CONTRACT, `upload-asset`, VERSION HISTORY & REVERT, the canvas-URL surfacing, TOOL USE RULE, and USER REQUEST PASSING. The init/design-system gates do NOT apply here: a standalone poster/marketing asset needs no repo init, no `.superdesign/init/` files, and no `design-system.md`/`globals.css` context — the brief carries the style. (Only run init and pass the design system if the user explicitly asks for on-brand output matching an existing codebase.)
 
+**On-brand exception:** graphics stay design-system-free by default, but when the user asks for output that matches an existing codebase's brand, the project's `DESIGN.md` (its normative token front matter — see `SUPERDESIGN.md` detection and consumption rules) is the preferred design-system context to attach.
+
 Core idea: **you** produce the key visual with your own image-generation tool, upload it to Superdesign, and let Superdesign compose the graphic as pixel-perfect HTML on a fixed canvas. Text is always rendered by the HTML layer, never baked into images — that is what keeps graphics sharp, editable, and iterable.
 
 A graphic lives in a project like any draft. Reuse the current project or `create-project --title "<topic> Graphics"` first.
