@@ -516,7 +516,6 @@ Marketing assets (feed posts, stories, covers, thumbnails, ad creatives) are sta
 Every command supports `--json` for the full machine-readable payload; the default output is agent-optimized (TOON + `help[]`). Only the flags below `--json` (e.g. `--full`, `--user-request`) are per-command.
 
 - create-project: required `--title`; optional `--template <path>`, `--device <mobile|tablet|desktop>` (default: desktop), `--extend-from <projectId>`, `--no-open`, `--json`. Auto-opens the user's browser by default (canvas URL is always printed too); leave it on and tell the user the canvas was opened, or pass `--no-open` when there's no user-facing browser (CI, headless). See SKILL.md.
-- canvas-link: required `<projectId>` positional; optional `--json`. Prints a clean shareable `canvasUrl` (the login-gated canvas URL to give a human) — it does NOT open a browser.
 - iterate-design-draft:
   - required `--draft-id`, `-p`/`--prompt`, and `--mode <branch|replace>`; optional `--context-file` (one or more paths; supports `path:startLine:endLine`), `--model`, `--user-request <text>`, `--json`
   - branch: can include multiple `-p` prompts; optional `--count <1-4>` is valid only with a single prompt
