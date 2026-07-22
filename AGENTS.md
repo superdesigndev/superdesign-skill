@@ -8,7 +8,12 @@ A published agent **skill** (`skills/superdesign/`) that drives the SuperDesign 
 - `skills/superdesign/SKILL.md` - entry point (front-matter + core workflow)
 - `skills/superdesign/references/SUPERDESIGN.md` - full design workflow + `COMMAND CONTRACT`
 - `skills/superdesign/references/INIT.md` - repo-analysis (init) instructions
+- `skills/superdesign/references/DESIGNMD-SPEC.md` - pinned, verbatim snapshot of Google Labs' DESIGN.md format spec (Apache-2.0). See "Design tokens layer" below.
 - `skills/superdesign/{SUPERDESIGN,INIT}.md` - deprecated compatibility forwarders (do not add content)
+
+## Design tokens layer: DESIGN.md, not theme.md
+
+The skill's theme/token context is the interoperable **DESIGN.md** format (Google Labs), not the old `theme.md`. INIT.md step 5 is the source of truth: detect a project `DESIGN.md` (repo root, then `docs/`); consume a valid one READ-ONLY (NEVER overwrite it - duplicate `##` section headings = invalid per spec, fall back to a generated `.superdesign/init/DESIGN.md`); generate one at repo root when the project has none. Raw CSS/Tailwind dumps live in the `theme-raw.md` sidecar, not inside DESIGN.md. DESIGN.md = visual-identity layer; `components/layouts/routes/pages/extractable-components.md` stay the code-context layer. The init-complete predicate (SKILL.md, SUPERDESIGN.md Task 1.1) counts a "DESIGN.md slot" = valid DESIGN.md available + `theme-raw.md` exists. `DESIGNMD-SPEC.md` carries its own upstream URL/commit/version attribution header; re-vendor from `raw.githubusercontent.com/google-labs-code/design.md/main/docs/spec.md` (verbatim body + refreshed header) when syncing - do NOT add a runtime dep on any DESIGN.md CLI.
 
 ## Skill flow invariant: two entry paths
 

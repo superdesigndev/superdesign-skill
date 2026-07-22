@@ -62,7 +62,7 @@ When a real codebase is present (per Step 1) and init is NOT complete, you MUST 
 2. Read `references/INIT.md` relative to this selected `SKILL.md`
 3. Follow its instructions to analyze the repo and write context files
 
-**Init-complete test (one decidable rule, used everywhere):** init is complete only if all six named files below exist AND are non-empty. A directory that is missing any of them, or holds an empty one (e.g. an interrupted init), is NOT complete — rerun the full init, which regenerates all six; overwriting existing files is expected and fine.
+**Init-complete test (one decidable rule, used everywhere):** init is complete only if all six init slots below are satisfied AND non-empty. Five are files in `.superdesign/init/`; the sixth is the DESIGN.md slot — a valid `DESIGN.md` available (the project's own, or the one init generated) plus its `theme-raw.md` sidecar (see `references/INIT.md` step 5 for the full rule). A slot that is missing, or an empty file (e.g. an interrupted init), is NOT complete — rerun the full init, which regenerates our own files; overwriting them is expected and fine, but init NEVER overwrites a pre-existing valid project `DESIGN.md` (it consumes that read-only).
 
 Do NOT ask the user to do this manually — just do it.
 
@@ -73,11 +73,11 @@ If init is complete (all six files present and non-empty), you MUST read ALL of 
 - `components.md` — shared UI primitives with full source code
 - `layouts.md` — shared layout components (nav, sidebar, header, footer)
 - `routes.md` — page/route mapping
-- `theme.md` — design tokens, CSS variables, Tailwind config
+- `DESIGN.md` — normative design tokens (YAML front matter) + design rationale, in the interoperable DESIGN.md format (detection order: repo root, then `docs/`, then `.superdesign/init/`); its `theme-raw.md` sidecar holds the raw CSS/Tailwind dumps. See `references/DESIGNMD-SPEC.md`.
 - `pages.md` — page component dependency trees (which files each page needs)
 - `extractable-components.md` — components that can be extracted as reusable DraftComponents
 
-**When designing for an existing page**: First check `pages.md` for the page's dependency tree — the candidate set of `--context-file` files. Pass them under the PAYLOAD BUDGET rules in `references/SUPERDESIGN.md` (line-range ~900+ line files to their render/token sections; drop files with no visual bearing) so the payload does not 400. Then also add the globals.css tokens, tailwind.config, and design-system.md.
+**When designing for an existing page**: First check `pages.md` for the page's dependency tree — the candidate set of `--context-file` files. Pass them under the PAYLOAD BUDGET rules in `references/SUPERDESIGN.md` (line-range ~900+ line files to their render/token sections; drop files with no visual bearing) so the payload does not 400. Then also add the design tokens (the `DESIGN.md` YAML front matter, or the globals.css `:root`/`.dark` block), tailwind.config, and design-system.md.
 
 # Superdesign CLI (MUST use before any command)
 
