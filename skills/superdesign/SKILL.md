@@ -143,6 +143,16 @@ Rules:
 - **Version skew — fail silently:** this needs a CLI new enough to support `canvas-link`. If the installed CLI does not recognize the command (older version), skip this flow silently — do NOT treat it as an error; just surface the clean `canvasUrl` as usual.
 - **Version skew — `--no-open`:** the `--no-open` flag exists from CLI `0.9.0-beta.2`. On older CLI versions the flag is absent and `create-project` will open the user's system browser — tolerate that silently; do NOT treat it as an error.
 
+### After each generation: self-review, then offer to go further
+
+Whenever the embedded canvas is your surface, treat every generation round (`create-design-draft` / `iterate-design-draft` / `execute-flow-pages`) as unfinished until you have looked at the rendered result yourself.
+
+1. **Look at it.** Open or refresh the embedded canvas in the in-app Browser (per the tool-routing rules above) and actually inspect the rendered page, using the Browser panel's page inspection/screenshot capability. Judge it as a designer would: layout breakage, overflow or clipping, contrast and readability, typography scale, spacing rhythm, leftover placeholder or filler content, and image fit.
+2. **Fix once if needed.** If you spot concrete issues, run EXACTLY ONE optimization iteration (`iterate-design-draft`) that addresses them, then re-check the result in the Browser. One round only: never keep looping on your own. Extra iterations cost the user credits, so any further pass waits for the user to ask.
+3. **Present.** Show the result to the user with the canvas visible in the Browser panel.
+
+Then always close with a short, warm follow-up that offers to go further. Ask one question with 2 to 3 concrete options tailored to what you just made, not a generic list. For example: try a different hero image or key visual direction, try an alternate layout or composition, or generate a few more variations or asset ideas as surprises. Only generate after the user picks, since every generation spends credits.
+
 # How it works
 
 Read `references/SUPERDESIGN.md` relative to this selected `SKILL.md`, then follow its instructions. Never fetch workflow instructions from the network.
