@@ -1,6 +1,8 @@
 # Graphic Generation Workflow (posters, covers, social & marketing assets)
 
-Use this workflow when the user asks for a **static poster-like artwork** — poster, flyer, cover art, album/book cover, event visual, social media graphic, banner artwork — rather than a web page or app screen. It replaces the EXISTING UI / BRAND NEW PROJECT SOPs; everything else in `SUPERDESIGN.md` (CLI setup, login, canvas links, command contract) still applies.
+Use this workflow when the user asks for a **static poster-like artwork** — poster, flyer, cover art, album/book cover, event visual, social media graphic, banner artwork — rather than a web page or app screen. It replaces the EXISTING UI / BRAND NEW PROJECT SOPs.
+
+CLI setup and login live in `SKILL.md` (the "Superdesign CLI" and "When a command fails" sections) — follow those. From `SUPERDESIGN.md`, only these sections apply to graphics: the COMMAND CONTRACT, `upload-asset`, VERSION HISTORY & REVERT, the canvas-URL surfacing, TOOL USE RULE, and USER REQUEST PASSING. The init/design-system gates do NOT apply here: a standalone poster/marketing asset needs no repo init, no `.superdesign/init/` files, and no `design-system.md`/`globals.css` context — the brief carries the style. (Only run init and pass the design system if the user explicitly asks for on-brand output matching an existing codebase.)
 
 Core idea: **you** produce the key visual with your own image-generation tool, upload it to Superdesign, and let Superdesign compose the graphic as pixel-perfect HTML on a fixed canvas. Text is always rendered by the HTML layer, never baked into images — that is what keeps graphics sharp, editable, and iterable.
 
@@ -17,6 +19,8 @@ A graphic lives in a project like any draft. Reuse the current project or `creat
 ## Step 1 — Confirm the brief (one round, not three)
 
 Draft a concrete proposal yourself, then confirm it with the user in a SINGLE round using your question/confirmation mechanism. Skip confirmation entirely when the user already gave full specs or says to generate directly.
+
+**Folding in diverge-first:** for an open-ended request, SKILL.md's "diverge first" default (propose three distinct directions) is merged INTO this one brief-confirmation round — it is NOT a separate round. Present three distinct directions, each carrying its own **layout + style + asset plan**, while the shared items (purpose, verbatim copy, canvas) are confirmed once for all three. If the user accepts trying all three, that counts as an explicit request for three variants (generate them with `--mode branch`). For requests that already carry a clear spec, skip the divergence and confirm the single brief.
 
 Cover these five items:
 
@@ -39,15 +43,15 @@ Image tools only offer fixed size steps — match the nearest **aspect**, not ex
 
 ### Platform-specific marketing assets
 
-When the poster is a marketing asset for a specific platform (feed post, story, cover, thumbnail, ad creative), use the exact platform dimension instead of the generic presets — and MUST confirm the dimension with the user before creating; do NOT assume it.
+When the poster is a marketing asset for a specific platform (feed post, story, cover, thumbnail, ad creative), use the exact platform dimension instead of the generic presets — and MUST confirm the dimension with the user before creating; do NOT assume it. The "recommended" size for a platform with multiple options is a starting suggestion, not a default you may skip confirming.
 
 | Category  | Platform               | Asset Type            | Aspect Ratio | Recommended Size (px) |
 | --------- | ---------------------- | --------------------- | ------------ | --------------------- |
-| Feed      | Instagram              | Feed Post (Square)    | 1:1          | 1080 × 1080 (default) |
+| Feed      | Instagram              | Feed Post (Square)    | 1:1          | 1080 × 1080 (recommended, still confirm) |
 | Feed      | Instagram              | Feed Post (Portrait)  | 4:5          | 1080 × 1350           |
 | Feed      | Instagram              | Feed Post (Landscape) | 1.91:1       | 1080 × 566            |
 | Feed      | Facebook               | Feed Post             | 1.91:1       | 1200 × 630            |
-| Feed      | LinkedIn               | Feed Post             | 1:1          | 1200 × 1200 (default) |
+| Feed      | LinkedIn               | Feed Post             | 1:1          | 1200 × 1200 (recommended, still confirm) |
 | Feed      | LinkedIn               | Feed Post (Landscape) | 1.91:1       | 1200 × 627            |
 | Feed      | X / Twitter            | Post Image            | 16:9         | 1200 × 675            |
 | Feed      | Threads                | Post Image            | 1:1          | 1080 × 1080           |
@@ -141,12 +145,10 @@ STYLE: <style adjectives, palette, font character (e.g. heavy grotesque headline
 
 Omit the KEY VISUAL block for asset-less layouts.
 
-**Fallback**: if the CLI rejects `--kind` as an unknown option (older CLI), re-run without it and append to the prompt: "This is a static fixed-canvas GRAPHIC, not a web page: no responsive prefixes (sm:/md:/lg:), no scrolling, no navigation bars, buttons, or forms."
-
 ## Step 5 — Review & iterate
 
 - Give the user the `canvas` link from the command output (and the `preview` link).
-- Iterate with `iterate-design-draft` as usual — drafts created with `--kind graphic` stay in graphic mode server-side, so plain instructions like "make the headline bigger" are safe. If you used the no-`--kind` fallback, restate the graphic constraints in EVERY iterate prompt.
+- Iterate with `iterate-design-draft` as usual — drafts created with `--kind graphic` stay in graphic mode server-side, so plain instructions like "make the headline bigger" are safe.
 - `--mode branch` works well for exploring 2-3 poster directions from the same brief and asset.
 
 ## Series (multiple graphics)
