@@ -136,7 +136,7 @@ After creating a project or design draft, and at natural review moments (after `
 
 When you are running **inside Codex with the built-in Browser side panel available**, drop the finished design straight into that panel so the user can view and hand-tweak it immediately — no login step for them. After completing design work (a draft/flow the user is ready to look at), and only when Codex's in-app Browser is available:
 
-1. **Mint the URL:** run `npx --yes @superdesign/cli@latest canvas-link <projectId>`. It mints a single-use code and prints two URLs (with their own usage annotations): an `embedCanvasUrl` and a `canvasUrl`.
+1. **Mint the URL:** run `npx --yes @superdesign/cli@latest canvas-link <projectId>`. It mints a code and prints two URLs (with their own usage annotations): an `embedCanvasUrl` and a `canvasUrl`.
 2. **Open `embedCanvasUrl` specifically in the Codex in-app Browser.** It auto-signs-in to a restricted embedded canvas — view + manual edit only, no chat/agent, no navigation — so the user can see and manually edit the design right away, no login needed.
    - Make the in-app Browser visible to the user.
    - Keep the canvas tab open as a user-facing deliverable.
@@ -148,8 +148,8 @@ When you are running **inside Codex with the built-in Browser side panel availab
 Rules:
 
 - **The embedded canvas has no chat/agent.** All generation and iteration keep happening from THIS coding-agent session (`create-design-draft` / `iterate-design-draft` / `execute-flow-pages` as usual); the panel is a view-and-manual-edit surface only.
-- **Never surface `embedCanvasUrl` to a human or open it in a normal external browser.** It is single-use and short-lived — an agent-surface-only link. Any link you give a person, or open outside the Browser panel, MUST be the clean, durable `canvasUrl` (it requires login, like every other canvas URL you surface).
-- **The embedded session expires after 1 hour.** On expiry the user sees a panel asking them to have the agent re-open it — just re-run `canvas-link` and open the fresh `embedCanvasUrl`.
+- **Never surface `embedCanvasUrl` to a human or open it in a normal external browser.** It auto-signs-in whoever opens it, so it is an agent-surface-only link. Any link you give a person, or open outside the Browser panel, MUST be the clean, durable `canvasUrl` (it requires login, like every other canvas URL you surface).
+- **The `embedCanvasUrl` stays valid for about an hour** and can be opened again from this conversation during that window — reopening it, or opening it in another tab, works fine. Once it expires, the embedded session shows a panel asking the user to have the agent re-open it; just re-run `canvas-link` and open the fresh `embedCanvasUrl`.
 
 ### After each generation: self-review, then offer to go further
 
