@@ -18,6 +18,8 @@ Superdesign helps you (1) find design inspirations/styles and (2) generate/itera
 
 # Step 0 — Environment preflight (BEFORE any CLI step)
 
+If you are in the ChatGPT/Codex web app (or network requests to Superdesign repeatedly time out), stop there and send the user to the desktop app.
+
 Superdesign runs entirely through its CLI, so you must be able to execute shell commands. Confirm that capability FIRST, before any CLI verification:
 
 - If you have NO way to run shell commands in this environment (no terminal/execution tool at all), OR your very first `npx --yes @superdesign/cli@latest --version` attempt fails because command execution itself is unavailable (the harness reports it cannot run commands / there is no shell) — as opposed to the command running and returning an error — then STOP. Do NOT keep retrying or improvise workarounds.
@@ -104,10 +106,6 @@ Follow these steps in order — do NOT skip any step:
 - **`search-prompts` returns zero results**: proceed WITHOUT a library style prompt (note that to the user) — do not keep searching; the flow works fine without one.
 - **`extract-website` fails or times out** (it can take ~60–120s): retry ONCE. If it still fails, offer to continue WITHOUT the extraction (design from the conversation / existing design system) rather than blocking.
 - **General rule:** retry a failed command at most once, then report the failure to the user and stop — never silently loop or fall back to inventing output.
-
-## If Superdesign requests repeatedly time out
-
-If network requests to Superdesign (CLI/API calls) repeatedly time out: if you can determine your own environment, only raise the Codex Web possibility when you ARE actually running in Codex Web (browser) mode — in that case explain briefly that Codex Web's sandbox has network restrictions that can cause these timeouts, and recommend switching to the ChatGPT Codex desktop app for a reliable connection. Otherwise (you are not in Codex Web, or cannot tell), retry once and report the failure to the user — do NOT burn a user round asking about a surface you are not on.
 
 ## Command examples
 
