@@ -40,6 +40,16 @@ Two entry paths. Choose one with this cheap, deterministic check BEFORE any init
 
 **Exception — standalone extraction:** if the task is ONLY to extract a site's design DNA or set/refresh `design-system.md` from a URL (`extract-website` → `design-system.md`, no design generation), run it WITHOUT repo init — extracting an external site's style doesn't require analyzing the user's codebase. Init is still required before generating designs FOR the existing codebase's UI (reproducing/redesigning an existing page).
 
+# Default: diverge first on simple, open-ended requests
+
+When the user makes a simple, open-ended design request — one sentence, no strong constraints (the classic case: "Make me a tourism poster for Kanazawa, Japan") — do NOT generate immediately. First propose THREE genuinely distinct creative directions and confirm the choice with the user:
+
+- Each direction is 1-2 lines: a named style/concept plus what sets it apart (art direction, mood, composition, key visual idea). The three MUST differ substantially — not three shades of one idea. For the Kanazawa poster, for example: a Japanese-minimal seasonal-garden direction; a retro travel-poster gold-leaf craft direction; a bold photographic street-and-food direction.
+- Ask the user to pick one (or say "surprise me" / "all three"). Only generate after they choose. If they pick "all three", generate them as parallel variants for side-by-side comparison on the canvas.
+- When the request already carries detailed constraints or an explicit style, SKIP the divergence and follow the user's spec directly — this default is only for underspecified asks.
+
+This applies across every scenario (pages, flows, posters/graphics), on both entry paths. It pairs with the after-generation follow-up: diverge before the first generation, offer to go further after it.
+
 # Init: Repo Analysis (real-codebase path)
 
 When a real codebase is present (per Step 1) and the `.superdesign/init/` directory doesn't exist or is empty, you MUST automatically:
