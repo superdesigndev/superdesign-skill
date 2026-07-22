@@ -141,12 +141,10 @@ STYLE: <style adjectives, palette, font character (e.g. heavy grotesque headline
 
 Omit the KEY VISUAL block for asset-less layouts.
 
-**Fallback**: if the CLI rejects `--kind` as an unknown option (older CLI), re-run without it and append to the prompt: "This is a static fixed-canvas GRAPHIC, not a web page: no responsive prefixes (sm:/md:/lg:), no scrolling, no navigation bars, buttons, or forms."
-
 ## Step 5 — Review & iterate
 
 - Give the user the `canvas` link from the command output (and the `preview` link).
-- Iterate with `iterate-design-draft` as usual — drafts created with `--kind graphic` stay in graphic mode server-side, so plain instructions like "make the headline bigger" are safe. If you used the no-`--kind` fallback, restate the graphic constraints in EVERY iterate prompt.
+- Iterate with `iterate-design-draft` as usual — drafts created with `--kind graphic` stay in graphic mode server-side, so plain instructions like "make the headline bigger" are safe.
 - `--mode branch` works well for exploring 2-3 poster directions from the same brief and asset.
 
 ## Series (multiple graphics)

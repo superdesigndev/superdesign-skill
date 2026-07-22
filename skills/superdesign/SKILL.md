@@ -150,8 +150,6 @@ Rules:
 - **The embedded canvas has no chat/agent.** All generation and iteration keep happening from THIS coding-agent session (`create-design-draft` / `iterate-design-draft` / `execute-flow-pages` as usual); the panel is a view-and-manual-edit surface only.
 - **Never surface `embedCanvasUrl` to a human or open it in a normal external browser.** It is single-use and short-lived — an agent-surface-only link. Any link you give a person, or open outside the Browser panel, MUST be the clean, durable `canvasUrl` (it requires login, like every other canvas URL you surface).
 - **The embedded session expires after 1 hour.** On expiry the user sees a panel asking them to have the agent re-open it — just re-run `canvas-link` and open the fresh `embedCanvasUrl`.
-- **Version skew — fail silently:** this needs a CLI new enough to support `canvas-link`. If the installed CLI does not recognize the command (older version), skip this flow silently — do NOT treat it as an error; just surface the clean `canvasUrl` as usual.
-- **Version skew — `--no-open`:** the `--no-open` flag exists from CLI `0.9.0-beta.2`. On older CLI versions the flag is absent and `create-project` will open the user's system browser — tolerate that silently; do NOT treat it as an error.
 
 ### After each generation: self-review, then offer to go further
 
