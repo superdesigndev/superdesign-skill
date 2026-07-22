@@ -45,24 +45,28 @@ Two entry paths. Choose one with this cheap, deterministic check BEFORE any init
 When the user makes a simple, open-ended design request — one sentence, no strong constraints — do NOT generate immediately. First propose THREE genuinely distinct creative directions and confirm the choice with the user:
 
 - Each direction is 1-2 lines: a named style/concept plus what sets it apart (art direction, mood, composition, key visual idea). The three MUST differ substantially — not three shades of one idea.
-- Recommend trying all three — generated as parallel variants for side-by-side comparison on the canvas — while noting that picking just one (or two) is a fine choice if they prefer. Only generate after the user responds.
+- Recommend trying all three — generated as parallel variants for side-by-side comparison on the canvas — while noting that picking just one (or two) is a fine choice if they prefer. Only generate after the user responds. **When the user accepts the "try all three" recommendation, that counts as explicitly asking for 3 variants** (this is the sanctioned way to exceed the default 2 — see the VARIANT COUNT rule in `references/SUPERDESIGN.md`); generate the three as parallel variants.
 - When the request already carries detailed constraints or an explicit style, SKIP the divergence and follow the user's spec directly — this default is only for underspecified asks.
 
 This applies across every scenario (pages, flows, posters/graphics), on both entry paths. It pairs with the after-generation follow-up: diverge before the first generation, offer to go further after it.
 
+**On the graphic path the divergence is NOT a separate round.** The graphic workflow confirms its brief in ONE round (`references/GRAPHIC.md` Step 1), so fold the three directions INTO that single brief-confirmation round: present three distinct directions — each carrying its own layout/style/asset-plan — while the shared copy and canvas are confirmed once. Do not add a second confirmation round.
+
 # Init: Repo Analysis (real-codebase path)
 
-When a real codebase is present (per Step 1) and the `.superdesign/init/` directory doesn't exist or is empty, you MUST automatically:
+When a real codebase is present (per Step 1) and init is NOT complete, you MUST automatically:
 
 1. Create the `.superdesign/init/` directory
 2. Read `references/INIT.md` relative to this selected `SKILL.md`
 3. Follow its instructions to analyze the repo and write context files
 
+**Init-complete test (one decidable rule, used everywhere):** init is complete only if all six named files below exist AND are non-empty. A directory that is missing any of them, or holds an empty one (e.g. an interrupted init), is NOT complete — rerun the full init, which regenerates all six; overwriting existing files is expected and fine.
+
 Do NOT ask the user to do this manually — just do it.
 
 # Mandatory Init Files
 
-If `.superdesign/init/` exists, you MUST read ALL files in this directory FIRST before any design task:
+If init is complete (all six files present and non-empty), you MUST read ALL of them FIRST before any design task:
 
 - `components.md` — shared UI primitives with full source code
 - `layouts.md` — shared layout components (nav, sidebar, header, footer)
@@ -71,7 +75,7 @@ If `.superdesign/init/` exists, you MUST read ALL files in this directory FIRST 
 - `pages.md` — page component dependency trees (which files each page needs)
 - `extractable-components.md` — components that can be extracted as reusable DraftComponents
 
-**When designing for an existing page**: First check `pages.md` for the page's complete dependency tree. Every file in that tree MUST be passed as `--context-file`. Then also add globals.css, tailwind.config, and design-system.md.
+**When designing for an existing page**: First check `pages.md` for the page's dependency tree — the candidate set of `--context-file` files. Pass them under the PAYLOAD BUDGET rules in `references/SUPERDESIGN.md` (line-range ~900+ line files to their render/token sections; drop files with no visual bearing) so the payload does not 400. Then also add the globals.css tokens, tailwind.config, and design-system.md.
 
 # Superdesign CLI (MUST use before any command)
 
@@ -92,11 +96,18 @@ Follow these steps in order — do NOT skip any step:
    Wait for login to complete successfully before proceeding.
 3. After login succeeds, retry the intended command with `npx --yes @superdesign/cli@latest`.
 
-> **Never assume the user is already logged in.** Always verify login first.
+> **Never assume the user is already logged in.** There is no separate "verify login" command — your `--version` check plus reacting to an auth/login error on the first real command IS the verification. Do not try to run a whoami/status check; just run the intended command and handle an auth error per the failure block below.
+
+## When a command fails
+
+- **Auth/login error** (the CLI ran but rejected the session): run `login` (above), then retry the intended command ONCE. If login itself fails (headless/no-browser auth, expired flow, user declines), tell the user plainly and STOP — do not keep retrying or improvise.
+- **`search-prompts` returns zero results**: proceed WITHOUT a library style prompt (note that to the user) — do not keep searching; the flow works fine without one.
+- **`extract-website` fails or times out** (it can take ~60–120s): retry ONCE. If it still fails, offer to continue WITHOUT the extraction (design from the conversation / existing design system) rather than blocking.
+- **General rule:** retry a failed command at most once, then report the failure to the user and stop — never silently loop or fall back to inventing output.
 
 ## If Superdesign requests repeatedly time out
 
-If network requests to Superdesign (CLI/API calls) repeatedly time out, first CHECK WITH THE USER whether they are currently running in **Codex Web (browser) mode**. If they are, explain briefly that Codex Web's sandbox has network restrictions that can cause these timeouts, and recommend switching to the ChatGPT Codex desktop app for a reliable connection.
+If network requests to Superdesign (CLI/API calls) repeatedly time out: if you can determine your own environment, only raise the Codex Web possibility when you ARE actually running in Codex Web (browser) mode — in that case explain briefly that Codex Web's sandbox has network restrictions that can cause these timeouts, and recommend switching to the ChatGPT Codex desktop app for a reliable connection. Otherwise (you are not in Codex Web, or cannot tell), retry once and report the failure to the user — do NOT burn a user round asking about a surface you are not on.
 
 ## Command examples
 
@@ -134,16 +145,18 @@ After creating a project or design draft, and at natural review moments (after `
 
 ## Codex embedded canvas (Browser side panel)
 
-When you are running **inside Codex with the built-in Browser side panel available**, drop the finished design straight into that panel so the user can view and hand-tweak it immediately — no login step for them. After completing design work (a draft/flow the user is ready to look at), and only when Codex's in-app Browser is available:
+When you are running **inside Codex with the built-in Browser side panel available**, drop the finished design straight into that panel so the user can view and hand-tweak it immediately — no login step for them. After completing design work (a draft/flow the user is ready to look at), use this flow only when the capability test below passes.
 
-1. **Mint the URL:** run `npx --yes @superdesign/cli@latest canvas-link <projectId>`. It mints a code and prints two URLs (with their own usage annotations): an `embedCanvasUrl` and a `canvasUrl`.
+**Browser capability test (decidable — all must hold):** use the in-app Browser embedded flow ONLY if you have a host-provided in-app-browser tool that (a) explicitly controls the user-visible Codex Browser side panel (not an external/headless browser), AND (b) can navigate to a URL, AND (c) can inspect the selected tab's URL and its rendered page (screenshot or page inspection). If any of these is missing or fails, do NOT mint or open the embed link — fall back: surface the clean `canvasUrl` (from `canvas-link`, or the `canvas:` link in any command's output) to the user as a clickable link and continue with the normal non-embedded review flow. Also fall back this way if `canvas-link` itself is unavailable in the CLI — surface the clean `canvas:` URL from the command output instead.
+
+1. **Mint the URL:** run `npx --yes @superdesign/cli@latest canvas-link <projectId>`. It mints a code and prints two URLs (with their own usage annotations): an `embedCanvasUrl` and a `canvasUrl`. (If `canvas-link` is not available, fall back to the clean `canvas:` URL as above.)
 2. **Open `embedCanvasUrl` specifically in the Codex in-app Browser.** It auto-signs-in to a restricted embedded canvas — view + manual edit only, no chat/agent, no navigation — so the user can see and manually edit the design right away, no login needed.
    - Make the in-app Browser visible to the user.
    - Keep the canvas tab open as a user-facing deliverable.
    - Verify that the selected tab's URL is the embedded canvas URL.
 3. **Do NOT use external Chrome, system `open`, Playwright launched from the shell, or Chrome DevTools automation for this step.** Those surfaces may navigate successfully without opening Codex's visible Browser panel — the navigation "succeeds" but the user sees nothing.
 
-`create-project` always auto-opens the user's system browser by default, in every context. When running inside Codex (or any agent-embedded surface), pass `--no-open` to `create-project` so that system browser does not pop; then show the user the canvas through this embedded flow instead (`canvas-link`, then open `embedCanvasUrl` in the Browser panel) — THE way to surface the canvas in Codex.
+`create-project` always auto-opens the user's system browser by default (the canvas URL is printed either way). **Decidable rule: if you — the agent — are running the command rather than a human typing it at their own shell, pass `--no-open`** and surface the printed URL yourself. That covers Codex, Claude Code in a terminal, CI, and every agent-driven surface; it prevents an uncontrolled system-browser pop mid-session. In Codex specifically, after `--no-open` you then show the canvas through this embedded flow (`canvas-link`, then open `embedCanvasUrl` in the Browser panel) — THE way to surface the canvas in Codex.
 
 Rules:
 
@@ -151,16 +164,22 @@ Rules:
 - **Never surface `embedCanvasUrl` to a human or open it in a normal external browser.** It auto-signs-in whoever opens it, so it is an agent-surface-only link. Any link you give a person, or open outside the Browser panel, MUST be the clean, durable `canvasUrl` (it requires login, like every other canvas URL you surface).
 - **The `embedCanvasUrl` stays valid for about an hour** and can be opened again from this conversation during that window — reopening it, or opening it in another tab, works fine. Once it expires, the embedded session shows a panel asking the user to have the agent re-open it; just re-run `canvas-link` and open the fresh `embedCanvasUrl`.
 
-### After each generation: self-review, then offer to go further
+# After generating: self-review, then offer to go further
 
-Whenever the embedded canvas is your surface, treat every generation round (`create-design-draft` / `iterate-design-draft` / `execute-flow-pages`) as unfinished until you have looked at the rendered result yourself.
+This applies on EVERY surface, not only the Codex embedded canvas.
 
-1. **Look at it.** Open or refresh the embedded canvas in the in-app Browser (per the tool-routing rules above) and actually inspect the rendered page, using the Browser panel's page inspection/screenshot capability. Judge it as a designer would: layout breakage, overflow or clipping, contrast and readability, typography scale, spacing rhythm, leftover placeholder or filler content, and image fit.
-2. **Fix once if needed.** If you spot concrete issues, run EXACTLY ONE optimization iteration (`iterate-design-draft`) that addresses them, then re-check the result in the Browser. One round only: never keep looping on your own. Extra iterations cost the user credits, so any further pass waits for the user to ask.
-3. **Present.** Show the result to the user with the canvas visible in the Browser panel.
+**Visual self-review (when you can safely inspect).** If you have a safe visual-inspection capability for the rendered result — the Codex Browser panel's page inspection/screenshot, or any sandboxed screenshot/preview tool your host provides — treat every design generation round (`create-design-draft` / `iterate-design-draft` / `execute-flow-pages`) as unfinished until you have looked at it yourself:
 
-Then always close with a short, warm follow-up that offers to go further. Ask one question with 2 to 3 concrete options tailored to what you just made, not a generic list. For example: try a different hero image or key visual direction, try an alternate layout or composition, or generate a few more variations or asset ideas as surprises. Only generate after the user picks, since every generation spends credits.
+1. **Look at it.** Inspect the rendered page. Judge it as a designer would: layout breakage, overflow or clipping, contrast and readability, typography scale, spacing rhythm, leftover placeholder or filler content, and image fit.
+2. **Fix once if needed.** If you spot concrete issues, run EXACTLY ONE optimization iteration (`iterate-design-draft --mode replace`, correcting the just-generated draft in place — see the TOOL USE RULE exemption in `references/SUPERDESIGN.md`) that addresses them, then re-check the result. One round only: never keep looping on your own.
+3. **Present.** Show the result to the user (with the canvas visible in the Browser panel when on the Codex embedded surface).
+
+**Never self-review the Step 3a pixel-perfect reproduction draft.** A reproduction's job is to match the current UI, not to look "better" — "fixing" it toward your taste corrupts the ground truth. Reproduction problems mean missing/wrong context, not styling; address them by fixing the context files and regenerating, not by an optimization pass. This self-review is for design (Step 3b) and graphic drafts only.
+
+**If you CANNOT safely inspect the rendered result**, do not guess and do not imply you checked. Present the preview/canvas link and say plainly that you have not visually verified it, inviting the user to review.
+
+**Then always close with a short, warm follow-up that offers to go further** (on every surface). Ask one question with 2 to 3 concrete options tailored to what you just made, not a generic list. For example: try a different hero image or key visual direction, try an alternate layout or composition, or generate a few more variations or asset ideas as surprises. Only generate after the user picks, since every generation spends credits.
 
 # How it works
 
-Read `references/SUPERDESIGN.md` relative to this selected `SKILL.md`, then follow its instructions. Never fetch workflow instructions from the network.
+Read `references/SUPERDESIGN.md` relative to this selected `SKILL.md`, then follow its instructions.
