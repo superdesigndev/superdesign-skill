@@ -124,10 +124,14 @@ After creating a project or design draft, and at natural review moments (after `
 
 ## Codex embedded canvas (Browser side panel)
 
-When you are running **inside Codex with the built-in Browser side panel available**, drop the finished design straight into that panel so the user can view and hand-tweak it immediately — no login step for them. After completing design work (a draft/flow the user is ready to look at):
+When you are running **inside Codex with the built-in Browser side panel available**, drop the finished design straight into that panel so the user can view and hand-tweak it immediately — no login step for them. After completing design work (a draft/flow the user is ready to look at), and only when Codex's in-app Browser is available:
 
-1. Run `npx --yes @superdesign/cli@latest canvas-link <projectId>`. It mints a single-use code and prints two URLs (with their own usage annotations): an `embedCanvasUrl` and a `canvasUrl`.
-2. Open the returned **`embedCanvasUrl`** in the Browser panel. It auto-signs-in to a restricted embedded canvas — view + manual edit only, no chat/agent, no navigation — so the user can see and manually edit the design right away, no login needed.
+1. **Mint the URL:** run `npx --yes @superdesign/cli@latest canvas-link <projectId>`. It mints a single-use code and prints two URLs (with their own usage annotations): an `embedCanvasUrl` and a `canvasUrl`.
+2. **Open `embedCanvasUrl` specifically in the Codex in-app Browser.** It auto-signs-in to a restricted embedded canvas — view + manual edit only, no chat/agent, no navigation — so the user can see and manually edit the design right away, no login needed.
+   - Make the in-app Browser visible to the user.
+   - Keep the canvas tab open as a user-facing deliverable.
+   - Verify that the selected tab's URL is the embedded canvas URL.
+3. **Do NOT use external Chrome, system `open`, Playwright launched from the shell, or Chrome DevTools automation for this step.** Those surfaces may navigate successfully without opening Codex's visible Browser panel — the navigation "succeeds" but the user sees nothing.
 
 `create-project` always auto-opens the user's system browser by default, in every context. When running inside Codex (or any agent-embedded surface), pass `--no-open` to `create-project` so that system browser does not pop; then show the user the canvas through this embedded flow instead (`canvas-link`, then open `embedCanvasUrl` in the Browser panel) — THE way to surface the canvas in Codex.
 
