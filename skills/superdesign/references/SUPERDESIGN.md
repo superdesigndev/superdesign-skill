@@ -515,8 +515,8 @@ Marketing assets (feed posts, stories, covers, thumbnails, ad creatives) are sta
 
 Every command supports `--json` for the full machine-readable payload; the default output is agent-optimized (TOON + `help[]`). Only the flags below `--json` (e.g. `--full`, `--user-request`) are per-command.
 
-- create-project: required `--title`; optional `--template <path>`, `--device <mobile|tablet|desktop>` (default: desktop), `--extend-from <projectId>`, `--no-open`, `--json`. By default the created project opens in the user's system browser; pass `--no-open` to suppress that (the canvas URL is always printed either way). Pass `--no-open` whenever you, the agent, are running the command rather than a human at the shell (see SKILL.md).
-- canvas-link: required `<projectId>` positional; optional `--json`. Mints a self-signing embedded-canvas link for an agent browser plus a clean shareable URL, and prints both — it does NOT open a browser. Returns `embedCanvasUrl` (agent-surface only) and `canvasUrl` (the clean login-gated URL to give a human). Used by the Codex embedded-canvas flow in SKILL.md.
+- create-project: required `--title`; optional `--template <path>`, `--device <mobile|tablet|desktop>` (default: desktop), `--extend-from <projectId>`, `--no-open`, `--json`. Auto-opens the user's browser by default (canvas URL is always printed too); leave it on and tell the user the canvas was opened, or pass `--no-open` when there's no user-facing browser (CI, headless). See SKILL.md.
+- canvas-link: required `<projectId>` positional; optional `--json`. Prints a clean shareable `canvasUrl` (the login-gated canvas URL to give a human) — it does NOT open a browser.
 - iterate-design-draft:
   - required `--draft-id`, `-p`/`--prompt`, and `--mode <branch|replace>`; optional `--context-file` (one or more paths; supports `path:startLine:endLine`), `--model`, `--user-request <text>`, `--json`
   - branch: can include multiple `-p` prompts; optional `--count <1-4>` is valid only with a single prompt

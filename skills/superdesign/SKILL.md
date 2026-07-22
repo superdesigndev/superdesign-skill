@@ -141,36 +141,19 @@ Every project/draft command's default output includes a `canvas:` link (the proj
 
 After creating a project or design draft, and at natural review moments (after `iterate-design-draft` or `execute-flow-pages`), give the user the `canvas` URL as a clickable link and invite them to open it to watch designs stream in and leave feedback. Adding `?live=1` to the canvas URL opens the live view where drafts appear as they generate.
 
-## Codex embedded canvas (Browser side panel)
+## Let the browser open, and tell the user
 
-When you are running **inside Codex with the built-in Browser side panel available**, drop the finished design straight into that panel so the user can view and hand-tweak it immediately — no login step for them. After completing design work (a draft/flow the user is ready to look at), use this flow only when the capability test below passes.
-
-**Browser capability test (decidable — all must hold):** use the in-app Browser embedded flow ONLY if you have a host-provided in-app-browser tool that (a) explicitly controls the user-visible Codex Browser side panel (not an external/headless browser), AND (b) can navigate to a URL, AND (c) can inspect the selected tab's URL and its rendered page (screenshot or page inspection). If any of these is missing or fails, do NOT mint or open the embed link — fall back: surface the clean `canvasUrl` (from `canvas-link`, or the `canvas:` link in any command's output) to the user as a clickable link and continue with the normal non-embedded review flow. Also fall back this way if `canvas-link` itself is unavailable in the CLI — surface the clean `canvas:` URL from the command output instead.
-
-1. **Mint the URL:** run `npx --yes @superdesign/cli@latest canvas-link <projectId>`. It mints a code and prints two URLs (with their own usage annotations): an `embedCanvasUrl` and a `canvasUrl`. (If `canvas-link` is not available, fall back to the clean `canvas:` URL as above.)
-2. **Open `embedCanvasUrl` specifically in the Codex in-app Browser.** It auto-signs-in to a restricted embedded canvas — view + manual edit only, no chat/agent, no navigation — so the user can see and manually edit the design right away, no login needed.
-   - Make the in-app Browser visible to the user.
-   - Keep the canvas tab open as a user-facing deliverable.
-   - Verify that the selected tab's URL is the embedded canvas URL.
-3. **Do NOT use external Chrome, system `open`, Playwright launched from the shell, or Chrome DevTools automation for this step.** Those surfaces may navigate successfully without opening Codex's visible Browser panel — the navigation "succeeds" but the user sees nothing.
-
-`create-project` always auto-opens the user's system browser by default (the canvas URL is printed either way). **Decidable rule: if you — the agent — are running the command rather than a human typing it at their own shell, pass `--no-open`** and surface the printed URL yourself. That covers Codex, Claude Code in a terminal, CI, and every agent-driven surface; it prevents an uncontrolled system-browser pop mid-session. In Codex specifically, after `--no-open` you then show the canvas through this embedded flow (`canvas-link`, then open `embedCanvasUrl` in the Browser panel) — THE way to surface the canvas in Codex.
-
-Rules:
-
-- **The embedded canvas has no chat/agent.** All generation and iteration keep happening from THIS coding-agent session (`create-design-draft` / `iterate-design-draft` / `execute-flow-pages` as usual); the panel is a view-and-manual-edit surface only.
-- **Never surface `embedCanvasUrl` to a human or open it in a normal external browser.** It auto-signs-in whoever opens it, so it is an agent-surface-only link. Any link you give a person, or open outside the Browser panel, MUST be the clean, durable `canvasUrl` (it requires login, like every other canvas URL you surface).
-- **The `embedCanvasUrl` stays valid for about an hour** and can be opened again from this conversation during that window — reopening it, or opening it in another tab, works fine. Once it expires, the embedded session shows a panel asking the user to have the agent re-open it; just re-run `canvas-link` and open the fresh `embedCanvasUrl`.
+`create-project` auto-opens the user's browser by default. Leave it on, and tell the user the canvas was opened (with the `canvas` URL as a clickable link). Only pass `--no-open` when there's no user-facing browser (CI, headless).
 
 # After generating: self-review, then offer to go further
 
-This applies on EVERY surface, not only the Codex embedded canvas.
+This applies on EVERY surface.
 
-**Visual self-review (when you can safely inspect).** If you have a safe visual-inspection capability for the rendered result — the Codex Browser panel's page inspection/screenshot, or any sandboxed screenshot/preview tool your host provides — treat every design generation round (`create-design-draft` / `iterate-design-draft` / `execute-flow-pages`) as unfinished until you have looked at it yourself:
+**Visual self-review (when you can safely inspect).** If you have a safe visual-inspection capability for the rendered result — any sandboxed screenshot/preview tool your host provides — treat every design generation round (`create-design-draft` / `iterate-design-draft` / `execute-flow-pages`) as unfinished until you have looked at it yourself:
 
 1. **Look at it.** Inspect the rendered page. Judge it as a designer would: layout breakage, overflow or clipping, contrast and readability, typography scale, spacing rhythm, leftover placeholder or filler content, and image fit.
 2. **Fix once if needed.** If you spot concrete issues, run EXACTLY ONE optimization iteration (`iterate-design-draft --mode replace`, correcting the just-generated draft in place — see the TOOL USE RULE exemption in `references/SUPERDESIGN.md`) that addresses them, then re-check the result. One round only: never keep looping on your own.
-3. **Present.** Show the result to the user (with the canvas visible in the Browser panel when on the Codex embedded surface).
+3. **Present.** Show the result to the user.
 
 **Never self-review the Step 3a pixel-perfect reproduction draft.** A reproduction's job is to match the current UI, not to look "better" — "fixing" it toward your taste corrupts the ground truth. Reproduction problems mean missing/wrong context, not styling; address them by fixing the context files and regenerating, not by an optimization pass. This self-review is for design (Step 3b) and graphic drafts only.
 
