@@ -149,15 +149,15 @@ After creating a project or design draft, and at natural review moments (after `
 
 This applies on EVERY surface.
 
-**Visual self-review (when you can safely inspect).** If you have a safe visual-inspection capability for the rendered result — any sandboxed screenshot/preview tool your host provides — treat every design generation round (`create-design-draft` / `iterate-design-draft` / `execute-flow-pages`) as unfinished until you have looked at it yourself:
+**Visual self-review (when you can safely inspect).** If you can see the rendered result — a sandboxed screenshot/preview tool your host provides, OR a browser tool with vision that can open the draft's live artifact (served under `p.superdesign.dev`; take the `preview` URL from the command output, don't hand-construct it) — treat every design generation round (`create-design-draft` / `iterate-design-draft` / `execute-flow-pages`) as unfinished until you have looked at it yourself:
 
-1. **Look at it.** Inspect the rendered page. Judge it as a designer would: layout breakage, overflow or clipping, contrast and readability, typography scale, spacing rhythm, leftover placeholder or filler content, and image fit.
+1. **Look at it.** Open the artifact and inspect the rendered page. Judge it as a designer would: layout breakage, overflow or clipping, contrast and readability, typography scale, spacing rhythm, leftover placeholder or filler content, and image fit.
 2. **Fix once if needed.** If you spot concrete issues, run EXACTLY ONE optimization iteration (`iterate-design-draft --mode replace`, correcting the just-generated draft in place — see the TOOL USE RULE exemption in `references/SUPERDESIGN.md`) that addresses them, then re-check the result. One round only: never keep looping on your own.
-3. **Present.** Show the result to the user.
+3. **Present.** Show the result to the user, preferring the `canvas` URL (the artifact/`preview` link is for your own inspection, not the primary thing you hand the user).
 
 **Never self-review the Step 3a pixel-perfect reproduction draft.** A reproduction's job is to match the current UI, not to look "better" — "fixing" it toward your taste corrupts the ground truth. Reproduction problems mean missing/wrong context, not styling; address them by fixing the context files and regenerating, not by an optimization pass. This self-review is for design (Step 3b) and graphic drafts only.
 
-**If you CANNOT safely inspect the rendered result**, do not guess and do not imply you checked. Present the preview/canvas link and say plainly that you have not visually verified it, inviting the user to review.
+**If you CANNOT safely inspect the rendered result**, do not guess and do not imply you checked. Give the user the `canvas` URL and say plainly that you have not visually verified it, inviting the user to review.
 
 **Then always close with a short, warm follow-up that offers to go further** (on every surface). Ask one question with 2 to 3 concrete options tailored to what you just made, not a generic list. For example: try a different hero image or key visual direction, try an alternate layout or composition, or generate a few more variations or asset ideas as surprises. Only generate after the user picks, since every generation spends credits.
 
