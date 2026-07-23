@@ -21,6 +21,7 @@ A published agent **skill** (`skills/superdesign/`) that drives the SuperDesign 
 
 The skill invokes `npx --yes @superdesign/cli@latest`. When editing any command example or the `COMMAND CONTRACT`, verify against the **published** CLI - do not trust memory. `@beta` is what `@latest` becomes, so use it to check upcoming surface:
 - `npx --yes @superdesign/cli@beta <command> --help` for flags
+- The bare command (no args) is the preflight surface: version, `auth:` status line (works logged-out too), recent projects
 - Live-run read-only commands (search-prompts, get-prompts, list-design-systems) to see real output
 - Valid `--model` values: run `list-models` (or pass a bogus `--model` to any generation command; the validation error prints the same list)
 - Default (no `--json`) output is agent-optimized (compact TOON + `help[]` hints); add `--json` only for the full machine payload, `--full` only to expand truncated fields

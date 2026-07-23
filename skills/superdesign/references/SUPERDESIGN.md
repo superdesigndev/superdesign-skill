@@ -5,7 +5,7 @@ IMPORTANT: MUST produce design on superdesign, only implement actual code AFTER 
 HARD GATE — INIT BEFORE ANY DESIGN (real-codebase path): When a real codebase is present, NEVER run `npx --yes @superdesign/cli@latest create-project`, `npx --yes @superdesign/cli@latest create-design-draft`, `npx --yes @superdesign/cli@latest iterate-design-draft`, or `npx --yes @superdesign/cli@latest execute-flow-pages` until init is complete (all six files in `.superdesign/init/` exist and are non-empty — the decidable test in Task 1.1). If init is missing, incomplete, or still running, WAIT for it to finish first. Creating a project or draft before init is done is a hard error. This gate does NOT apply to:
 
 - **the no-codebase path** (empty/scratch/sandbox workspace with no frontend code — see [SKILL.md](../SKILL.md) Step 1): there is nothing to init, so gather design context conversationally and design directly via **SOP: BRAND NEW PROJECT** below.
-- **the graphic workflow** ([GRAPHIC.md](GRAPHIC.md)): posters/marketing assets are standalone fixed-canvas artworks that never require repo init or design-system context — UNLESS the user explicitly asks for on-brand output that matches the codebase, in which case run init first and pass the design system as usual.
+- **the graphic workflow** ([GRAPHIC.md](GRAPHIC.md)): posters/marketing assets are standalone fixed-canvas artworks that never require repo init or design-system context — UNLESS the user wants on-brand output matching the codebase (asked explicitly, or confirmed via the graphic brief's on-brand item), in which case pass the design-system/brand context — running init first only if that context doesn't already exist.
 
 ## UI TARGET ROUTING (pick the SOP by what the design targets)
 
@@ -178,7 +178,7 @@ Step 3 — Design in Superdesign
   **VARIANT COUNT RULE**:
   - Default: generate exactly **2** variations (2 `-p` flags) unless the user specifies otherwise.
   - If the user explicitly requests or describes only **1** variation, generate exactly **1** `-p`. Do NOT invent extra variations the user didn't ask for.
-  - Only generate 3+ variations if the user explicitly asks for more. **Accepting the diverge-first "try all three directions" recommendation counts as explicitly asking for 3** — when the user says yes to that offer, generate the three as parallel variants.
+  - Only generate 3+ variations if the user explicitly asks for more. On the graphic path, accepting the brief's "try all three directions" recommendation counts as explicitly asking for 3 (see [GRAPHIC.md](GRAPHIC.md) Step 1).
 
   ```
   npx --yes @superdesign/cli@latest iterate-design-draft --draft-id <draft-id-from-3a> \
@@ -222,7 +222,12 @@ Extension after approval:
 
 ## SOP: NEW TARGET IN EXISTING CODEBASE
 
-For a page/feature that does not exist yet inside a real codebase (UI TARGET ROUTING → B). Everything before generation is shared with SOP: EXISTING UI — run its Step 1 (Task 1.1 init/context + Task 1.2 design system), Step 2 (requirements) and Step 2.5 (component extraction) exactly as written: the new page must reuse the app's real shell, tokens, and components, so the context work is identical.
+For a page/feature that does not exist yet inside a real codebase (UI TARGET ROUTING → B). The init gate (Task 1.1's six-file test), Task 1.2 (design system), Step 2 (requirements) and Step 2.5 (component extraction) run exactly as in SOP: EXISTING UI. Context collection does NOT: Task 1.1's target-page steps — reading the real render branch, recursive import tracing from the target — assume a rendered target, and a new page has none. Collect from what the new page will reuse instead:
+
+- **Shared shell/layout components** (nav, sidebar, header, footer, layout wrapper) — full render code, same as for any page.
+- **A representative existing page** as the style/structure anchor — pick the closest sibling feature (e.g. an existing list page when adding another list-like page) and trace THAT page's dependency tree (via `pages.md` or import tracing), under the usual PAYLOAD BUDGET / CONTEXT FILE LINE RANGES rules.
+- **Existing components the new page should reuse** — discover them via `components.md` / `extractable-components.md`.
+- **`design-system.md` + the globals tokens**, as on every design command.
 
 Step 3 differs — there is no Step 3a:
 
@@ -372,10 +377,10 @@ Quick index of the invariants — each defers to its canonical section for the d
 
 - Design system file path is fixed: `.superdesign/design-system.md`; it carries ALL design specs (DESIGN SYSTEM SETUP).
 - **MANDATORY INIT (real-codebase path)**: governed by the HARD GATE at the top — init complete per Task 1.1's six-file test before any design command, and all six files read at the start of every design task. The no-codebase and graphic exemptions are listed in the gate itself.
-- **MANDATORY CONTEXT FILES on EVERY design command** (create-design-draft, iterate-design-draft, execute-flow-pages): `--context-file .superdesign/design-system.md` always; on the real-codebase path also the globals.css tokens — see DESIGN SYSTEM FIDELITY for the why and PAYLOAD BUDGET for the ~900-line handling. No-codebase path: globals.css not required, do not invent one. Graphic workflow: neither file, unless the user explicitly asks for on-brand output matching the codebase.
+- **MANDATORY CONTEXT FILES on EVERY design command** (create-design-draft, iterate-design-draft, execute-flow-pages): `--context-file .superdesign/design-system.md` always; on the real-codebase path also the globals.css tokens — see DESIGN SYSTEM FIDELITY for the why and PAYLOAD BUDGET for the ~900-line handling. No-codebase path: globals.css not required, do not invent one. Graphic workflow: neither file, unless the user wants on-brand output matching the codebase (asked explicitly or confirmed via the graphic brief's on-brand item — see the HARD GATE).
 - **DESIGN SYSTEM = HARD CONSTRAINT, NOT SUGGESTION**: iteration prompts explore layout/structure/content direction, never visual style; a -p prompt never overrides the design system.
 - **CONTEXT COLLECTION**: what to pass, import tracing, and trimming are governed by Task 1.1 (ALL UI CODE STRIP ONLY LOGIC, RECURSIVE IMPORT TRACING, shared layouts included) plus CONTEXT FILE LINE RANGES and PAYLOAD BUDGET. Context files must be actual implementation (.tsx/.css/.ts), not just .md docs.
-- **VARIANT COUNT**: see the VARIANT COUNT RULE in Step 3b (default 2; diverge-first acceptance counts as an explicit request for 3).
+- **VARIANT COUNT**: see the VARIANT COUNT RULE in Step 3b (default 2; on the graphic path, accepting the brief's "try all three" counts as an explicit request for 3).
 - **REPRODUCTION FIRST, TWO STEPS (existing rendered targets only)**: when the target already renders in the codebase, the Step 3a pixel-perfect reproduction (`create-design-draft`, reproduction-only -p) ALWAYS precedes Step 3b variations (`iterate-design-draft --mode branch`) — two separate commands, never combined. New targets (SOP: NEW TARGET IN EXISTING CODEBASE / BRAND NEW PROJECT) skip reproduction entirely — there is no ground truth to capture.
 - Prefer iterating an existing design draft over creating new ones.
 - **CLI VERSION**: always invoke via `npx --yes @superdesign/cli@latest`. If a flag is not recognized, inspect `<command> --help` and follow the command contract below; never install or upgrade the CLI globally.

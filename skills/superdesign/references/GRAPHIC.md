@@ -2,7 +2,7 @@
 
 Use this workflow when the user asks for a **static poster-like artwork** — poster, flyer, cover art, album/book cover, event visual, social media graphic, banner artwork — rather than a web page or app screen. It replaces the EXISTING UI / BRAND NEW PROJECT SOPs.
 
-CLI setup and login live in [SKILL.md](../SKILL.md) (the "Superdesign CLI" and "When a command fails" sections) — follow those. From [SUPERDESIGN.md](SUPERDESIGN.md), only these sections apply to graphics: the COMMAND CONTRACT, `upload-asset`, VERSION HISTORY & REVERT, the canvas-URL surfacing, TOOL USE RULE, and USER REQUEST PASSING. The init/design-system gates do NOT apply here: a standalone poster/marketing asset needs no repo init, no `.superdesign/init/` files, and no `design-system.md`/`globals.css` context — the brief carries the style. (Only run init and pass the design system if the user explicitly asks for on-brand output matching an existing codebase.)
+CLI setup and login live in [SKILL.md](../SKILL.md) (the "Superdesign CLI" and "When a command fails" sections) — follow those. From [SUPERDESIGN.md](SUPERDESIGN.md), only these sections apply to graphics: the COMMAND CONTRACT, `upload-asset`, VERSION HISTORY & REVERT, the canvas-URL surfacing, TOOL USE RULE, and USER REQUEST PASSING. The init/design-system gates do NOT apply here: a standalone poster/marketing asset needs no repo init, no `.superdesign/init/` files, and no `design-system.md`/`globals.css` context — the brief carries the style. Design-system/brand context comes in only when the user wants on-brand output matching an existing codebase — asked explicitly, or confirmed via the Step 1 brief's on-brand item; run init first only if that context doesn't already exist.
 
 Core idea: **you** produce the key visual with your own image-generation tool, upload it to Superdesign, and let Superdesign compose the graphic as pixel-perfect HTML on a fixed canvas. Text is always rendered by the HTML layer, never baked into images — that is what keeps graphics sharp, editable, and iterable.
 
@@ -20,15 +20,16 @@ A graphic lives in a project like any draft. Reuse the current project or `creat
 
 Draft a concrete proposal yourself, then confirm it with the user in a SINGLE round using your question/confirmation mechanism. Skip confirmation entirely when the user already gave full specs or says to generate directly.
 
-**Folding in diverge-first:** for an open-ended request, SKILL.md's "diverge first" default (propose three distinct directions) is merged INTO this one brief-confirmation round — it is NOT a separate round. Present three distinct directions, each carrying its own **layout + style + asset plan**, while the shared items (purpose, verbatim copy, canvas) are confirmed once for all three. If the user accepts trying all three, that counts as an explicit request for three variants (generate them with `--mode branch`). For requests that already carry a clear spec, skip the divergence and confirm the single brief.
+**Diverge first on open-ended requests:** when the request is simple and open-ended (one sentence, no strong constraints), do not settle on a single proposal — present THREE genuinely distinct creative directions inside this same brief round, never as a separate round. Each direction is 1-2 lines carrying its own **layout + style + asset plan**, and the three must differ substantially (not three shades of one idea); the shared items (purpose, verbatim copy, canvas) are confirmed once for all three. Recommend trying all three as parallel variants for side-by-side comparison on the canvas, noting that picking just one (or two) is a fine choice. If the user accepts trying all three, that counts as an explicit request for three variants (generate them with `--mode branch` — see the VARIANT COUNT RULE in [SUPERDESIGN.md](SUPERDESIGN.md)). For requests that already carry a clear spec, skip the divergence and confirm the single brief.
 
-Cover these five items:
+Cover these items:
 
 - **Purpose**: what the poster announces/sells and where it will be shown.
 - **Verbatim copy**: the exact headline, subhead, info lines (date/venue/price/URL), and footer. Write them out and get them locked — the generator reproduces these strings EXACTLY, so typos and missing lines here become typos on the poster.
 - **Canvas**: pick from the presets below (user-given dimensions always win).
 - **Layout**: recommend ONE from the menu with a one-line reason; let the user swap.
 - **Style + asset plan**: 2-3 style adjectives with a rough palette, and the asset plan implied by the layout (AI-generate / user provides a file / no imagery).
+- **On-brand?** — only when the workspace is a real product codebase (per SKILL.md Step 1): confirm in this same round whether the artwork should match the product's brand. **Yes** → pass `.superdesign/design-system.md` and/or the init `theme.md` tokens as `--context-file` if they already exist; if neither exists, run repo init first (per SKILL.md) and pass the design system. **No** → stay standalone (the default). Skip this item entirely outside a real codebase.
 
 ### Canvas presets
 

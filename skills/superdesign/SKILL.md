@@ -26,7 +26,7 @@ If Superdesign is invoked in standard ChatGPT chat without Work Mode tools, do n
 Chat isn't supported by the Superdesign plugin. Please switch to the Work tab and paste this prompt in for the full experience.
 ```
 
-If you have no way to run shell commands in this environment (no terminal/execution tool at all), OR your very first `npx --yes @superdesign/cli@latest --version` attempt fails because command execution itself is unavailable (the harness reports it cannot run commands / there is no shell) then STOP. Do NOT keep retrying or improvise workarounds.
+If you have no way to run shell commands in this environment (no terminal/execution tool at all), OR your very first bare `npx --yes @superdesign/cli@latest` preflight attempt fails because command execution itself is unavailable (the harness reports it cannot run commands / there is no shell) then STOP. Do NOT keep retrying or improvise workarounds.
 
 # Step 1 — Is there a codebase to analyze?
 
@@ -44,21 +44,11 @@ Two entry paths. Choose one with this cheap, deterministic check BEFORE any init
 
 **Exception — standalone extraction:** if the task is ONLY to extract a site's design DNA or set/refresh `design-system.md` from a URL (`extract-website` → `design-system.md`, no design generation), run it WITHOUT repo init — extracting an external site's style doesn't require analyzing the user's codebase. Init is still required before generating designs FOR the existing codebase's UI (reproducing/redesigning an existing page).
 
-# Default: diverge first on simple, open-ended requests
-
-When the user makes a simple, open-ended design request — one sentence, no strong constraints — do NOT generate immediately. First propose THREE genuinely distinct creative directions and confirm the choice with the user:
-
-- Each direction is 1-2 lines: a named style/concept plus what sets it apart (art direction, mood, composition, key visual idea). The three MUST differ substantially — not three shades of one idea.
-- Recommend trying all three — generated as parallel variants for side-by-side comparison on the canvas — while noting that picking just one (or two) is a fine choice if they prefer. Only generate after the user responds. **When the user accepts the "try all three" recommendation, that counts as explicitly asking for 3 variants** (this is the sanctioned way to exceed the default 2 — see the VARIANT COUNT rule in [SUPERDESIGN.md](references/SUPERDESIGN.md)); generate the three as parallel variants.
-- When the request already carries detailed constraints or an explicit style, SKIP the divergence and follow the user's spec directly — this default is only for underspecified asks.
-
-This applies across every scenario (pages, flows, posters/graphics), on both entry paths. It pairs with the after-generation follow-up: diverge before the first generation, offer to go further after it.
-
-**On the graphic path the divergence is NOT a separate round.** The graphic workflow confirms its brief in ONE round ([GRAPHIC.md](references/GRAPHIC.md) Step 1), so fold the three directions INTO that single brief-confirmation round: present three distinct directions — each carrying its own layout/style/asset-plan — while the shared copy and canvas are confirmed once. Do not add a second confirmation round.
+**Exception — graphics:** posters/marketing assets (scenario 5) skip init even in a real codebase — the brief carries the style, and most of init's output (components, layouts, routes, pages) has no bearing on a fixed-canvas artwork. The graphic brief round asks whether the artwork should be on-brand with this repo's product ([GRAPHIC.md](references/GRAPHIC.md) Step 1); only an on-brand "yes" pulls in the design-system/brand context — running init first only if that context doesn't already exist.
 
 # Init: Repo Analysis (real-codebase path)
 
-When a real codebase is present (per Step 1) and init is NOT complete, you MUST automatically:
+When a real codebase is present (per Step 1, and neither Step 1 exception — standalone extraction, graphics — applies) and init is NOT complete, you MUST automatically:
 
 1. Create the `.superdesign/init/` directory
 2. Read [INIT.md](references/INIT.md)
@@ -83,24 +73,23 @@ If init is complete (all six files present and non-empty), you MUST read ALL of 
 
 # Superdesign CLI (MUST use before any command)
 
-**IMPORTANT: Run the CLI on demand with `npx --yes @superdesign/cli@latest`. Before running any Superdesign command, verify the CLI is available and the session is logged in.**
+**IMPORTANT: Run the CLI on demand with `npx --yes @superdesign/cli@latest`. Start every session with the bare command — it IS the preflight.**
 
-Follow these steps in order:
-
-1. Verify the on-demand CLI runner:
+1. Preflight once:
    ```
    npx --yes @superdesign/cli@latest
    ```
+   The bare command verifies everything in one shot: that the CLI runs at all, an `auth:` status line (`authenticated as team "…"` vs `not authenticated — run superdesign login`), and a list of recent projects — read that list when deciding whether to reuse an existing project or `create-project`.
 
-2. Run the intended command with the same prefix. If it reports an auth/login error, run:
+2. If the `auth:` line says not authenticated, run login NOW, before any real command:
    ```
    npx --yes @superdesign/cli@latest login
    ```
    Wait for login to complete successfully before proceeding.
 
-3. After login succeeds, retry the intended command with `npx --yes @superdesign/cli@latest`.
+3. Run the intended commands with the same `npx --yes @superdesign/cli@latest` prefix. A session can still expire mid-flow — handle a later auth/login error per the failure block below.
 
-> **Never assume the user is already logged in.** There is no separate "verify login" command — your `--version` check plus reacting to an auth/login error on the first real command IS the verification. Do not try to run a whoami/status check; just run the intended command and handle an auth error per the failure block below.
+> **Never assume the user is already logged in** — read the preflight's `auth:` line instead of guessing or probing with real commands.
 
 ## When a command fails
 
