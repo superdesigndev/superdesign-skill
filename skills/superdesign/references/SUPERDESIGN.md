@@ -294,7 +294,7 @@ When using execute-flow-pages:
 
 Default tool while iterating design of a specific page is iterate-design-draft
 Default mode is branch
-You may use replace in two cases: (1) the user requests a tiny tweak you can describe in one sentence and is okay overwriting the previous version; (2) the one-round post-generation self-review fix pass (see [SKILL.md](../SKILL.md) "After generating") — that agent-initiated fix corrects the just-generated draft in place, so it uses `--mode replace` (never spend a variant branching a flaw you are fixing). Both cases are single-`-p`, one round only.
+You may use replace in two cases: (1) the user requests a tiny tweak you can describe in one sentence and is okay overwriting the previous version; (2) the graphic workflow's one-round self-review fix pass (see [GRAPHIC.md](GRAPHIC.md) Step 5) — that agent-initiated fix corrects the just-generated draft in place, so it uses `--mode replace` (never spend a variant branching a flaw you are fixing). Both cases are single-`-p`, one round only.
 Default tool while generating new pages based on an existing confirmed page is execute-flow-pages
 Prefer iterating an existing design draft over creating new ones
 

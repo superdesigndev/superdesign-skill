@@ -148,7 +148,19 @@ Omit the KEY VISUAL block for asset-less layouts.
 
 ## Step 5 — Review & iterate
 
-- Give the user the `canvas` link from the command output. The `preview` link is for your own visual self-review (SKILL.md "After generating"); share it only if the user asks for a direct render.
+### Visual self-review (one round)
+
+Treat a generated graphic as unfinished until you have looked at the render yourself. In Codex Work environments a browser is always available for this:
+
+- In ChatGPT Work Mode, always use the cloud browser available to that chat. If it is not initially visible, load the Browser skill and follow its setup instructions before concluding it is unavailable.
+- In Codex Desktop, use `@Browser` and explicitly select the in-app surface with `agent.browsers.get("iab")`. Use Chrome only when the user asks for it, the task needs an existing Chrome tab/login/profile/extension, or the in-app Browser is unavailable or blocked.
+- In other environments, use whatever your host provides (a sandboxed screenshot/preview tool, or a browser tool with vision). If you genuinely cannot see the render, skip the review and tell the user plainly that you have not visually verified it — do not imply you checked.
+
+Open the draft's `preview` URL and judge it as a designer would: every copy string reproduced verbatim (headline, info lines, footer — no typos, no rewording), nothing overflowing the fixed canvas, text legible where it sits over the key visual, sensible image crop, and general layout/contrast/typography quality. If you spot concrete issues, run EXACTLY ONE `iterate-design-draft --mode replace` fix round and re-check — one round only, never keep looping on your own.
+
+### Deliver
+
+- Give the user the `canvas` link from the command output. The `preview` link is for your own visual self-review (above); share it only if the user asks for a direct render.
 - Iterate with `iterate-design-draft` as usual — drafts created with `--kind graphic` stay in graphic mode server-side, so plain instructions like "make the headline bigger" are safe.
 - `--mode branch` works well for exploring 2-3 poster directions from the same brief and asset.
 
