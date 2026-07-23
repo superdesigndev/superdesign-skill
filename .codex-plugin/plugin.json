@@ -1,7 +1,7 @@
 {
   "name": "superdesign",
-  "version": "0.3.1",
-  "description": "Superdesign adds a product-design skill to ChatGPT.",
+  "version": "0.3.2",
+  "description": "Superdesign adds a design skill to ChatGPT that spans both web UI and graphics.",
   "author": {
     "name": "Superdesign dev, Inc.",
     "email": "support@superdesign.dev",
@@ -19,8 +19,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Superdesign",
-    "shortDescription": "Create and iterate UI designs",
-    "longDescription": "Superdesign adds a product-design skill to ChatGPT. Ask for a screen, a landing page, or a whole flow, and ChatGPT drives the Superdesign CLI to generate polished UI design drafts you can open on an infinite canvas in your browser.\n\nExplore directions in parallel: give a few prompts like \"dark theme\", \"minimal\", \"bold\" and compare side-by-side variations. Iterate on the one you like, branch alternatives, and revert to any earlier version.\n\nTo keep results on-brand, it can extract brand guidelines from a website, extend existing design systems, search a community prompt library for inspiration, and reuse components across drafts.",
+    "shortDescription": "Design web UIs and graphics",
+    "longDescription": "From landing pages to launch graphics, Superdesign turns your ideas into polished visuals you can explore and refine with ChatGPT. See multiple directions side by side on an infinite browser canvas, choose what feels right, and keep iterating—all grounded in your brand and existing design system.",
     "developerName": "Superdesign",
     "category": "Developer Tools",
     "capabilities": [
@@ -32,9 +32,9 @@
     "privacyPolicyURL": "https://superdesign.dev/privacy-policy",
     "termsOfServiceURL": "https://superdesign.dev/terms-of-service",
     "defaultPrompt": [
-      "Help me design a landing page for this project.",
-      "Explore three visual directions for this product.",
-      "Create a launch graphic for this product to share on X and LinkedIn."
+      "Design an on-brand landing page for this product.",
+      "Reimagine this interface in three distinct visual directions.",
+      "Create a polished launch graphic for this product to share on X (Twitter)."
     ],
     "brandColor": "#000000",
     "composerIcon": "./assets/superdesign-icon.png",
