@@ -148,7 +148,7 @@ Omit the KEY VISUAL block for asset-less layouts.
 
 ## Step 5 — Review & iterate
 
-- Give the user the `canvas` link from the command output (and the `preview` link).
+- Give the user the `canvas` link from the command output. The `preview` link is for your own visual self-review (SKILL.md "After generating"); share it only if the user asks for a direct render.
 - Iterate with `iterate-design-draft` as usual — drafts created with `--kind graphic` stay in graphic mode server-side, so plain instructions like "make the headline bigger" are safe.
 - `--mode branch` works well for exploring 2-3 poster directions from the same brief and asset.
 

@@ -42,13 +42,10 @@ These files are pre-analyzed context and MUST be read every time before any desi
 
 **READ THE REAL RENDER BRANCH (do not infer layout from an import name).** Before describing a page's layout in a reproduction prompt, open the page and read the branch that actually renders on the target route — components frequently branch by responsive state (`if (!isMobile) { return … }`), feature flag, or route. Pass the branch that renders (e.g. the desktop master-detail split), NOT a fallback (e.g. the mobile grid). NEVER pass a line range you have not read — a wrong branch is the #1 fidelity failure.
 
-**CONTEXT COLLECTION PRINCIPLE: ALL UI CODE, STRIP ONLY LOGIC**
-Superdesign needs ALL UI code for accurate reproduction. Include every piece of visual code — JSX/template, className, inline styles, props interfaces, CSS. Only strip pure business logic that has zero visual impact.
-
-**Strip logic code, keep happy-path UI.** That's it.
+**CONTEXT COLLECTION PRINCIPLE — strip logic code, keep happy-path UI:**
 
 - Remove: data fetching, event handlers, API calls, auth checks, loading/error/empty guard returns
-- Keep: all JSX, styles, className, props, CSS, config — the complete happy-path UI as-is
+- Keep: all JSX, styles, className, props, CSS, config — including `{x && <Y/>}` and ternary branches (conditional UI is a visual detail, not an edge case)
 
 **HOW TO USE LINE RANGES:** follow the canonical **CONTEXT FILE LINE RANGES** table below — the single trimming rule (threshold ~900 lines), with syntax and examples.
 
@@ -97,8 +94,7 @@ Summary: **Logo = real, Icons = real, Photos/images = placeholder.**
 Task 1.2 - Design system:
 
 - Ensure .superdesign/design-system.md exists
-- If missing: create it using 'Design System Setup' rule below
-- The design-system.md should capture ALL design specifications: colors, fonts, spacing, components, patterns, layout conventions, etc.
+- If missing: create it using the DESIGN SYSTEM SETUP rule below
 
 Step 2 - Requirements gathering:
 Ask the user using the session's available user-input mechanism; if none is available, ask in chat. Ask only non-obvious, high-signal questions about constraints and tradeoffs.
@@ -145,9 +141,6 @@ Step 3 — Design in Superdesign
   Before ANY design changes, FIRST create a draft that is a **100% pixel-perfect reproduction** of the current UI.
 
   **GOAL: Pixel-to-pixel exact match.** Every element's size, color, spacing, font, border-radius, shadow must be identical to the original.
-
-  **CONTEXT FILES: ALL UI CODE, STRIP ONLY LOGIC**
-  Pass all UI-related files with full visual code. Only use line ranges to skip large blocks of pure business logic.
 
   ```
   npx --yes @superdesign/cli@latest create-design-draft --project-id <id> --title "Current <X>" \
@@ -203,22 +196,10 @@ Step 3 — Design in Superdesign
 - Present the `canvas` URL (from the command output) as a clickable link and the title to the user; invite them to open the canvas to watch designs stream in and leave feedback, then ask for their feedback. (`?live=1` on the canvas URL opens the live streaming view.)
 - Before further iteration, MUST read the design first: `npx --yes @superdesign/cli@latest get-design --draft-id <id> --json`
 
-COMMON MISTAKES — do not do these:
-
-- Skipping Step 3a and jumping straight to design changes (existing rendered targets)
-- Running Step 3a for a target that doesn't exist yet — reproduction is only for existing rendered targets (see UI TARGET ROUTING); a new page goes straight to a design draft
-- Putting multiple design variations into a single create-design-draft -p (create-design-draft only accepts ONE -p, and it should be reproduction only)
-- Using create-design-draft for variations — use iterate-design-draft --mode branch instead
-- Combining "reproduce current UI + try 4 new designs" in one step — these are ALWAYS two separate steps
-- **Trimming visual code against the CONTEXT FILE LINE RANGES rule** — never trim CSS/JSX/config in a file under ~900 lines (line ranges there only skip pure-logic blocks)
-- **Missing key files** — trace imports to find all UI-touching files. Missing a layout or CSS file = broken reproduction
-- **Stripping conditional UI inside the main render** — `{x && <Y/>}` and ternaries are visual details, NOT edge cases. Keep them all
-- **Generating too many or too few variants** — default is 2 variants in branch mode; only 1 if the user describes a single direction; 3+ only if user explicitly asks
-
 Extension after approval:
 
 - If user wants to design more relevant pages or whole user journey based on a design, use execute-flow-pages: `npx --yes @superdesign/cli@latest execute-flow-pages --draft-id <draftId> --pages '[{"title":"Product Details","prompt":"Product detail page with image gallery, specs and add-to-cart"},{"title":"Checkout","prompt":"Checkout page with cart summary and payment form"}]' --context-file src/components/Foo.tsx`
-- IMPORTANT: Use execute-flow-pages instead of create-design-draft for extend more pages based on existing design, create-design-draft is ONLY used for creating brand new design
+- IMPORTANT: Use execute-flow-pages instead of create-design-draft to extend more pages based on an existing design — create-design-draft is only for a new base draft with no source draft (see the command contract)
 
 ## SOP: NEW TARGET IN EXISTING CODEBASE
 
@@ -287,21 +268,21 @@ Do NOT put multiple design variations into one -p string — each variation MUST
 When using iterate-design-draft with multiple -p prompts:
 
 - Prompt count: follow the **VARIANT COUNT RULE** in Step 3b (default 2).
-- Each -p must describe ONE distinct direction (e.g. "conversion-focused hero", "editorial storytelling", "dense power-user layout").
-- Do NOT invent new colors, fonts, or gradients outside the design system. The design system defines ALL allowed values.
-- Every -p MUST end with a design system fidelity constraint: "Use ONLY the fonts, colors, spacing, and component styles defined in the design system. Do not introduce any fonts, colors, or visual styles not in the design system."
-- Prompt should specify which to changes/explore, which parts to keep the same
+- Each -p must describe ONE distinct direction (e.g. "conversion-focused hero", "editorial storytelling", "dense power-user layout"), and should specify what to change/explore and what to keep the same.
+- Design-system fidelity for every -p is governed by DESIGN SYSTEM FIDELITY below.
 
 **DESIGN SYSTEM FIDELITY (CRITICAL — #1 cause of bad iterations)**
 
-Without explicit constraints, the Superdesign design agent will invent random fonts (serif, decorative), random colors (pink, neon, purple gradients), and random button styles. This happens because vague prompts like "bold design" or "modern feel" give the design agent creative freedom to deviate.
+Without explicit constraints, the Superdesign design agent will invent random fonts (serif, decorative), random colors (pink, neon, purple gradients), and random button styles. This happens because vague prompts like "bold design" or "modern feel" give the design agent creative freedom to deviate. The design system is a hard constraint, not a suggestion: iteration prompts explore layout/structure/content direction, never visual style.
 
 To prevent this:
 
-1. **ALWAYS pass `--context-file .superdesign/design-system.md`** on EVERY iterate-design-draft and create-design-draft call
+1. **ALWAYS pass `--context-file .superdesign/design-system.md`** on EVERY create-design-draft, iterate-design-draft, and execute-flow-pages call
 2. **ALWAYS pass the globals.css tokens** on EVERY call — this contains the actual CSS tokens. Pass the file whole when it is under ~900 lines; at ~900+ lines pass its `:root`/`.dark` token block (line-ranged) or the token summary from `.superdesign/init/theme.md` instead (see the canonical rule in CONTEXT FILE LINE RANGES / PAYLOAD BUDGET)
-3. **ALWAYS append the fidelity constraint** to every -p prompt (see above)
+3. **ALWAYS append the fidelity constraint** to every -p prompt: "Use ONLY the fonts, colors, spacing, and component styles defined in the design system. Do not introduce any fonts, colors, or visual styles not in the design system."
 4. **Be explicit about what MUST stay the same** — e.g. "keep Inter as the font family, use black/white primary palette, amber/orange brand gradients only"
+
+Path carve-outs: on the no-codebase path `globals.css` is not required — do not invent one. The graphic workflow passes neither file unless the user wants on-brand output (see the HARD GATE).
 
 ## EXECUTE FLOW RULE
 
@@ -315,6 +296,7 @@ Default tool while iterating design of a specific page is iterate-design-draft
 Default mode is branch
 You may use replace in two cases: (1) the user requests a tiny tweak you can describe in one sentence and is okay overwriting the previous version; (2) the one-round post-generation self-review fix pass (see [SKILL.md](../SKILL.md) "After generating") — that agent-initiated fix corrects the just-generated draft in place, so it uses `--mode replace` (never spend a variant branching a flaw you are fixing). Both cases are single-`-p`, one round only.
 Default tool while generating new pages based on an existing confirmed page is execute-flow-pages
+Prefer iterating an existing design draft over creating new ones
 
 <example>
 ...
@@ -371,25 +353,6 @@ Every draft keeps a version history. The CLI's default output already self-discl
 - **Iterate from an earlier version**: `iterate-design-draft ... --from-version <n>` starts from a specific historical version instead of the current head.
 - **Revert to an earlier version** (no generation): `npx --yes @superdesign/cli@latest revert-design-draft --draft-id <id> --to-version <n>` restores a prior version as the current head. The revert is itself reversible — the current head is snapshotted into history first — so it is always safe to try. Use `get-design` to find the version number to restore.
 
-## ALWAYS-ON RULES
-
-Quick index of the invariants — each defers to its canonical section for the details and the why:
-
-- Design system file path is fixed: `.superdesign/design-system.md`; it carries ALL design specs (DESIGN SYSTEM SETUP).
-- **MANDATORY INIT (real-codebase path)**: governed by the HARD GATE at the top — init complete per Task 1.1's six-file test before any design command, and all six files read at the start of every design task. The no-codebase and graphic exemptions are listed in the gate itself.
-- **MANDATORY CONTEXT FILES on EVERY design command** (create-design-draft, iterate-design-draft, execute-flow-pages): `--context-file .superdesign/design-system.md` always; on the real-codebase path also the globals.css tokens — see DESIGN SYSTEM FIDELITY for the why and PAYLOAD BUDGET for the ~900-line handling. No-codebase path: globals.css not required, do not invent one. Graphic workflow: neither file, unless the user wants on-brand output matching the codebase (asked explicitly or confirmed via the graphic brief's on-brand item — see the HARD GATE).
-- **DESIGN SYSTEM = HARD CONSTRAINT, NOT SUGGESTION**: iteration prompts explore layout/structure/content direction, never visual style; a -p prompt never overrides the design system.
-- **CONTEXT COLLECTION**: what to pass, import tracing, and trimming are governed by Task 1.1 (ALL UI CODE STRIP ONLY LOGIC, RECURSIVE IMPORT TRACING, shared layouts included) plus CONTEXT FILE LINE RANGES and PAYLOAD BUDGET. Context files must be actual implementation (.tsx/.css/.ts), not just .md docs.
-- **VARIANT COUNT**: see the VARIANT COUNT RULE in Step 3b (default 2; on the graphic path, accepting the brief's "try all three" counts as an explicit request for 3).
-- **REPRODUCTION FIRST, TWO STEPS (existing rendered targets only)**: when the target already renders in the codebase, the Step 3a pixel-perfect reproduction (`create-design-draft`, reproduction-only -p) ALWAYS precedes Step 3b variations (`iterate-design-draft --mode branch`) — two separate commands, never combined. New targets (SOP: NEW TARGET IN EXISTING CODEBASE / BRAND NEW PROJECT) skip reproduction entirely — there is no ground truth to capture.
-- Prefer iterating an existing design draft over creating new ones.
-- **CLI VERSION**: always invoke via `npx --yes @superdesign/cli@latest`. If a flag is not recognized, inspect `<command> --help` and follow the command contract below; never install or upgrade the CLI globally.
-- **DEFAULT OUTPUT IS FOR AGENTS**: default output is agent-optimized (compact TOON + `help[]` hints); add `--json` only for the full machine payload, `--full` only to expand truncated fields. Do NOT reflexively append them.
-- **USER REQUEST PASSING**: pass the user's verbatim round message via `--user-request "<text>"` on user-driven create/iterate calls (USER REQUEST PASSING above).
-- **DEVICE/VIEWPORT INHERITANCE**: `iterate-design-draft` inherits the source draft's viewport — do not re-specify `--device`/`--width`/`--height` unless deliberately changing it.
-
----
-
 ## CONTEXT FILE LINE RANGES — CANONICAL TRIMMING RULE
 
 **This is the single source of truth for when to trim a `--context-file`. Every other "trim" / "NEVER trim" / large-file mention in this skill defers to this table. The threshold is ~900 lines.**
@@ -422,13 +385,11 @@ The Petite-Vue template spec for `create-component`/`update-component` conversio
 
 ---
 
-<marketing_assets_dimension_guidelines>
-Marketing assets (feed posts, stories, covers, thumbnails, ad creatives) are static fixed-canvas artworks: generate them via the graphic workflow in [GRAPHIC.md](GRAPHIC.md) (`--kind graphic`), which carries the platform dimension table. MUST confirm the dimension with the user before creating — do NOT assume it.
-</marketing_assets_dimension_guidelines>
-
 ---
 
 ## COMMAND CONTRACT (DO NOT HALLUCINATE FLAGS)
+
+Always invoke via `npx --yes @superdesign/cli@latest`; if a flag is not recognized, inspect `<command> --help`.
 
 Every command supports `--json` for the full machine-readable payload; the default output is agent-optimized (TOON + `help[]`). Only the flags below `--json` (e.g. `--full`, `--user-request`) are per-command.
 
@@ -442,7 +403,7 @@ Every command supports `--json` for the full machine-readable payload; the defau
 - create-design-draft: required `--project-id`, `--title`, and `-p` (SINGLE prompt only); optional `--device <mobile|tablet|desktop|custom>` (default: desktop), `--width <pixels>`, `--height <pixels>`, `--kind <page|graphic>` (default: page), `--context-file` (one or more paths; supports `path:startLine:endLine`), `--model`, `--user-request <text>`, `--json`
   - ONLY accepts ONE -p flag. Multiple -p flags will silently drop all but the last one.
   - Combine all design directions into a single -p string.
-  - Only use this for creating purely new design from scratch.
+  - Use this whenever a new base draft is needed and there is NO source draft to build on: the Step 3a reproduction, a new target in an existing codebase (SOP: NEW TARGET IN EXISTING CODEBASE), or a brand-new/scratch project. To vary an existing draft use iterate-design-draft; to extend sibling pages from one use execute-flow-pages.
   - --device custom requires both --width and --height (min 20px each). Providing --width/--height auto-sets --device to custom.
   - --kind graphic switches generation to the fixed-canvas graphic branch (static artwork, no responsive layout) and keeps iterations in graphic mode; pair it with --width/--height. See [GRAPHIC.md](GRAPHIC.md).
 - upload-asset: required `<file>` positional (png/jpeg/webp/gif, max 10MB) and `--project-id`; optional `--no-canvas`, `--json`. Uploads a project image asset and returns a public `url` to reference from create/iterate prompts (e.g. a poster key visual). By default the asset is also placed on the project canvas as an image node (response includes its `nodeId`); pass `--no-canvas` to skip.
