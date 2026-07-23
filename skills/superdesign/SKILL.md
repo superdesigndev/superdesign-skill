@@ -94,7 +94,6 @@ If init is complete (all six files present and non-empty), you MUST read ALL of 
 ## When a command fails
 
 - **Auth/login error** (the CLI ran but rejected the session): run `login` (above), then retry the intended command ONCE. If login itself fails (headless/no-browser auth, expired flow, user declines), tell the user plainly and STOP — do not keep retrying or improvise.
-- **`search-prompts` returns zero results**: proceed WITHOUT a library style prompt (note that to the user) — do not keep searching; the flow works fine without one.
 - **`extract-website` fails or times out** (it can take ~60–120s): retry ONCE. If it still fails, offer to continue WITHOUT the extraction (design from the conversation / existing design system) rather than blocking.
 - **General rule:** retry a failed command at most once, then report the failure to the user and stop — never silently loop or fall back to inventing output.
 

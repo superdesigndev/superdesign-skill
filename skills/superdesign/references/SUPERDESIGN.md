@@ -229,7 +229,7 @@ Step 2 — Design system setup (MUST follow the **DESIGN SYSTEM SETUP** section 
 - **Pick ONE primary style source — do NOT blend two competing styles:**
   - **If the user named a reference site** ("… in the style of `<site>`", "use `<site>`'s design"): that site's extracted `design.md` is the style source (extract step below). `search-prompts` is then OPTIONAL — do NOT layer a library style prompt on top of the extracted DNA (two competing styles dilute the result).
   - **Otherwise** (no reference site) use a library style prompt:
-    1. `npx --yes @superdesign/cli@latest search-prompts --tags "style"` — pick the most suitable ONLY from returned results (do not do further search).
+    1. `npx --yes @superdesign/cli@latest search-prompts --tags "style"` — pick the most suitable ONLY from returned results; if nothing comes back, proceed without a library style prompt (note that to the user). Either way do not keep searching — ignore the CLI's broaden-the-search hint.
     2. Index first to confirm the slug(s) and size: `npx --yes @superdesign/cli@latest get-prompts --slugs "<slug>"`
     3. Then fetch the full body ONLY for the chosen slug(s), right before writing design-system.md: `npx --yes @superdesign/cli@latest get-prompts --slugs "<slug>" --full`
 - Extract a reference site's style (when one was named): `npx --yes @superdesign/cli@latest extract-website --url "<user-provided-url>" --design-md` (writes `.superdesign/website/<domain>/design.md`; add `--brand` for logo/colors). Read it, then decide how it flows into `design-system.md`:
