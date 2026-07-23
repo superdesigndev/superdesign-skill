@@ -1,6 +1,6 @@
 # Graphic Generation Workflow (posters, covers, social & marketing assets)
 
-Use this workflow when the user asks for a **static poster-like artwork** — poster, flyer, cover art, album/book cover, event visual, social media graphic, banner artwork — rather than a web page or app screen. It replaces the EXISTING UI / BRAND NEW PROJECT SOPs.
+Use this workflow when the user asks for a **static poster-like artwork** — poster, flyer, cover art, album/book cover, event visual, social media graphic, banner artwork — rather than a web page or app screen. It replaces all of the UI SOPs in SUPERDESIGN.md.
 
 CLI setup and login live in [SKILL.md](../SKILL.md) (the "Superdesign CLI" and "When a command fails" sections) — follow those. From [SUPERDESIGN.md](SUPERDESIGN.md), only these sections apply to graphics: the COMMAND CONTRACT, `upload-asset`, VERSION HISTORY & REVERT, the canvas-URL surfacing, TOOL USE RULE, and USER REQUEST PASSING. The init/design-system gates do NOT apply here: a standalone poster/marketing asset needs no repo init, no `.superdesign/init/` files, and no `design-system.md`/`globals.css` context — the brief carries the style. Design-system/brand context comes in only when the user wants on-brand output matching an existing codebase — asked explicitly, or confirmed via the Step 1 brief's on-brand item; run init first only if that context doesn't already exist.
 
@@ -29,7 +29,7 @@ Cover these items:
 - **Canvas**: pick from the presets below (user-given dimensions always win).
 - **Layout**: recommend ONE from the menu with a one-line reason; let the user swap.
 - **Style + asset plan**: 2-3 style adjectives with a rough palette, and the asset plan implied by the layout (AI-generate / user provides a file / no imagery).
-- **On-brand?** — only when the workspace is a real product codebase (per SKILL.md Step 1): confirm in this same round whether the artwork should match the product's brand. **Yes** → pass `.superdesign/design-system.md` and/or the init `theme.md` tokens as `--context-file` if they already exist; if neither exists, run repo init first (per SKILL.md) and pass the design system. **No** → stay standalone (the default). Skip this item entirely outside a real codebase.
+- **On-brand?** — only when the workspace is a real product codebase (per SKILL.md Step 1): confirm in this same round whether the artwork should match the product's brand. **Yes** → pass `.superdesign/design-system.md` and/or the init `theme.md` tokens as `--context-file` if they already exist; if neither exists, run repo init first (per SKILL.md) and pass the init `theme.md` tokens — init does not create `design-system.md`, and a poster doesn't need one. **No** → stay standalone (the default). Skip this item entirely outside a real codebase.
 
 ### Canvas presets
 
