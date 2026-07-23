@@ -1,4 +1,4 @@
 interface:
   display_name: "Superdesign"
-  short_description: "Create and iterate UI designs"
+  short_description: "Create polished UI & graphics"
   default_prompt: "Use $superdesign to design an on-brand landing page for this product."

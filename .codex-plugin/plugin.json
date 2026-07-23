@@ -1,6 +1,6 @@
 {
   "name": "superdesign",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "Superdesign adds a design skill to ChatGPT that spans both web UI and graphics.",
   "author": {
     "name": "Superdesign dev, Inc.",
@@ -19,10 +19,10 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Superdesign",
-    "shortDescription": "Design web UIs and graphics",
+    "shortDescription": "Create polished UI & graphics",
     "longDescription": "From landing pages to launch graphics, Superdesign turns your ideas into polished visuals you can explore and refine with ChatGPT. See multiple directions side by side on an infinite browser canvas, choose what feels right, and keep iterating—all grounded in your brand and existing design system.",
     "developerName": "Superdesign",
-    "category": "Developer Tools",
+    "category": "Creativity",
     "capabilities": [
       "Read",
       "Write",
