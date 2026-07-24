@@ -26,6 +26,10 @@ The skill invokes `npx --yes @superdesign/cli@latest`. When editing any command 
 - Valid `--model` values: run `list-models` (or pass a bogus `--model` to any generation command; the validation error prints the same list)
 - Default (no `--json`) output is agent-optimized (compact TOON + `help[]` hints); add `--json` only for the full machine payload, `--full` only to expand truncated fields
 
+## Plugin packaging & release
+
+The Codex-plugin manifest is `.codex-plugin/plugin.json`. Releasing a new version is a single `chore(plugin): bump to X.Y.Z` commit editing its `version`, merged via PR - there are **no git tags, no GitHub releases, and no CI/publish workflow** (verify with `git tag` / `gh release list` before assuming otherwise). The marketplace-facing **display name** lives in two files that must stay in sync: `.codex-plugin/plugin.json` `interface.displayName` and `skills/superdesign/agents/openai.yaml` `display_name`. These are distinct from machine identity - the plugin slug (`plugin.json` `name`), the skill dir/`SKILL.md` `name`, and the `$superdesign` invocation - which must never change on a rename.
+
 ## Maintaining this file
 
 Keep this file for knowledge useful to almost every future agent session in this project.
