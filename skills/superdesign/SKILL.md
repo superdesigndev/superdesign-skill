@@ -69,7 +69,7 @@ If init is complete (all six files present and non-empty), you MUST read ALL of 
 - `pages.md` — page component dependency trees (which files each page needs)
 - `extractable-components.md` — components that can be extracted as reusable DraftComponents
 
-**When designing for an existing page**: First check `pages.md` for the page's dependency tree — the candidate set of `--context-file` files. Pass them under the PAYLOAD BUDGET rules in [SUPERDESIGN.md](references/SUPERDESIGN.md) (line-range ~900+ line files to their render/token sections; drop files with no visual bearing) so the payload does not 400. Then also add the globals.css tokens, tailwind.config, and design-system.md.
+**When designing for an existing page**: First check `pages.md` for the page's dependency tree — the candidate set of `--context-file` files. Pass them under the PAYLOAD BUDGET rules in [SUPERDESIGN.md](references/SUPERDESIGN.md) so the payload does not 400. Then also add the globals.css tokens, tailwind.config, and design-system.md.
 
 # Superdesign CLI (MUST use before any command)
 
@@ -99,31 +99,17 @@ If init is complete (all six files present and non-empty), you MUST read ALL of 
 
 ## Command examples
 
-Always use the full on-demand runner prefix:
+Always use the full on-demand runner prefix, e.g.:
 
 ```bash
 npx --yes @superdesign/cli@latest create-project --title "X"
-npx --yes @superdesign/cli@latest extract-website --url https://example.com --design-md
-npx --yes @superdesign/cli@latest create-design-draft --project-id <id> --title "Current UI" -p "Faithfully reproduce..." --context-file src/Component.tsx
-npx --yes @superdesign/cli@latest iterate-design-draft --draft-id <id> -p "dark theme" -p "minimal" --mode branch --context-file src/Component.tsx
-npx --yes @superdesign/cli@latest execute-flow-pages --draft-id <id> --pages '[{"title":"Product Details","prompt":"Product detail page with image gallery, specs and add-to-cart"},{"title":"Checkout","prompt":"Checkout page with cart summary and payment form"}]' --context-file src/Component.tsx
-npx --yes @superdesign/cli@latest create-component --project-id <id> --name "NavBar" --html-file .superdesign/tmp/navbar.html --props '[{"name":"activeItem","type":"string","defaultValue":"home"}]'
-npx --yes @superdesign/cli@latest update-component --component-id <id> --html-file .superdesign/tmp/navbar.html
-npx --yes @superdesign/cli@latest list-components --project-id <id>
-npx --yes @superdesign/cli@latest upload-asset ./key-visual.png --project-id <id>
-npx --yes @superdesign/cli@latest create-design-draft --project-id <id> --title "Launch Poster" --kind graphic --width 900 --height 1200 -p "Design a static poster..."
 ```
 
-Each item in the `execute-flow-pages` `--pages` array generates one new page styled after the source draft (1-10 pages per call).
+Full invocations live at their use sites — the SOPs in [SUPERDESIGN.md](references/SUPERDESIGN.md) and the graphic steps in [GRAPHIC.md](references/GRAPHIC.md); flags live in the COMMAND CONTRACT in [SUPERDESIGN.md](references/SUPERDESIGN.md).
 
-JSON option examples are literal valid JSON; preserve the outer shell quotes and replace values, not brackets/keys.
+JSON option values are literal valid JSON; preserve the outer shell quotes and replace values, not brackets/keys.
 
-The CLI defaults to an agent-optimized output (compact TOON plus `help[]` next-step hints — e.g. `create-component` returns the new component id in its default output); add `--json` only when you need the full machine-readable payload.
-
-Create the workspace-local `.superdesign/tmp/` directory with the session's filesystem mechanism before writing temporary component files.
-Ensure `.superdesign/tmp/` is ignored by the project's `.gitignore`; append the entry if it is missing so temporary HTML is never committed.
-
-`--context-file` supports `path:startLine:endLine`; see [SUPERDESIGN.md](references/SUPERDESIGN.md) for the complete workflow and current command contract.
+The CLI defaults to an agent-optimized output (compact TOON plus `help[]` next-step hints); add `--json` only when you need the full machine-readable payload.
 
 # Surface the canvas URL
 
