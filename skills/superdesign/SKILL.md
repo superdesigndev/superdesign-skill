@@ -11,10 +11,11 @@ Superdesign helps you (1) find design inspirations/styles and (2) generate/itera
 
 1. **superdesign init** — Analyze the repo and build UI context to `.superdesign/init/`
 2. **Help me design X** (feature/page/flow) — the target decides the SOP: an existing rendered page is reproduced first (ground truth), while a brand-new page (in a real repo or from scratch) is designed directly with no reproduction step; see UI TARGET ROUTING in [SUPERDESIGN.md](references/SUPERDESIGN.md)
-3. **Set design system** (optionally seed or refresh it from a live site via `extract-website --design-md` — you'll choose *create-from / inspired-by / update-existing*, asking first if a `design-system.md` already exists; see [SUPERDESIGN.md](references/SUPERDESIGN.md) SOP: BRAND NEW PROJECT Step 2)
+3. **Set design system** (optionally seed or refresh it from a live site via `extract-website --design-md` — you'll choose _create-from / inspired-by / update-existing_, asking first if a `design-system.md` already exists; see [SUPERDESIGN.md](references/SUPERDESIGN.md) SOP: BRAND NEW PROJECT Step 2)
 4. **Help me improve design of X**
 5. **Make a poster / marketing asset** (flyer, cover art, social feed post, story, channel cover, thumbnail, ad creative) — a static artwork, not a page. Skip repo init/analysis; read [GRAPHIC.md](references/GRAPHIC.md) and follow it (you generate the key visual with your own image tool, upload it, then compose the artwork on a fixed canvas; platform dimension table included).
-6. **Design from a live website / reference URL** (borrow a style, restyle, recombine, or plan a rebuild) — extract a reference site's design DNA (style guide, design tokens, content structure, brand assets, a static reference clone) with `extract-website`, then design with it. Read [WEBSITE.md](references/WEBSITE.md) and follow its recipes. Note: via the CLI a "recreate"/"clone" is a **style-informed rebuild** — faithful pixel-recreation and *editable* on-canvas clones are done in the Superdesign app (superdesign.dev), not the CLI.
+6. **Design from a live website / reference URL** (borrow a style, restyle, recombine, or plan a rebuild) — extract a reference site's design DNA (style guide, design tokens, content structure, brand assets, a static reference clone) with `extract-website`, then design with it. Read [WEBSITE.md](references/WEBSITE.md) and follow its recipes. Note: via the CLI a "recreate"/"clone" is a **style-informed rebuild** — faithful pixel-recreation and _editable_ on-canvas clones are done in the Superdesign app (superdesign.dev), not the CLI.
+7. **Design with YOUR OWN model** — ONLY when the user explicitly asks you to author the design yourself / without spending generation credits (or platform generation is unavailable and they agree): author the HTML per [DRAFT-HTML.md](references/DRAFT-HTML.md) and import it with `import-design-draft`; see IMPORT PATH in [SUPERDESIGN.md](references/SUPERDESIGN.md). Never pick this route on your own.
 
 # Step 0 — Environment preflight (BEFORE any CLI step)
 
@@ -76,15 +77,19 @@ If init is complete (all six files present and non-empty), you MUST read ALL of 
 **IMPORTANT: Run the CLI on demand with `npx --yes @superdesign/cli@latest`. Start every session with the bare command — it IS the preflight.**
 
 1. Preflight once:
+
    ```
    npx --yes @superdesign/cli@latest
    ```
+
    The bare command verifies everything in one shot: that the CLI runs at all, an `auth:` status line (`authenticated as team "…"` vs `not authenticated — run superdesign login`), and a list of recent projects — read that list when deciding whether to reuse an existing project or `create-project`.
 
 2. If the `auth:` line says not authenticated, run login NOW, before any real command:
+
    ```
    npx --yes @superdesign/cli@latest login
    ```
+
    Wait for login to complete successfully before proceeding.
 
 3. Run the intended commands with the same `npx --yes @superdesign/cli@latest` prefix. A session can still expire mid-flow — handle a later auth/login error per the failure block below.

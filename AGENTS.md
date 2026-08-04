@@ -5,12 +5,14 @@ This file is the project's committed home for project-intrinsic agent knowledge:
 ## What this repo is
 
 A published agent **skill** (`skills/superdesign/`) that drives the SuperDesign design canvas via its CLI. The skill is prose, not code - there is no build/test suite. Files:
+
 - `skills/superdesign/SKILL.md` - entry point (front-matter + core workflow)
 - `skills/superdesign/references/SUPERDESIGN.md` - main design workflow (always read) + `COMMAND CONTRACT`
 - `skills/superdesign/references/INIT.md` - repo-analysis (init) instructions
 - `skills/superdesign/references/GRAPHIC.md` - poster/marketing-asset workflow (loaded only for graphics)
 - `skills/superdesign/references/WEBSITE.md` - live-site extraction recipes (loaded only for reference-URL tasks)
 - `skills/superdesign/references/COMPONENTS.md` - Petite-Vue template spec (loaded only before create/update-component conversions)
+- `skills/superdesign/references/DRAFT-HTML.md` - draft HTML authoring contract (loaded only before authoring HTML for `import-design-draft`)
 - `skills/superdesign/{SUPERDESIGN,INIT}.md` - deprecated compatibility forwarders (do not add content)
 
 ## Skill flow invariant: two entry paths
@@ -20,6 +22,7 @@ A published agent **skill** (`skills/superdesign/`) that drives the SuperDesign 
 ## Ground truth for CLI behavior
 
 The skill invokes `npx --yes @superdesign/cli@latest`. When editing any command example or the `COMMAND CONTRACT`, verify against the **published** CLI - do not trust memory. `@beta` is what `@latest` becomes, so use it to check upcoming surface:
+
 - `npx --yes @superdesign/cli@beta <command> --help` for flags
 - The bare command (no args) is the preflight surface: version, `auth:` status line (works logged-out too), recent projects
 - Live-run read-only commands (search-prompts, get-prompts, list-design-systems) to see real output

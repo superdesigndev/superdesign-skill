@@ -339,7 +339,7 @@ Assistant:
 
 ## USER REQUEST PASSING
 
-When you run `create-design-draft` or `iterate-design-draft` on behalf of a user request, you SHOULD pass the user's verbatim message for that round via `--user-request "<text>"`.
+When you run `create-design-draft`, `iterate-design-draft`, or `import-design-draft` on behalf of a user request, you SHOULD pass the user's verbatim message for that round via `--user-request "<text>"`.
 
 - Pass the user's ACTUAL words for this round (not your paraphrase, not the design-system-fidelity boilerplate). This is the caller-side signal the design backend uses to improve generation quality.
 - This is separate from `-p`/`--prompt`: `-p` is the directional design instruction(s) you author; `--user-request` is the raw human ask that motivated them.
@@ -352,6 +352,38 @@ Every draft keeps a version history. The CLI's default output already self-discl
 
 - **Iterate from an earlier version**: `iterate-design-draft ... --from-version <n>` starts from a specific historical version instead of the current head.
 - **Revert to an earlier version** (no generation): `npx --yes @superdesign/cli@latest revert-design-draft --draft-id <id> --to-version <n>` restores a prior version as the current head. The revert is itself reversible — the current head is snapshotted into history first — so it is always safe to try. Use `get-design` to find the version number to restore.
+
+## IMPORT PATH (author the HTML with YOUR OWN model - explicit trigger only)
+
+`import-design-draft` stores HTML you authored yourself as a draft: no platform generation, no credits, synchronous. It is NOT a default route - every SOP above stays on create/iterate/execute-flow. Use it ONLY when:
+
+- the user explicitly asks you to design with your own model / without spending generation credits, OR
+- platform generation is unavailable (insufficient credits, gated model) and the user agrees to proceed this way.
+
+When the trigger applies:
+
+1. **MUST read [DRAFT-HTML.md](DRAFT-HTML.md) first** and author to its contract. On the real-codebase path the init HARD GATE applies unchanged - the context that steers platform generation is exactly the context YOU need to author faithfully. DESIGN SYSTEM FIDELITY applies too: author from `design-system.md` and the globals tokens, never invent fonts/colors.
+2. Write the HTML to `.superdesign/tmp/<name>.html` (ensure `.superdesign/tmp/` is gitignored, same as component conversions).
+3. Import - the viewport is REQUIRED (the platform cannot infer what you designed for; there is no default):
+
+   ```
+   npx --yes @superdesign/cli@latest import-design-draft --project-id <id> --title "<X>" \
+     --device desktop --html-file .superdesign/tmp/<name>.html \
+     --generated-by <your-real-model-id> --user-request "<the user's verbatim request>"
+   ```
+
+4. **Act on `warnings[N]:`** in the output: each line is a contract violation that was stored anyway, with fix guidance. Fix your HTML and push the corrected version onto the SAME draft:
+
+   ```
+   npx --yes @superdesign/cli@latest import-design-draft --into <draftId> \
+     --html-file .superdesign/tmp/<name>-fixed.html --generated-by <your-real-model-id>
+   ```
+
+   The push is revertible (VERSION HISTORY & REVERT applies - the previous head is snapshotted first).
+
+5. Multi-page = one import call per page; there is no batch mode. Surface the `canvas` URL as usual.
+
+`--generated-by` must be your REAL model id (e.g. `claude-fable-5`) - it is recorded as the draft's generation model. Platform iteration (`iterate-design-draft`) and `execute-flow-pages` work on imported drafts exactly like on generated ones.
 
 ## CONTEXT FILE LINE RANGES — CANONICAL TRIMMING RULE
 
@@ -369,11 +401,11 @@ Multiple ranges from the same file are automatically merged into a single contex
 
 **Decision table:**
 
-| File size | What to pass |
-| --- | --- |
-| **Under ~900 lines** | FULL file. NEVER trim CSS, JSX/template, config, or any other visual code. The only line-ranging allowed here is skipping a large pure-logic block (data fetching / hooks / handlers) — e.g. `src/pages/Dashboard.tsx:60` keeps all JSX from line 60. |
+| File size                          | What to pass                                                                                                                                                                                                                                                                                                                                             |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Under ~900 lines**               | FULL file. NEVER trim CSS, JSX/template, config, or any other visual code. The only line-ranging allowed here is skipping a large pure-logic block (data fetching / hooks / handlers) — e.g. `src/pages/Dashboard.tsx:60` keeps all JSX from line 60.                                                                                                    |
 | **~900 lines or more (MANDATORY)** | Line-range to the sections that matter — this is the ONLY sanctioned way to "trim visual code". For a page/component: the render branch that actually renders. For CSS: the used selectors + the `:root`/`.dark` token block (e.g. `globals.css:1:120` for variables + `globals.css:800:900` for used component styles). For config: the relevant block. |
-| **`globals.css` ~900+ lines** | Do NOT pass whole. Prefer the compact token summary at the top of `.superdesign/init/theme.md`, or line-range globals to its `:root`/`.dark` token block only. |
+| **`globals.css` ~900+ lines**      | Do NOT pass whole. Prefer the compact token summary at the top of `.superdesign/init/theme.md`, or line-range globals to its `:root`/`.dark` token block only.                                                                                                                                                                                           |
 
 Files that are always FULL when under ~900 lines: ALL UI components (Button, Card, Nav, Sidebar, etc.), ALL layout files, and any file where UI and logic are interleaved (safer to include everything).
 
@@ -406,6 +438,11 @@ Every command supports `--json` for the full machine-readable payload; the defau
   - Use this whenever a new base draft is needed and there is NO source draft to build on: the Step 3a reproduction, a new target in an existing codebase (SOP: NEW TARGET IN EXISTING CODEBASE), or a brand-new/scratch project. To vary an existing draft use iterate-design-draft; to extend sibling pages from one use execute-flow-pages.
   - --device custom requires both --width and --height (min 20px each). Providing --width/--height auto-sets --device to custom.
   - --kind graphic switches generation to the fixed-canvas graphic branch (static artwork, no responsive layout) and keeps iterations in graphic mode; pair it with --width/--height. See [GRAPHIC.md](GRAPHIC.md).
+- import-design-draft: stores HTML YOU authored as a draft (no AI generation, no credits, synchronous). Explicit trigger only - see IMPORT PATH; contract in [DRAFT-HTML.md](DRAFT-HTML.md). Two modes:
+  - create: required `--project-id`, `--title`, `--html-file <path>`, and an EXPLICIT viewport - either `--device <mobile|tablet|desktop>` or both `--width`/`--height` (20-10000, sets custom). There is NO default viewport, and a preset `--device` cannot be combined with `--width`/`--height`.
+  - `--into <draftId>`: push the HTML as a new revertible version of an existing draft. `--title` optionally renames; `--project-id` optionally cross-checks ownership; `--device`/`--width`/`--height`/`--kind` are REJECTED (fixed by the draft).
+  - optional (create mode) `--kind <page|graphic>`; both modes `--generated-by <your real model id>`, `--user-request <text>`, `--json`.
+  - Hard contract violations are a 400 with fix guidance; lesser issues import WITH a `warnings[N]:` block - fix your HTML and re-push via `--into`.
 - upload-asset: required `<file>` positional (png/jpeg/webp/gif, max 10MB) and `--project-id`; optional `--no-canvas`, `--json`. Uploads a project image asset and returns a public `url` to reference from create/iterate prompts (e.g. a poster key visual). By default the asset is also placed on the project canvas as an image node (response includes its `nodeId`); pass `--no-canvas` to skip.
 - revert-design-draft: required `--draft-id`, `--to-version <n>`; optional `--json`. Restores a prior version as the current head with NO generation; reversible (the current head is snapshotted into history first). Discover version numbers via `get-design`.
 - execute-flow-pages: required `--draft-id`, `--pages`; optional `--context <text>` (free-text additional context for the flow generation — a prose string, distinct from `--context-file` which passes source files), `--context-file` (one or more paths; supports `path:startLine:endLine`), `--model`, `--json`
