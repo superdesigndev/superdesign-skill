@@ -41,7 +41,7 @@ Superdesign agent has no context of our codebase and current UI, so first step i
 - Remove: data fetching, event handlers, API calls, auth checks, loading/error/empty guard returns
 - Keep: all JSX, styles, className, props, CSS, config — including `{x && <Y/>}` and ternary branches (conditional UI is a visual detail, not an edge case)
 
-**HOW TO USE LINE RANGES:** follow the canonical **CONTEXT FILE LINE RANGES** table below — the single trimming rule (threshold ~900 lines), with syntax and examples.
+**HOW TO USE LINE RANGES:** follow the canonical **CONTEXT FILE LINE RANGES** section below — the single trimming rule (threshold ~900 lines), with syntax and examples.
 
 **RECURSIVE IMPORT TRACING (MANDATORY — DO NOT SKIP)**
 
@@ -298,7 +298,7 @@ Every draft keeps a version history. The CLI's default output already self-discl
 
 ## CONTEXT FILE LINE RANGES — CANONICAL TRIMMING RULE
 
-**This is the single source of truth for when to trim a `--context-file`. Every other "trim" / "NEVER trim" / large-file mention in this skill defers to this table. The threshold is ~900 lines.**
+**This is the single source of truth for when to trim a `--context-file`. Every other "trim" / "NEVER trim" / large-file mention in this skill defers to this rule. The threshold is ~900 lines.**
 
 `--context-file` supports an optional `:startLine:endLine` suffix to include only specific portions of a file:
 
@@ -310,15 +310,10 @@ Every draft keeps a version history. The CLI's default output already self-discl
 
 Multiple ranges from the same file are automatically merged into a single context entry with omission markers between non-contiguous ranges.
 
-**Decision table:**
+**Decision rule:**
 
-| File size | What to pass |
-| --- | --- |
-| **Under ~900 lines** | FULL file. NEVER trim CSS, JSX/template, config, or any other visual code. The only line-ranging allowed here is skipping a large pure-logic block (data fetching / hooks / handlers) — e.g. `src/pages/Dashboard.tsx:60` keeps all JSX from line 60. |
-| **~900 lines or more (MANDATORY)** | Line-range to the sections that matter — this is the ONLY sanctioned way to "trim visual code". For a page/component: the render branch that actually renders. For CSS: the used selectors + the `:root`/`.dark` token block (e.g. `globals.css:1:120` for variables + `globals.css:800:900` for used component styles). For config: the relevant block. |
-| **`globals.css` ~900+ lines** | Do NOT pass whole. Prefer the compact token summary at the top of `.superdesign/init/theme.md`, or line-range globals to its `:root`/`.dark` token block only. |
-
-Files that are always FULL when under ~900 lines: ALL UI components (Button, Card, Nav, Sidebar, etc.), ALL layout files, and any file where UI and logic are interleaved (safer to include everything).
+- **Under ~900 lines**: FULL file - never trim visual code (CSS, JSX/template, config, all UI/layout components, any file interleaving UI and logic). Only exception: skip a large pure-logic block, e.g. `src/pages/Dashboard.tsx:60` keeps all JSX from line 60.
+- **~900 lines or more (MANDATORY)**: line-range to what matters - the ONLY sanctioned way to "trim visual code": page/component → the render branch that actually renders; CSS → the `:root`/`.dark` token block + used selectors (for `globals.css`, prefer the token summary in `.superdesign/init/theme.md` instead); config → the relevant block.
 
 ---
 
