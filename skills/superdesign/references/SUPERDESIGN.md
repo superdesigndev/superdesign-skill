@@ -325,46 +325,34 @@ The Petite-Vue template spec for `create-component`/`update-component` conversio
 
 ---
 
-## COMMAND CONTRACT (DO NOT HALLUCINATE FLAGS)
+## COMMAND CONTRACT (read `--help`, never guess)
 
-Always invoke via `npx --yes @superdesign/cli@latest`; if a flag is not recognized, inspect `<command> --help`.
+Always invoke via `npx --yes @superdesign/cli@latest`. Read flag sets off the CLI rather than from memory: the bare command lists every available command, and `<command> --help` prints its current, complete options. Do that before using any command you have not already run this session.
 
-Not part of the design flow: the CLI's `init` command installs skill files into a project (and `--force` overwrites them). It has nothing to do with this skill's repo analysis — never run it to build `.superdesign/init/`.
+**This section is deliberately partial.** It carries only what `--help` cannot tell you: the traps, and which command to reach for. A flag missing from here is not a flag that does not exist — it just means `--help` already documents it correctly. Never conclude an option is unavailable because it is absent below.
 
-Every command supports `--json` for the full machine-readable payload; the default output is agent-optimized (TOON + `help[]`). Only the flags below `--json` (e.g. `--full`, `--user-request`) are per-command.
+Every command takes `--json` for the full machine payload, and `--full` expands truncated fields on the listing commands. The default output is agent-optimized TOON plus `help[]` next-step hints, and is usually the one you want. JSON-valued flags (`--pages`, `--props`, `--slots`, `--events`, `--css-imports`) take literal valid JSON — replace the values, not the brackets or keys.
 
-JSON-valued flags (`--pages`, `--props`, `--slots`, `--events`, `--css-imports`) take literal valid JSON — preserve the outer shell quotes and replace the values, not the brackets/keys.
+**Traps `--help` will not warn you about:**
 
-- create-project: required `--title`; optional `--template <path>`, `--device <mobile|tablet|desktop>` (default: desktop — applies to the `--template` first draft only; later drafts carry their own `--device`), `--extend-from <projectId>`, `--no-open`, `--json`. Auto-opens the user's browser by default (canvas URL is always printed too) — see Browser Choice in [SKILL.md](../SKILL.md).
-- iterate-design-draft:
-  - required `--draft-id`, `-p`/`--prompt`, and `--mode <branch|replace>`; optional `--context-file` (one or more paths; supports `path:startLine:endLine`), `--model`, `--user-request <text>`, `--json`
-  - branch: can include multiple `-p` prompts; optional `--count <1-4>` is valid only with a single prompt
-  - replace: use exactly one `-p`; do not use `--count`
-  - `--from-version <n>`: iterate from a specific historical version instead of the current head (see VERSION HISTORY & REVERT)
-  - `--device <mobile|tablet|desktop|custom>` / `--width <pixels>` / `--height <pixels>`: OVERRIDE the viewport. Defaults to the source draft's device — omit unless deliberately changing it. `--width`/`--height` require `--device custom`.
-- create-design-draft: required `--project-id`, `--title`, and `-p` (SINGLE prompt only); optional `--device <mobile|tablet|desktop|custom>` (default: desktop), `--width <pixels>`, `--height <pixels>`, `--kind <page|graphic>` (default: page), `--context-file` (one or more paths; supports `path:startLine:endLine`), `--model`, `--user-request <text>`, `--json`
-  - ONLY accepts ONE -p flag. Multiple -p flags will silently drop all but the last one.
-  - Combine all design directions into a single -p string.
-  - Use this whenever a new base draft is needed and there is NO source draft to build on: the Step 3a reproduction, a new target in an existing codebase (SOP: NEW TARGET IN EXISTING CODEBASE), or a brand-new/scratch project. To vary an existing draft use iterate-design-draft; to extend sibling pages from one use execute-flow-pages.
-  - --device custom requires both --width and --height (min 20px each). Providing --width/--height auto-sets --device to custom.
-  - --kind graphic switches generation to the fixed-canvas graphic branch (static artwork, no responsive layout) and keeps iterations in graphic mode; pair it with --width/--height. See [GRAPHIC.md](GRAPHIC.md).
-- upload-asset: required `<file>` positional (png/jpeg/webp/gif, max 10MB) and `--project-id`; optional `--no-canvas`, `--json`. Uploads a project image asset and returns a public `url` to reference from create/iterate prompts (e.g. a poster key visual). By default the asset is also placed on the project canvas as an image node (response includes its `nodeId`); pass `--no-canvas` to skip.
-- revert-design-draft: required `--draft-id`, `--to-version <n>`; optional `--json`. No generation; semantics in VERSION HISTORY & REVERT.
-- execute-flow-pages: required `--draft-id`, `--pages`; optional `--context <text>` (free-text additional context for the flow generation — a prose string, distinct from `--context-file` which passes source files), `--context-file` (one or more paths; supports `path:startLine:endLine`), `--model`, `--json`. Each `--pages` item generates one new page styled after the source draft (1-10 pages per call).
-- get-design: required `--draft-id`; optional `--json`, `--output <path>`
-- fetch-design-nodes: required `--project-id`; optional `--full`, `--json`. Lists a project's drafts with their ids, titles, versions, and parent/child links. This is how you recover a `draft-id` when resuming a project from an earlier session — every draft command needs one, and the only other source is the output of the call that created the draft.
-- create-component: required `--project-id`, `--name` (PascalCase), and exactly one of `--html` or `--html-file`; optional `--description`, `--props` (JSON array), `--slots` (JSON array), `--events` (JSON array), `--css-imports` (JSON array), `--json`. `update-component --component-id` takes the id this returns; `list-components` recovers it later.
-- update-component: required `--component-id`; optional `--name`, `--html` or `--html-file` (not both), `--description`, `--props` (JSON array), `--slots` (JSON array), `--events` (JSON array), `--css-imports` (JSON array), `--json`
-- list-components: required `--project-id`; optional `--full`, `--json`
-- list-design-systems: no required flags; optional `--full`, `--json`. Lists default design systems and projects available to `create-project --extend-from`.
-- search-prompts: no required flags; optional `--query <text>`, `--tags <csv>`, `--limit <n>` (default 20, max 100), `--offset <n>`, `--full`, `--json`
-- get-prompts: required `--slugs <csv>`; optional `--full` (print full prompt bodies instead of the compact index), `--json`. Index first with the default output, then re-run with `--full` for the chosen slug(s) only.
-- extract-website: required `--url <url>`; optional payload selectors `--design-md` (portable style guide → design.md; the default when no selector is given), `--tokens` (raw design tokens → tokens.json), `--content-structure` (content/section map → content-structure.md), `--brand` (brand metadata → brand.json), `--website-copy` (marketing copy → website-copy.md; best-effort — may come back empty), `--all` (fetch every payload — but it writes no clone HTML and downloads no brand binaries, so still pass `--clone` and/or `--brand-assets` if you want those); `--brand-assets` (also download brand binaries — best logo, screenshot, page images — into `<out>/brand/`; implies `--brand`); `--clone [dir]` (save the frozen page HTML; default `<out>/clone/index.html`, pass a dir to override; assets are served from Superdesign's bucket); `--out <path>` (default `.superdesign/website/<domain>`); `--json`. An extract crawls the page server-side and can take ~60–120s. Supersedes the older `extract-brand-guide`.
+- `--context-file` accepts `path:startLine:endLine`, and several ranges for one file are merged into a single entry. No help text mentions this, and the whole PAYLOAD BUDGET rule depends on it.
+- `create-design-draft` takes ONE `-p`. Extra `-p` flags are silently dropped — the run reports success and every variation but the last is gone. Variations exist only through `iterate-design-draft --mode branch`; `--mode replace` is likewise a single-`-p`, no-`--count` call.
+- `extract-website` crawls server-side and takes ~60–120s. With no payload selector it defaults to `--design-md`. `--all` fetches every payload but writes no clone HTML and downloads no brand binaries, so still pass `--clone` / `--brand-assets` for those. `--brand-assets` implies `--brand`. It supersedes `extract-brand-guide`, which the command list still shows — do not use that one.
+- `create-project --device` styles only the `--template` first draft; every later draft carries its own `--device`.
+- The CLI's `init` installs skill files into the repo and `--force` overwrites them. It is NOT this skill's repo analysis — never run it for that.
 
-**--model**: omit it unless the user explicitly requests a specific model — the backend then uses its default. Do not guess or memorize the supported list (it changes over time): run `npx --yes @superdesign/cli@latest list-models` to see the current values.
+**Which command:**
+
+- No source draft to build on → `create-design-draft` (the Step 3a reproduction, a new target in an existing codebase, or a scratch project). Vary an existing draft → `iterate-design-draft`. Extend sibling pages from a confirmed one → `execute-flow-pages` (1-10 pages per call, each styled after the source draft).
+- Resuming a project from an earlier session → `fetch-design-nodes --project-id <id>` recovers its `draft-id`s. Every draft command needs one, and the only other source is the output of the call that created the draft.
+- `--model`: omit it unless the user names one, so the backend picks its default. Do not memorize the list — run `list-models`.
+- `--device` on `iterate-design-draft` is inherited from the source draft; omit it unless you are deliberately changing the viewport. `--kind graphic` switches `create-design-draft` to the fixed-canvas branch and sticks across iterations; pair it with `--width`/`--height` (see [GRAPHIC.md](GRAPHIC.md)).
+- `execute-flow-pages --context` is a prose string; `--context-file` passes source files. They are different inputs.
+- `get-prompts`: index with the default output first, then re-run with `--full` for the chosen slug(s) only.
+- `create-project` auto-opens the browser — see Browser Choice in [SKILL.md](../SKILL.md). Revert and `--from-version` semantics live in VERSION HISTORY & REVERT.
 
 ---
 
 ## EXTRACT-WEBSITE
 
-Live-site extraction (borrow a style, restyle/recombine sites, tokens, reference clones, and the pixel-recreation scope boundary) has its own reference: whenever a task involves a reference URL, read [WEBSITE.md](WEBSITE.md) and follow its recipes. The `extract-website` command flags stay in the COMMAND CONTRACT above.
+Live-site extraction (borrow a style, restyle/recombine sites, tokens, reference clones, and the pixel-recreation scope boundary) has its own reference: whenever a task involves a reference URL, read [WEBSITE.md](WEBSITE.md) and follow its recipes. Run `extract-website --help` for its flag set; the COMMAND CONTRACT above carries its gotchas.
