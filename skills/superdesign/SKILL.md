@@ -9,7 +9,7 @@ Superdesign helps you (1) find design inspirations/styles and (2) generate/itera
 
 # Core scenarios (what this skill handles)
 
-1. **superdesign init** — Analyze the repo and build UI context to `.superdesign/init/`
+1. **"superdesign init"** (the user asking for repo analysis) — analyze the repo and build UI context to `.superdesign/init/`. This is this skill's own analysis pass; the CLI's `init` command is a different thing entirely (it installs skill files) — never run it to build `.superdesign/init/`.
 2. **Help me design X** (feature/page/flow) — the target decides the SOP: an existing rendered page is reproduced first (ground truth), while a brand-new page (in a real repo or from scratch) is designed directly with no reproduction step; see UI TARGET ROUTING in [SUPERDESIGN.md](references/SUPERDESIGN.md)
 3. **Set design system** (optionally seed or refresh it from a live site via `extract-website --design-md` — you'll choose *create-from / inspired-by / update-existing*, asking first if a `design-system.md` already exists; see [SUPERDESIGN.md](references/SUPERDESIGN.md) SOP: BRAND NEW PROJECT Step 2)
 4. **Help me improve design of X**
@@ -79,7 +79,7 @@ If init is complete (all six files present and non-empty), you MUST read ALL of 
    ```
    npx --yes @superdesign/cli@latest
    ```
-   The bare command verifies everything in one shot: that the CLI runs at all, an `auth:` status line (`authenticated as team "…"` vs `not authenticated — run superdesign login`), and a list of recent projects — read that list when deciding whether to reuse an existing project or `create-project`.
+   The bare command verifies everything in one shot: that the CLI runs at all, an `auth:` status line (`authenticated as team "…"` vs `not authenticated — run superdesign login`), and a list of recent projects — read that list when deciding whether to reuse an existing project or `create-project`. When reusing one, `fetch-design-nodes --project-id <id>` lists its drafts and their ids; that is the only way to get a `draft-id` for work started in an earlier session.
 
 2. If the `auth:` line says not authenticated, run login NOW, before any real command:
    ```
