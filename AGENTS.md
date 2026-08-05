@@ -28,7 +28,11 @@ The skill invokes `npx --yes @superdesign/cli@latest`. When editing any command 
 
 ## Plugin packaging & release
 
-The Codex-plugin manifest is `.codex-plugin/plugin.json`. Releasing a new version is a single `chore(plugin): bump to X.Y.Z` commit editing its `version`, merged via PR - there are **no git tags, no GitHub releases, and no CI/publish workflow** (verify with `git tag` / `gh release list` before assuming otherwise). The marketplace-facing **display name** lives in two files that must stay in sync: `.codex-plugin/plugin.json` `interface.displayName` and `skills/superdesign/agents/openai.yaml` `display_name`. These are distinct from machine identity - the plugin slug (`plugin.json` `name`), the skill dir/`SKILL.md` `name`, and the `$superdesign` invocation - which must never change on a rename.
+The repo root doubles as **two** plugins off one `skills/superdesign/` tree: `.codex-plugin/plugin.json` (Codex) and `.claude-plugin/plugin.json` (Claude Code, alongside a self-hosted `.claude-plugin/marketplace.json` that lists the repo root as `"source": "./"`). Releasing a new version is a single `chore(plugin): bump to X.Y.Z` commit editing the `version` in **both** manifests plus the `## Unreleased` heading in `CHANGELOG.md`, merged via PR - there are **no git tags, no GitHub releases, and no CI/publish workflow** (verify with `git tag` / `gh release list` before assuming otherwise). Both marketplaces treat an explicit `version` as the update cache key, so pushing commits without bumping ships nothing to users.
+
+Validate any manifest edit with `claude plugin validate ./.claude-plugin/plugin.json --strict` and `claude plugin validate ./.claude-plugin/marketplace.json --strict` (the bare `claude plugin validate .` resolves to the marketplace file, not the plugin one). The Claude Code review pipeline runs the same check on submission.
+
+The marketplace-facing **display name** lives in three files. The two ChatGPT-facing ones must stay in sync with each other - `.codex-plugin/plugin.json` `interface.displayName` and `skills/superdesign/agents/openai.yaml` `display_name` - and carry the `01 ` listing-sort prefix. `.claude-plugin/plugin.json` `displayName` deliberately drops that prefix, since Claude Code's `/plugin` picker does not sort by name. All three are distinct from machine identity - the plugin slug (both `plugin.json` `name` fields), the skill dir/`SKILL.md` `name`, and the `$superdesign` / `superdesign:superdesign` invocations - which must never change on a rename.
 
 ## Maintaining this file
 

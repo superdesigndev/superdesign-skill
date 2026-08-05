@@ -14,7 +14,22 @@ propose design ideas, and do NOT run things in parallel — just init, then ask 
 
 ## Step 1 — Install the Superdesign skill into yourself
 
-Run (non-interactive), substituting **your own agent's slug**:
+**Already installed?** If you are reading this because the Superdesign skill or plugin is already loaded in
+this session (you can invoke `superdesign` / `superdesign:superdesign`), skip straight to Step 2 — do not
+install a second copy.
+
+**Claude Code** — install the plugin instead of the skill, and tell the user to run these two, since `/plugin`
+is a user-typed command you cannot run for them:
+
+```
+/plugin marketplace add superdesigndev/superdesign-skill
+/plugin install superdesign@superdesign
+```
+
+Then continue at Step 2. Do NOT also run `npx skills add` — that leaves a second, unnamespaced copy of the
+same skill.
+
+**Every other agent** — run (non-interactive), substituting **your own agent's slug**:
 
 ```
 npx skills add superdesigndev/superdesign-skill -g -a <your-agent-slug> -y

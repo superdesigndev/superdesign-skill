@@ -27,11 +27,22 @@ Install it once and your agent (Claude Code, Cursor, Codex, and 70+ others) can 
 
 ## Install
 
+**Any coding agent** — installs the skill for any of the [70+ supported coding agents](https://github.com/vercel-labs/skills#supported-agents):
+
 ```
 npx skills add superdesigndev/superdesign-skill
 ```
 
-This works for any of the [70+ supported coding agents](https://github.com/vercel-labs/skills#supported-agents). Then install the CLI it drives:
+**Claude Code** — install it as a plugin instead, so it stays namespaced and updates with `/plugin update`:
+
+```
+/plugin marketplace add superdesigndev/superdesign-skill
+/plugin install superdesign@superdesign
+```
+
+The skill is then invoked as `/superdesign:superdesign`. (Do not also run `npx skills add` in Claude Code — that installs a second, unnamespaced copy of the same skill.)
+
+Either way, install the CLI it drives:
 
 ```
 npm install -g @superdesign/cli@latest

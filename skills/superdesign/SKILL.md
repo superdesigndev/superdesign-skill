@@ -20,13 +20,15 @@ Superdesign helps you (1) find design inspirations/styles and (2) generate/itera
 
 Superdesign runs entirely through its CLI, so you must be able to execute shell commands. Confirm that capability first, before any CLI verification.
 
-If Superdesign is invoked in standard ChatGPT chat without Work Mode tools, do not start the workflow. Tell the user once:
+If you have no way to run shell commands in this environment (no terminal/execution tool at all), OR your very first bare `npx --yes @superdesign/cli@latest` preflight attempt fails because command execution itself is unavailable (the harness reports it cannot run commands / there is no shell) then STOP. Do NOT keep retrying or improvise workarounds. Tell the user once, and pick the message that matches where you are running:
 
-```text
-Chat isn't supported by the Superdesign plugin. Please switch to the Work tab and paste this prompt in for the full experience.
-```
+- **Standard ChatGPT chat without Work Mode tools** — this exact copy, because the Work tab is the fix:
 
-If you have no way to run shell commands in this environment (no terminal/execution tool at all), OR your very first bare `npx --yes @superdesign/cli@latest` preflight attempt fails because command execution itself is unavailable (the harness reports it cannot run commands / there is no shell) then STOP. Do NOT keep retrying or improvise workarounds.
+  ```text
+  Chat isn't supported by the Superdesign plugin. Please switch to the Work tab and paste this prompt in for the full experience.
+  ```
+
+- **Any other harness** (a coding agent whose shell is unavailable or disabled) — do NOT send the ChatGPT copy; there is no Work tab to switch to. Say plainly that Superdesign drives its CLI over the shell, that this session cannot run shell commands, and that they can re-run it in a session with shell access or design in the web app at https://superdesign.dev.
 
 # Step 1 — Is there a codebase to analyze?
 
