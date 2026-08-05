@@ -6,8 +6,10 @@ Both plugin manifests carry an explicit `version`, so marketplaces only hand use
 field is bumped — every release entry below corresponds to a `chore(plugin): bump to X.Y.Z` commit that
 bumps `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json` together.
 
-## Unreleased
+## 0.4.2
 
+- Add a `Design with your own model` path that imports caller-authored HTML when explicitly requested
+  or after `create-design-draft` / `iterate-design-draft` exhausts its retry.
 - Package the repo as a Claude Code plugin: `.claude-plugin/plugin.json` manifest, plus a self-hosted
   `.claude-plugin/marketplace.json` so it installs with
   `/plugin marketplace add superdesigndev/superdesign-skill` +
