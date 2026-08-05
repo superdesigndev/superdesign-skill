@@ -9,7 +9,7 @@ Superdesign helps you (1) find design inspirations/styles and (2) generate/itera
 
 # Core scenarios (what this skill handles)
 
-1. **superdesign init** — Analyze the repo and build UI context to `.superdesign/init/`
+1. **"superdesign init"** (the user asking for repo analysis) — analyze the repo and build UI context to `.superdesign/init/`. This is this skill's own analysis pass; the CLI's `init` command is a different thing entirely (it installs skill files) — never run it to build `.superdesign/init/`.
 2. **Help me design X** (feature/page/flow) — the target decides the SOP: an existing rendered page is reproduced first (ground truth), while a brand-new page (in a real repo or from scratch) is designed directly with no reproduction step; see UI TARGET ROUTING in [SUPERDESIGN.md](references/SUPERDESIGN.md)
 3. **Set design system** (optionally seed or refresh it from a live site via `extract-website --design-md` — you'll choose *create-from / inspired-by / update-existing*, asking first if a `design-system.md` already exists; see [SUPERDESIGN.md](references/SUPERDESIGN.md) SOP: BRAND NEW PROJECT Step 2)
 4. **Help me improve design of X**
@@ -44,7 +44,7 @@ Two entry paths. Choose one with this cheap, deterministic check BEFORE any init
 
 **Real codebase present** (any frontend code, or an existing `.superdesign/init/`) — the repo-init path below is MANDATORY; run the full analysis before designing.
 
-**Exception — standalone extraction:** if the task is ONLY to extract a site's design DNA or set/refresh `design-system.md` from a URL (`extract-website` → `design-system.md`, no design generation), run it WITHOUT repo init — extracting an external site's style doesn't require analyzing the user's codebase. Init is still required before generating designs FOR the existing codebase's UI (reproducing/redesigning an existing page).
+**Exception — standalone extraction:** if the task is ONLY to extract a site's design DNA or set/refresh `design-system.md` from a URL (`extract-website` → `design-system.md`, no design generation; read [WEBSITE.md](references/WEBSITE.md) for the recipes), run it WITHOUT repo init — extracting an external site's style doesn't require analyzing the user's codebase. Init is still required before generating designs FOR the existing codebase's UI (reproducing/redesigning an existing page).
 
 **Exception — graphics:** posters/marketing assets (scenario 5) skip init even in a real codebase — the brief carries the style, and most of init's output (components, layouts, routes, pages) has no bearing on a fixed-canvas artwork. The graphic brief round asks whether the artwork should be on-brand with this repo's product ([GRAPHIC.md](references/GRAPHIC.md) Step 1); only an on-brand "yes" pulls in the design-system/brand context — running init first only if that context doesn't already exist.
 
@@ -71,7 +71,7 @@ If init is complete (all six files present and non-empty), you MUST read ALL of 
 - `pages.md` — page component dependency trees (which files each page needs)
 - `extractable-components.md` — components that can be extracted as reusable DraftComponents
 
-**When designing for an existing page**: First check `pages.md` for the page's dependency tree — the candidate set of `--context-file` files. Pass them under the PAYLOAD BUDGET rules in [SUPERDESIGN.md](references/SUPERDESIGN.md) (line-range ~900+ line files to their render/token sections; drop files with no visual bearing) so the payload does not 400. Then also add the globals.css tokens, tailwind.config, and design-system.md.
+**When designing for an existing page**: First check `pages.md` for the page's dependency tree — the candidate set of `--context-file` files. Pass them under the PAYLOAD BUDGET rules in [SUPERDESIGN.md](references/SUPERDESIGN.md) so the payload does not 400. Then also add the globals.css tokens, tailwind.config, and design-system.md.
 
 # Superdesign CLI (MUST use before any command)
 
@@ -81,7 +81,7 @@ If init is complete (all six files present and non-empty), you MUST read ALL of 
    ```
    npx --yes @superdesign/cli@latest
    ```
-   The bare command verifies everything in one shot: that the CLI runs at all, an `auth:` status line (`authenticated as team "…"` vs `not authenticated — run superdesign login`), and a list of recent projects — read that list when deciding whether to reuse an existing project or `create-project`.
+   The bare command verifies everything in one shot: that the CLI runs at all, an `auth:` status line (`authenticated as team "…"` vs `not authenticated — run superdesign login`), and a list of recent projects — read that list when deciding whether to reuse an existing project or `create-project`. When reusing one, `fetch-design-nodes --project-id <id>` lists its drafts and their ids; that is the only way to get a `draft-id` for work started in an earlier session.
 
 2. If the `auth:` line says not authenticated, run login NOW, before any real command:
    ```
@@ -101,31 +101,15 @@ If init is complete (all six files present and non-empty), you MUST read ALL of 
 
 ## Command examples
 
-Always use the full on-demand runner prefix:
+Always use the full on-demand runner prefix, e.g.:
 
 ```bash
 npx --yes @superdesign/cli@latest create-project --title "X"
-npx --yes @superdesign/cli@latest extract-website --url https://example.com --design-md
-npx --yes @superdesign/cli@latest create-design-draft --project-id <id> --title "Current UI" -p "Faithfully reproduce..." --context-file src/Component.tsx
-npx --yes @superdesign/cli@latest iterate-design-draft --draft-id <id> -p "dark theme" -p "minimal" --mode branch --context-file src/Component.tsx
-npx --yes @superdesign/cli@latest execute-flow-pages --draft-id <id> --pages '[{"title":"Product Details","prompt":"Product detail page with image gallery, specs and add-to-cart"},{"title":"Checkout","prompt":"Checkout page with cart summary and payment form"}]' --context-file src/Component.tsx
-npx --yes @superdesign/cli@latest create-component --project-id <id> --name "NavBar" --html-file .superdesign/tmp/navbar.html --props '[{"name":"activeItem","type":"string","defaultValue":"home"}]'
-npx --yes @superdesign/cli@latest update-component --component-id <id> --html-file .superdesign/tmp/navbar.html
-npx --yes @superdesign/cli@latest list-components --project-id <id>
-npx --yes @superdesign/cli@latest upload-asset ./key-visual.png --project-id <id>
-npx --yes @superdesign/cli@latest create-design-draft --project-id <id> --title "Launch Poster" --kind graphic --width 900 --height 1200 -p "Design a static poster..."
 ```
 
-Each item in the `execute-flow-pages` `--pages` array generates one new page styled after the source draft (1-10 pages per call).
+Full invocations live at their use sites — the SOPs in [SUPERDESIGN.md](references/SUPERDESIGN.md) and the graphic steps in [GRAPHIC.md](references/GRAPHIC.md); flag sets come from `<command> --help`, and the COMMAND CONTRACT in [SUPERDESIGN.md](references/SUPERDESIGN.md) covers the traps help leaves out.
 
-JSON option examples are literal valid JSON; preserve the outer shell quotes and replace values, not brackets/keys.
-
-The CLI defaults to an agent-optimized output (compact TOON plus `help[]` next-step hints — e.g. `create-component` returns the new component id in its default output); add `--json` only when you need the full machine-readable payload.
-
-Create the workspace-local `.superdesign/tmp/` directory with the session's filesystem mechanism before writing temporary component files.
-Ensure `.superdesign/tmp/` is ignored by the project's `.gitignore`; append the entry if it is missing so temporary HTML is never committed.
-
-`--context-file` supports `path:startLine:endLine`; see [SUPERDESIGN.md](references/SUPERDESIGN.md) for the complete workflow and current command contract.
+The CLI defaults to an agent-optimized output (compact TOON plus `help[]` next-step hints); add `--json` only when you need the full machine-readable payload.
 
 # Surface the canvas URL
 

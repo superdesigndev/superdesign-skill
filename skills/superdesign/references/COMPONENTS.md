@@ -1,6 +1,6 @@
 # Component Extraction Reference (create-component / update-component)
 
-Read this right before converting a codebase component into a reusable Superdesign DraftComponent — i.e. Step 2.5's conversion step in [SUPERDESIGN.md](SUPERDESIGN.md), or any `create-component`/`update-component` call. Command flags live in the COMMAND CONTRACT in [SUPERDESIGN.md](SUPERDESIGN.md).
+Read this right before converting a codebase component into a reusable Superdesign DraftComponent — i.e. Step 2.5's conversion step in [SUPERDESIGN.md](SUPERDESIGN.md), or any `create-component`/`update-component` call. Run `create-component --help` / `update-component --help` for their flag sets.
 
 ## PETITE-VUE TEMPLATE SPEC
 

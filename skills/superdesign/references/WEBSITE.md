@@ -1,6 +1,6 @@
 # Website Extraction Workflow (design from a live site / reference URL)
 
-Read this whenever a task involves a live website URL: borrowing a site's style, restyling or recombining sites, extracting a design system or tokens from a URL, or a reference clone. Command flags live in the COMMAND CONTRACT in [SUPERDESIGN.md](SUPERDESIGN.md) (`extract-website`); this file carries the recipes and the scope boundary.
+Read this whenever a task involves a live website URL: borrowing a site's style, restyling or recombining sites, extracting a design system or tokens from a URL, or a reference clone. Run `extract-website --help` for its flag set, and see the COMMAND CONTRACT in [SUPERDESIGN.md](SUPERDESIGN.md) for its gotchas (crawl time, what `--all` does not fetch); this file carries the recipes and the scope boundary.
 
 ## EXTRACT-WEBSITE — RECIPES & SCOPE
 

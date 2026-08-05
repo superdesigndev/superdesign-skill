@@ -93,7 +93,7 @@ Dependencies:
 - src/components/layout/Footer.tsx
 ```
 
-This tree is the **candidate set** of files to pass as `--context-file` when designing a page — the starting point for context selection. It is not an unconditional include-everything list: apply the PAYLOAD BUDGET rules in [SUPERDESIGN.md](SUPERDESIGN.md) when selecting (budget before the call, line-range ~900+ line files to their render/token sections, drop files with no visual bearing) so the payload does not 400.
+This tree is the **candidate set** of files to pass as `--context-file` when designing a page — the starting point for context selection. It is not an unconditional include-everything list: apply the PAYLOAD BUDGET rules in [SUPERDESIGN.md](SUPERDESIGN.md) when selecting, so the payload does not 400.
 
 Prioritize the most important/complex pages (home, dashboard, settings, etc.). Skip trivial pages (404, offline, status).
 
