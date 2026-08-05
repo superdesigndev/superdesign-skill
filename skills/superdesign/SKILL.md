@@ -15,6 +15,7 @@ Superdesign helps you (1) find design inspirations/styles and (2) generate/itera
 4. **Help me improve design of X**
 5. **Make a poster / marketing asset** (flyer, cover art, social feed post, story, channel cover, thumbnail, ad creative) — a static artwork, not a page. Skip repo init/analysis; read [GRAPHIC.md](references/GRAPHIC.md) and follow it (you generate the key visual with your own image tool, upload it, then compose the artwork on a fixed canvas; platform dimension table included).
 6. **Design from a live website / reference URL** (borrow a style, restyle, recombine, or plan a rebuild) — extract a reference site's design DNA (style guide, design tokens, content structure, brand assets, a static reference clone) with `extract-website`, then design with it. Read [WEBSITE.md](references/WEBSITE.md) and follow its recipes. Note: via the CLI a "recreate"/"clone" is a **style-informed rebuild** — faithful pixel-recreation and *editable* on-canvas clones are done in the Superdesign app (superdesign.dev), not the CLI.
+7. **Design with your own model** — when the user explicitly asks, or `create-design-draft` / `iterate-design-draft` still fails after one retry, follow [design-with-your-model.md](references/design-with-your-model.md) to author and import the draft yourself.
 
 # Step 0 — Environment preflight (BEFORE any CLI step)
 
@@ -97,7 +98,7 @@ If init is complete (all six files present and non-empty), you MUST read ALL of 
 
 - **Auth/login error** (the CLI ran but rejected the session): run `login` (above), then retry the intended command ONCE. If login itself fails (headless/no-browser auth, expired flow, user declines), tell the user plainly and STOP — do not keep retrying or improvise.
 - **`extract-website` fails or times out** (it can take ~60–120s): retry ONCE. If it still fails, offer to continue WITHOUT the extraction (design from the conversation / existing design system) rather than blocking.
-- **General rule:** retry a failed command at most once, then report the failure to the user and stop — never silently loop or fall back to inventing output.
+- **General rule:** retry a failed command at most once. If `create-design-draft` or `iterate-design-draft` still fails, continue via [design-with-your-model.md](references/design-with-your-model.md); otherwise report the failure and stop.
 
 ## Command examples
 

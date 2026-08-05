@@ -11,6 +11,7 @@ A published agent **skill** (`skills/superdesign/`) that drives the SuperDesign 
 - `skills/superdesign/references/GRAPHIC.md` - poster/marketing-asset workflow (loaded only for graphics)
 - `skills/superdesign/references/WEBSITE.md` - live-site extraction recipes (loaded only for reference-URL tasks)
 - `skills/superdesign/references/COMPONENTS.md` - Petite-Vue template spec (loaded only before create/update-component conversions)
+- `skills/superdesign/references/design-with-your-model.md` - caller-model HTML authoring/import path (loaded only when explicitly requested or after create/iterate retry failure)
 - `skills/superdesign/{SUPERDESIGN,INIT}.md` - deprecated compatibility forwarders (do not add content)
 
 ## Skill flow invariant: two entry paths
