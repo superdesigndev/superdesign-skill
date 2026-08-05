@@ -42,7 +42,7 @@ Two entry paths. Choose one with this cheap, deterministic check BEFORE any init
 
 **Real codebase present** (any frontend code, or an existing `.superdesign/init/`) — the repo-init path below is MANDATORY; run the full analysis before designing.
 
-**Exception — standalone extraction:** if the task is ONLY to extract a site's design DNA or set/refresh `design-system.md` from a URL (`extract-website` → `design-system.md`, no design generation), run it WITHOUT repo init — extracting an external site's style doesn't require analyzing the user's codebase. Init is still required before generating designs FOR the existing codebase's UI (reproducing/redesigning an existing page).
+**Exception — standalone extraction:** if the task is ONLY to extract a site's design DNA or set/refresh `design-system.md` from a URL (`extract-website` → `design-system.md`, no design generation; read [WEBSITE.md](references/WEBSITE.md) for the recipes), run it WITHOUT repo init — extracting an external site's style doesn't require analyzing the user's codebase. Init is still required before generating designs FOR the existing codebase's UI (reproducing/redesigning an existing page).
 
 **Exception — graphics:** posters/marketing assets (scenario 5) skip init even in a real codebase — the brief carries the style, and most of init's output (components, layouts, routes, pages) has no bearing on a fixed-canvas artwork. The graphic brief round asks whether the artwork should be on-brand with this repo's product ([GRAPHIC.md](references/GRAPHIC.md) Step 1); only an on-brand "yes" pulls in the design-system/brand context — running init first only if that context doesn't already exist.
 
@@ -106,8 +106,6 @@ npx --yes @superdesign/cli@latest create-project --title "X"
 ```
 
 Full invocations live at their use sites — the SOPs in [SUPERDESIGN.md](references/SUPERDESIGN.md) and the graphic steps in [GRAPHIC.md](references/GRAPHIC.md); flags live in the COMMAND CONTRACT in [SUPERDESIGN.md](references/SUPERDESIGN.md).
-
-JSON option values are literal valid JSON; preserve the outer shell quotes and replace values, not brackets/keys.
 
 The CLI defaults to an agent-optimized output (compact TOON plus `help[]` next-step hints); add `--json` only when you need the full machine-readable payload.
 
