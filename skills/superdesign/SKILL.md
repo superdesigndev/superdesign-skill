@@ -105,7 +105,7 @@ Always use the full on-demand runner prefix, e.g.:
 npx --yes @superdesign/cli@latest create-project --title "X"
 ```
 
-Full invocations live at their use sites — the SOPs in [SUPERDESIGN.md](references/SUPERDESIGN.md) and the graphic steps in [GRAPHIC.md](references/GRAPHIC.md); flags live in the COMMAND CONTRACT in [SUPERDESIGN.md](references/SUPERDESIGN.md).
+Full invocations live at their use sites — the SOPs in [SUPERDESIGN.md](references/SUPERDESIGN.md) and the graphic steps in [GRAPHIC.md](references/GRAPHIC.md); flag sets come from `<command> --help`, and the COMMAND CONTRACT in [SUPERDESIGN.md](references/SUPERDESIGN.md) covers the traps help leaves out.
 
 The CLI defaults to an agent-optimized output (compact TOON plus `help[]` next-step hints); add `--json` only when you need the full machine-readable payload.
 
