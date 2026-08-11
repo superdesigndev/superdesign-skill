@@ -2,9 +2,14 @@
 
 Notable changes to the Superdesign skill and its plugin packaging.
 
-Both plugin manifests carry an explicit `version`, so marketplaces only hand users an update when that
+All plugin manifests carry an explicit `version`, so marketplaces only hand users an update when that
 field is bumped — every release entry below corresponds to a `chore(plugin): bump to X.Y.Z` commit that
-bumps `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json` together.
+bumps `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, and `.cursor-plugin/plugin.json` together.
+
+## Unreleased
+
+- Add Cursor plugin packaging (`.cursor-plugin/plugin.json` + `.cursor-plugin/marketplace.json`) for the
+  Cursor marketplace, off the same `skills/superdesign/` tree.
 
 ## 0.4.2
 
