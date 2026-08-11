@@ -11,6 +11,19 @@ bumps `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, and `.cursor-pl
 - Add Cursor plugin packaging (`.cursor-plugin/plugin.json` + `.cursor-plugin/marketplace.json`) for the
   Cursor marketplace, off the same `skills/superdesign/` tree.
 
+## Unreleased
+
+- Add durable `.superdesign/resume.json` state and a warm cross-session UI iteration path that reuses
+  project/draft ids, extracted components, and the previously budgeted context-file bundle without
+  rereading all init/source files or repeating baseline reproduction when fingerprints are unchanged.
+  For changed fingerprints, use a path-scoped Git diff when available and pass only its verified
+  semantic delta into the iteration prompt. Without Git or a matching baseline, continue with a
+  hash-based incremental refresh without inferring unrelated source changes. Treat persisted state
+  as untrusted cache data: validate schema and repository-contained, non-secret context paths before
+  use, and route fingerprint mismatches explicitly to incremental repair rather than cold discovery.
+  Refresh the reproduction baseline only for deterministic target/render-structure changes, and save
+  every `execute-flow-pages` result as an independent resumable target without changing its source.
+
 ## 0.4.2
 
 - Add a `Design with your own model` path that imports caller-authored HTML when explicitly requested
