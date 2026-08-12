@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "superdesign",
   "displayName": "Superdesign",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "Design or redesign frontend UI and marketing graphics on the Superdesign infinite canvas. Reads your codebase for context, sets up a design system, and generates branchable design drafts you refine.",
   "author": {
     "name": "Superdesign dev, Inc.",
