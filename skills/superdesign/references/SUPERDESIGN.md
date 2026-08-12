@@ -17,11 +17,13 @@ Three kinds of UI target, three SOPs. Decide BEFORE designing — the wrong SOP 
 - **B. New target in an existing codebase** — a real codebase is present, but the requested page/feature does not exist yet, so nothing renders to reproduce → **SOP: NEW TARGET IN EXISTING CODEBASE** (init/context as usual, then create a new draft directly — no reproduction step).
 - **C. New target without a codebase** — the no-codebase path from [SKILL.md](../SKILL.md) Step 1 → **SOP: BRAND NEW PROJECT** (conversational brief → design system → create draft).
 
+**RESUME ROUTING COMES FIRST:** for every real-codebase UI request, check for a matching target in `.superdesign/resume.json` before entering any SOP below. Valid saved state is the default for that target regardless of request wording; [RESUME.md](RESUME.md) decides warm iteration, targeted context expansion, incremental repair, or baseline refresh. The target kind determines the fallback SOP only when saved state is absent, rejected, or the user explicitly asks to start over from fresh ground truth.
+
 A task can mix targets (e.g. "redesign the dashboard and add a settings page"): handle the existing target per A first, then extend to the new pages per B — usually `execute-flow-pages` from the confirmed dashboard draft.
 
 ## SOP: EXISTING UI
 
-For an existing rendered target (UI TARGET ROUTING → A).
+For an existing rendered target (UI TARGET ROUTING → A) that does not have a valid warm resume. Once this cold path creates its baseline/context state, later iterations route through [RESUME.md](RESUME.md).
 
 Step 1 (Gather UI context & design system):
 Collect the two workstreams below in parallel when the current agent environment supports safe task delegation. Otherwise, complete them sequentially. Do not depend on a tool with a specific product-only name.
@@ -32,7 +34,8 @@ Superdesign agent has no context of our codebase and current UI, so first step i
 **MANDATORY FIRST STEP — init-complete test**: apply the decidable test from [SKILL.md](../SKILL.md) "Init: Repo Analysis": all six `.superdesign/init/` files exist AND are non-empty.
 
 - **If init is not complete**: You MUST run the full init analysis FIRST before any design work — follow [INIT.md](INIT.md) to scan the repo and write all six files (re-running init regenerates all six; overwriting existing ones is expected and fine). Do NOT proceed to Step 2 until init is complete.
-- **If init is complete**: Read ALL SIX files — the list and what each contains is in [SKILL.md](../SKILL.md) "Mandatory Init Files". They are pre-analyzed context and MUST be read every time before any design task.
+- **If init is complete and no valid resume covers this target**: Read all six files — the list and what each contains is in [SKILL.md](../SKILL.md) "Init Files (cold/stale context path)". This is cold/stale discovery, not a per-iteration requirement.
+- **If [RESUME.md](RESUME.md) validates a matching target**: do not read these files; exit this cold Step 1 and follow the warm procedure.
 
 **READ THE REAL RENDER BRANCH (do not infer layout from an import name).** Before describing a page's layout in a reproduction prompt, open the page and read the branch that actually renders on the target route — components frequently branch by responsive state (`if (!isMobile) { return … }`), feature flag, or route. Pass the branch that renders (e.g. the desktop master-detail split), NOT a fallback (e.g. the mobile grid). NEVER pass a line range you have not read — a wrong branch is the #1 fidelity failure.
 
@@ -43,9 +46,11 @@ Superdesign agent has no context of our codebase and current UI, so first step i
 
 **HOW TO USE LINE RANGES:** follow the canonical **CONTEXT FILE LINE RANGES** section below — the single trimming rule (threshold ~900 lines), with syntax and examples.
 
-**RECURSIVE IMPORT TRACING (MANDATORY — DO NOT SKIP)**
+**RECURSIVE IMPORT TRACING (MANDATORY FOR COLD/STALE TARGET CONTEXT — DO NOT SKIP)**
 
 Starting from the target page, recursively trace ALL local imports (relative `./Foo`, `../Bar`, alias `@/components/Baz` — skip node_modules) until every UI-touching file is discovered; then add globals.css, tailwind.config, and design-system.md. If `.superdesign/init/pages.md` exists, use its pre-computed dependency tree as the starting point — but still open the target page and confirm the actual render branch before passing context (do not infer layout from import names).
+
+After budgeting the final set, persist the exact `--context-file` entries and underlying-file SHA-256 fingerprints in `.superdesign/resume.json` per [RESUME.md](RESUME.md). Unchanged future sessions reuse that set without tracing imports again.
 
 **What to collect:**
 
@@ -117,13 +122,16 @@ After extraction, proceed to Step 3. The draft generation agent will automatical
 - Brand new projects with no existing UI components
 - When the user explicitly says they don't want component extraction
 - When `extractable-components.md` doesn't exist or lists no layout components
+- When a valid resume entry already records the needed components for the same project. Do not call `list-components` merely to reconfirm saved components; use it only after a component-related command fails or affected component source changed.
 
 Step 3 — Design in Superdesign
 
-- Create project (IMPORTANT - MUST create project first unless project id is given by user): `npx --yes @superdesign/cli@latest create-project --title "<X>"`
+- Reuse the project id recovered from valid resume state. Otherwise create a project (IMPORTANT - MUST create project first unless a project id is already known): `npx --yes @superdesign/cli@latest create-project --title "<X>"`
 
-- **Step 3a — PIXEL-PERFECT reproduction (ground truth) — MANDATORY, DO NOT SKIP**:
+- **Step 3a — PIXEL-PERFECT reproduction (ground truth) — MANDATORY ONCE PER COLD/BASELINE-REFRESH TARGET**:
   Before ANY design changes, FIRST create a draft that is a **100% pixel-perfect reproduction** of the current UI.
+
+  Do not repeat this step for an unchanged target or a localized incremental source change. Apply [RESUME.md](RESUME.md) **Incremental refresh**: reproduce again only when its deterministic routing selects **Baseline refresh**, then replace the saved baseline id while preserving prior draft history.
 
   **GOAL: Pixel-to-pixel exact match.** Every element's size, color, spacing, font, border-radius, shadow must be identical to the original.
 
@@ -177,12 +185,14 @@ Step 3 — Design in Superdesign
   Pass the SAME context files as Step 3a to maintain consistency.
   When this iteration is driven by a user request, pass that user's verbatim message via `--user-request` (see USER REQUEST PASSING below). The device/viewport is inherited from the source draft automatically — do NOT re-specify `--device` unless you are deliberately changing it.
 
+  After Step 3a and every Step 3b result, write/update `.superdesign/resume.json` per [RESUME.md](RESUME.md): project, target, baseline/active draft ids, branch description/version, extracted components, exact context bundle, and fingerprints.
+
 - Surface the `canvas` URL and invite the user in, per [SKILL.md](../SKILL.md) "Surface the canvas URL", then ask for their feedback.
-- Before further iteration, MUST read the design first: `npx --yes @superdesign/cli@latest get-design --draft-id <id> --json`
+- Before further iteration, MUST read the design first: `npx --yes @superdesign/cli@latest get-design --draft-id <id> --json`. In a later turn/session, reach this through [RESUME.md](RESUME.md); do not rerun the cold steps above.
 
 Extension after approval:
 
-- If user wants to design more relevant pages or whole user journey based on a design, use execute-flow-pages: `npx --yes @superdesign/cli@latest execute-flow-pages --draft-id <draftId> --pages '[{"title":"Product Details","prompt":"Product detail page with image gallery, specs and add-to-cart"},{"title":"Checkout","prompt":"Checkout page with cart summary and payment form"}]' --context-file src/components/Foo.tsx`
+- If user wants to design more relevant pages or whole user journey based on a design, use execute-flow-pages: `npx --yes @superdesign/cli@latest execute-flow-pages --draft-id <draftId> --pages '[{"title":"Product Details","prompt":"Product detail page with image gallery, specs and add-to-cart"},{"title":"Checkout","prompt":"Checkout page with cart summary and payment form"}]' --context-file src/components/Foo.tsx`. Persist every returned page as its own target per [RESUME.md](RESUME.md) **Flow-page persistence**; do not replace the source target's active draft.
 - IMPORTANT: Use execute-flow-pages instead of create-design-draft to extend more pages based on an existing design — create-design-draft is only for a new base draft with no source draft (see the command contract)
 
 ## SOP: NEW TARGET IN EXISTING CODEBASE
@@ -200,6 +210,7 @@ Step 3 differs — there is no Step 3a:
 - **If a related existing page is already on the canvas as a confirmed draft** (reproduced or designed earlier in this project): prefer `execute-flow-pages` from that draft — it inherits the confirmed page's style and shell, which is exactly what a sibling page should do.
 - **Otherwise**: `create-design-draft` with a normal design prompt (single `-p` describing the new page — a design prompt, not a reproduction prompt), passing `design-system.md`, the globals tokens, and the shared shell/layout + relevant component files as `--context-file` so the generated page matches the real app.
 - Then iterate variations with `iterate-design-draft --mode branch` per the VARIANT COUNT RULE, same as Step 3b.
+- After the first successful draft/flow result, add this target and its exact context bundle to `.superdesign/resume.json` per [RESUME.md](RESUME.md).
 - Optional, when the user emphasizes strict visual consistency with a specific existing page: offer to reproduce that representative page first (per Step 3a) and then `execute-flow-pages` the new page from it. This costs an extra generation, so propose it and let the user decide — don't do it unasked.
 
 ## SOP: BRAND NEW PROJECT
@@ -280,6 +291,8 @@ You may use replace in two cases: (1) the user requests a tiny tweak you can des
 Default tool while generating new pages based on an existing confirmed page is execute-flow-pages
 Prefer iterating an existing design draft over creating new ones
 
+For an unchanged initialized target, "prefer" is a hard routing rule: use [RESUME.md](RESUME.md); do not repeat init reads, source discovery, component checks, project creation, or reproduction.
+
 When the user's feedback is vague ("I don't like the banner position"), ask what is bothering them and offer a couple of concrete directions before generating — a generation round spends the user's credits, so guessing at intent spends them on a coin flip. Skip the question when the ask is already concrete enough to turn into distinct `-p` variations.
 
 ## USER REQUEST PASSING
@@ -327,7 +340,7 @@ The Petite-Vue template spec for `create-component`/`update-component` conversio
 
 ## COMMAND CONTRACT (read `--help`, never guess)
 
-Always invoke via `npx --yes @superdesign/cli@latest`. Read flag sets off the CLI rather than from memory: the bare command lists every available command, and `<command> --help` prints its current, complete options. Do that before using any command you have not already run this session.
+Always invoke via `npx --yes @superdesign/cli@latest`. Read flag sets off the CLI rather than from memory: the bare command lists every available command, and `<command> --help` prints its current, complete options. Do that before constructing an invocation whose exact form is not already specified by the active workflow. Canonical invocations in [RESUME.md](RESUME.md) may be used directly; do not add a `--help` round trip on every warm session unless a command rejects the documented form or you need different flags.
 
 **This section is deliberately partial.** It carries only what `--help` cannot tell you: the traps, and which command to reach for. A flag missing from here is not a flag that does not exist — it just means `--help` already documents it correctly. Never conclude an option is unavailable because it is absent below.
 
@@ -344,7 +357,7 @@ Every command takes `--json` for the full machine payload, and `--full` expands 
 **Which command:**
 
 - No source draft to build on → `create-design-draft` (the Step 3a reproduction, a new target in an existing codebase, or a scratch project). Vary an existing draft → `iterate-design-draft`. Extend sibling pages from a confirmed one → `execute-flow-pages` (1-10 pages per call, each styled after the source draft).
-- Resuming a project from an earlier session → `fetch-design-nodes --project-id <id>` recovers its `draft-id`s. Every draft command needs one, and the only other source is the output of the call that created the draft.
+- Resuming a project from an earlier session → use `.superdesign/resume.json` and address its saved draft id directly. If the saved draft is rejected or resume state is unavailable, `fetch-design-nodes --project-id <id>` recovers the project's draft ids as the fallback.
 - `--model`: omit it unless the user names one, so the backend picks its default. Do not memorize the list — run `list-models`.
 - `--device` on `iterate-design-draft` is inherited from the source draft; omit it unless you are deliberately changing the viewport. `--kind graphic` switches `create-design-draft` to the fixed-canvas branch and sticks across iterations; pair it with `--width`/`--height` (see [GRAPHIC.md](GRAPHIC.md)).
 - `execute-flow-pages --context` is a prose string; `--context-file` passes source files. They are different inputs.

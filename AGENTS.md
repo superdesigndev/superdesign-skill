@@ -8,6 +8,7 @@ A published agent **skill** (`skills/superdesign/`) that drives the SuperDesign 
 - `skills/superdesign/SKILL.md` - entry point (front-matter + core workflow)
 - `skills/superdesign/references/SUPERDESIGN.md` - main design workflow (always read) + `COMMAND CONTRACT`
 - `skills/superdesign/references/INIT.md` - repo-analysis (init) instructions
+- `skills/superdesign/references/RESUME.md` - durable UI context + warm cross-session iteration path
 - `skills/superdesign/references/GRAPHIC.md` - poster/marketing-asset workflow (loaded only for graphics)
 - `skills/superdesign/references/WEBSITE.md` - live-site extraction recipes (loaded only for reference-URL tasks)
 - `skills/superdesign/references/COMPONENTS.md` - Petite-Vue template spec (loaded only before create/update-component conversions)
@@ -16,7 +17,7 @@ A published agent **skill** (`skills/superdesign/`) that drives the SuperDesign 
 
 ## Skill flow invariant: two entry paths
 
-`SKILL.md` branches on Step 1 into a **real-codebase path** (repo init is mandatory) and a **no-codebase path** (empty/scratch/sandbox workspace with no frontend code - skip init, gather design context conversationally, design via `SUPERDESIGN.md` "SOP: BRAND NEW PROJECT"). Within the real-codebase path, `SUPERDESIGN.md`'s UI TARGET ROUTING further splits by target: an **existing rendered page** goes reproduce-first (Step 3a ground truth), while a **new page in the codebase** skips reproduction entirely ("SOP: NEW TARGET IN EXISTING CODEBASE") - keep reproduction rules scoped to existing rendered targets. Any init/hard-gate rule you edit must stay scoped to the real-codebase path so it does not block the no-codebase path (see the HARD GATE and MANDATORY INIT rules in `SUPERDESIGN.md`). A separate Step 0 preflight halts when shell execution is unavailable (e.g. ChatGPT Chat mode) - distinct from the auth/login path, where the CLI actually ran.
+`SKILL.md` branches on Step 1 into a **real-codebase path** (repo init is mandatory) and a **no-codebase path** (empty/scratch/sandbox workspace with no frontend code - skip init, gather design context conversationally, design via `SUPERDESIGN.md` "SOP: BRAND NEW PROJECT"). Before cold discovery, every real-codebase UI request checks `.superdesign/resume.json`; valid state for the same target follows `RESUME.md` regardless of request wording, reuses the saved bundle without rereading init/source context, and reads or adds only narrowly relevant source when targeted context expansion is required. Within the cold real-codebase path, `SUPERDESIGN.md`'s UI TARGET ROUTING further splits by target: an **existing rendered page** goes reproduce-first (Step 3a ground truth), while a **new page in the codebase** skips reproduction entirely ("SOP: NEW TARGET IN EXISTING CODEBASE") - keep reproduction rules scoped to existing rendered targets. Any init/hard-gate rule you edit must stay scoped to the real-codebase path so it does not block the no-codebase path (see the HARD GATE and MANDATORY INIT rules in `SUPERDESIGN.md`). A separate Step 0 preflight halts when shell execution is unavailable (e.g. ChatGPT Chat mode) - distinct from the auth/login path, where the CLI actually ran.
 
 ## Ground truth for CLI behavior
 

@@ -19,6 +19,7 @@ Install it once and your agent (Claude Code, Cursor, Codex, and 70+ others) can 
 - **What it does** — finds design direction, sets up a design system from your codebase, and generates + iterates high-quality UI drafts on an infinite canvas, all from your terminal.
 - **Who it's for** — developers, indie hackers, and product/UI designers who want to go from idea to shippable UI fast without leaving their coding agent.
 - **How it's different** — style-preset skills just swap in a theme or a component library. Superdesign designs *into* your existing design system: it reads your code for context, gathers real style references, and produces branchable drafts you refine.
+- **Cross-session continuity** — after the first real-codebase design, the skill remembers the project, draft, extracted components, and budgeted source-context bundle so later unchanged iterations resume without repeating codebase discovery.
 - **Two ways in** — this skill from any coding agent, or the web app at [superdesign.dev](https://superdesign.dev).
 
 > **Not the legacy IDE extension.** The archived open-source `superdesigndev/superdesign` VS Code extension is an older, separate project. This skill and [superdesign.dev](https://superdesign.dev) are the current, maintained product.

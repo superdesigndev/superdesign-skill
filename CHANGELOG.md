@@ -11,6 +11,13 @@ bumps `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, and `.cursor-pl
 - Add Cursor plugin packaging (`.cursor-plugin/plugin.json` + `.cursor-plugin/marketplace.json`) for the
   Cursor marketplace, off the same `skills/superdesign/` tree.
 
+## Unreleased
+
+- Reuse safe `.superdesign/resume.json` state across sessions so an initialized UI target keeps its
+  project, drafts, components, and budgeted source context without repeating discovery or reproduction.
+  Changed source is repaired incrementally with precise Git diffs when available; flow pages remain
+  independent targets, and requests that need extra code understanding expand context narrowly.
+
 ## 0.4.2
 
 - Add a `Design with your own model` path that imports caller-authored HTML when explicitly requested

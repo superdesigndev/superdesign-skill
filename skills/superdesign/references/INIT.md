@@ -3,6 +3,8 @@ You are performing a **Superdesign Init** — analyzing this repository to build
 ## Output Directory
 Write all files to `.superdesign/init/` in the project root.
 
+Init creates repository discovery artifacts only. It does not know the remote project, draft ids, final payload-budgeted context bundle, or extracted project components, so it MUST NOT create `.superdesign/resume.json`. The first successful UI draft/iteration writes that durable state per [RESUME.md](RESUME.md). If a full init is regenerated later, treat existing target resume entries as needing freshness validation before their next generation; preserve their project/draft ids while refreshing only affected context.
+
 ## Analysis Steps
 
 ### 1. Detect Framework & Component Library

@@ -58,7 +58,9 @@ then run `superdesign login` (opens a browser — ask the user to click to authe
 ## Step 3 — Run `init` (the repo design-system extraction)
 
 Run the Superdesign init analysis — it scans the repo and writes the UI context files to `.superdesign/init/`
-(per `references/INIT.md` in the installed skill). **This is the one-time slow step** (~3–5 min the first time; instant on every run after).
+(per `references/INIT.md` in the installed skill). **This is the one-time slow step** (~3–5 min the first time).
+After the first UI design, the skill also writes `.superdesign/resume.json` so unchanged targets can resume
+their project, draft, components, and context bundle across later agent sessions.
 
 Then move to Step 4. Do NOT propose designs and do NOT start any design command until init is complete.
 
@@ -78,9 +80,12 @@ clarifying question to pin the exact target. Otherwise proceed.
 
 Once `init` is complete AND you have the user's target, follow the SuperDesign design SOP (see
 `references/SUPERDESIGN.md` in the installed skill):
-read the init files, gather the real source context for the target page (mind the payload budget — line-range
-1000+ line files to their render section; never thin-retry on a 400), create the project, produce the
-pixel-perfect reproduction, then branch variations. Return the **preview / canvas URL**.
+first try the warm path in `references/RESUME.md` for a previously initialized target. A valid warm resume
+hash-checks and reuses the saved context without rereading init/source files or repeating reproduction.
+For a cold/new target, read the init files, gather the real source context for the target page (mind the
+payload budget — line-range 1000+ line files to their render section; never thin-retry on a 400), create the
+project, produce the pixel-perfect reproduction, persist resume state, then branch variations. Return the
+**preview / canvas URL**.
 
 If a generate fails with a 400 (payload), trim the big files to their render sections and retry the SAME
 faithful call — never retry with thinned context, which makes the model invent a generic page. If it genuinely

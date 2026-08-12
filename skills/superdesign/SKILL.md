@@ -16,6 +16,7 @@ Superdesign helps you (1) find design inspirations/styles and (2) generate/itera
 5. **Make a poster / marketing asset** (flyer, cover art, social feed post, story, channel cover, thumbnail, ad creative) — a static artwork, not a page. Skip repo init/analysis; read [GRAPHIC.md](references/GRAPHIC.md) and follow it (you generate the key visual with your own image tool, upload it, then compose the artwork on a fixed canvas; platform dimension table included).
 6. **Design from a live website / reference URL** (borrow a style, restyle, recombine, or plan a rebuild) — extract a reference site's design DNA (style guide, design tokens, content structure, brand assets, a static reference clone) with `extract-website`, then design with it. Read [WEBSITE.md](references/WEBSITE.md) and follow its recipes. Note: via the CLI a "recreate"/"clone" is a **style-informed rebuild** — faithful pixel-recreation and *editable* on-canvas clones are done in the Superdesign app (superdesign.dev), not the CLI.
 7. **Design with your own model** — when the user explicitly asks, or `create-design-draft` / `iterate-design-draft` still fails after one retry, follow [design-with-your-model.md](references/design-with-your-model.md) to author and import the draft yourself.
+8. **Work on an initialized target** — whenever a real-codebase UI request addresses a target already recorded in `.superdesign/resume.json`, try the durable path in [RESUME.md](references/RESUME.md) before any cold repo/context discovery. This is state-driven, not dependent on words such as "continue" or "refine".
 
 # Step 0 — Environment preflight (BEFORE any CLI step)
 
@@ -43,11 +44,19 @@ Two entry paths. Choose one with this cheap, deterministic check BEFORE any init
 
 → SKIP repo init entirely. Do NOT "analyze" an empty sandbox, and do NOT ask the user to point you at a repo they don't have. Instead, gather design context conversationally FIRST: ask what they want to build, the target audience/platform, style/brand preferences, and any reference designs or inspirations. Then design from that conversation via the **BRAND NEW PROJECT** path in [SUPERDESIGN.md](references/SUPERDESIGN.md).
 
-**Real codebase present** (any frontend code, or an existing `.superdesign/init/`) — the repo-init path below is MANDATORY; run the full analysis before designing.
+**Real codebase present** (any frontend code, or an existing `.superdesign/init/`) — repo init must have completed at least once before designing. Reuse a valid initialized target through Step 1.5; run the full analysis only when init is incomplete or warm state cannot be used.
 
 **Exception — standalone extraction:** if the task is ONLY to extract a site's design DNA or set/refresh `design-system.md` from a URL (`extract-website` → `design-system.md`, no design generation; read [WEBSITE.md](references/WEBSITE.md) for the recipes), run it WITHOUT repo init — extracting an external site's style doesn't require analyzing the user's codebase. Init is still required before generating designs FOR the existing codebase's UI (reproducing/redesigning an existing page).
 
 **Exception — graphics:** posters/marketing assets (scenario 5) skip init even in a real codebase — the brief carries the style, and most of init's output (components, layouts, routes, pages) has no bearing on a fixed-canvas artwork. The graphic brief round asks whether the artwork should be on-brand with this repo's product ([GRAPHIC.md](references/GRAPHIC.md) Step 1); only an on-brand "yes" pulls in the design-system/brand context — running init first only if that context doesn't already exist.
+
+# Step 1.5 — Resume before rediscovery (real-codebase UI path)
+
+Before reading init artifacts or source files, check `.superdesign/resume.json` for the requested route/feature. A matching target defaults to [RESUME.md](references/RESUME.md) regardless of whether the user says "continue", "change", "redesign", or gives only a direct instruction such as "make the dashboard darker". Intent phrasing never decides warm versus cold routing.
+
+Apply the saved target's trust/structural checks FIRST. A safe, structurally valid target reuses the saved project, draft, component records, design direction, and exact `--context-file` bundle: matching hashes go to warm resume, while mismatches go to incremental refresh without cold rediscovery. If a request needs code understanding not captured by the active draft metadata, use RESUME.md's targeted context-expansion rule; do not rerun full discovery merely to understand that request.
+
+Use the cold path only when no saved entry covers the requested target, the user explicitly asks to start over from fresh ground truth, the state is unsafe/structurally invalid, or targeted repair determines it is stale beyond incremental repair. A new agent session, different wording, or a fingerprint mismatch alone never forces cold routing.
 
 # Init: Repo Analysis (real-codebase path)
 
@@ -61,9 +70,9 @@ When a real codebase is present (per Step 1, and neither Step 1 exception — st
 
 Do NOT ask the user to do this manually — just do it.
 
-# Mandatory Init Files
+# Init Files (cold/stale context path)
 
-If init is complete (all six files present and non-empty), you MUST read ALL of them FIRST before any design task:
+For a first design of a target, or after [RESUME.md](references/RESUME.md) determines that saved context is stale/unusable, read all six files before collecting the target context:
 
 - `components.md` — shared UI primitives with full source code
 - `layouts.md` — shared layout components (nav, sidebar, header, footer)
@@ -72,7 +81,9 @@ If init is complete (all six files present and non-empty), you MUST read ALL of 
 - `pages.md` — page component dependency trees (which files each page needs)
 - `extractable-components.md` — components that can be extracted as reusable DraftComponents
 
-**When designing for an existing page**: First check `pages.md` for the page's dependency tree — the candidate set of `--context-file` files. Pass them under the PAYLOAD BUDGET rules in [SUPERDESIGN.md](references/SUPERDESIGN.md) so the payload does not 400. Then also add the globals.css tokens, tailwind.config, and design-system.md.
+On a valid warm resume, only check that all six files exist and are non-empty — do NOT read their contents. Reuse the target's saved context bundle; read only narrowly selected source files when [RESUME.md](references/RESUME.md) explicitly triggers targeted context expansion.
+
+**When cold-designing an existing page**: First check `pages.md` for the page's dependency tree — the candidate set of `--context-file` files. Pass them under the PAYLOAD BUDGET rules in [SUPERDESIGN.md](references/SUPERDESIGN.md) so the payload does not 400. Then also add the globals.css tokens, tailwind.config, and design-system.md. Persist the final selection per [RESUME.md](references/RESUME.md).
 
 # Superdesign CLI (MUST use before any command)
 
@@ -82,7 +93,7 @@ If init is complete (all six files present and non-empty), you MUST read ALL of 
    ```
    npx --yes @superdesign/cli@latest
    ```
-   The bare command verifies everything in one shot: that the CLI runs at all, an `auth:` status line (`authenticated as team "…"` vs `not authenticated — run superdesign login`), and a list of recent projects — read that list when deciding whether to reuse an existing project or `create-project`. When reusing one, `fetch-design-nodes --project-id <id>` lists its drafts and their ids; that is the only way to get a `draft-id` for work started in an earlier session.
+   The bare command verifies everything in one shot: that the CLI runs at all, an `auth:` status line (`authenticated as team "…"` vs `not authenticated — run superdesign login`), and a list of recent projects. On a valid warm resume, use the saved `projectId`/`activeDraftId` directly. Otherwise read the recent-project list when deciding whether to reuse an existing project or `create-project`; `fetch-design-nodes --project-id <id>` is the fallback for recovering draft ids when durable resume state is unavailable or rejected.
 
 2. If the `auth:` line says not authenticated, run login NOW, before any real command:
    ```

@@ -22,5 +22,6 @@ Use this path only when the user explicitly asks the current Agent to design, or
    ```
 
 5. Act on any returned `warnings[]`, then surface the returned `canvas` URL as usual.
+6. For a real-codebase UI target, record the imported draft/version as the active result in `.superdesign/resume.json` per [RESUME.md](RESUME.md). Preserve the already-selected context bundle and fingerprints; graphics do not use this resume state.
 
 Use the real model identifier exposed by the harness. If none is available, omit `--generated-by` instead of inventing one. Use `--width`/`--height` for a custom viewport and add `--kind graphic` for fixed-canvas graphics; read `--help` rather than guessing other flags.
