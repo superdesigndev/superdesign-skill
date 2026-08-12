@@ -6,13 +6,10 @@ All plugin manifests carry an explicit `version`, so marketplaces only hand user
 field is bumped — every release entry below corresponds to a `chore(plugin): bump to X.Y.Z` commit that
 bumps `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, and `.cursor-plugin/plugin.json` together.
 
-## Unreleased
+## 0.4.3
 
 - Add Cursor plugin packaging (`.cursor-plugin/plugin.json` + `.cursor-plugin/marketplace.json`) for the
   Cursor marketplace, off the same `skills/superdesign/` tree.
-
-## Unreleased
-
 - Reuse safe `.superdesign/resume.json` state across sessions so an initialized UI target keeps its
   project, drafts, components, and budgeted source context without repeating discovery or reproduction.
   Changed source is repaired incrementally with precise Git diffs when available; flow pages remain
