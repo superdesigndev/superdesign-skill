@@ -18,6 +18,8 @@ Superdesign helps you (1) find design inspirations/styles and (2) generate/itera
 7. **Design with your own model** — when the user explicitly asks, or `create-design-draft` / `iterate-design-draft` still fails after one retry, follow [design-with-your-model.md](references/design-with-your-model.md) to author and import the draft yourself.
 8. **Work on an initialized target** — whenever a real-codebase UI request addresses a target already recorded in `.superdesign/resume.json`, try the durable path in [RESUME.md](references/RESUME.md) before any cold repo/context discovery. This is state-driven, not dependent on words such as "continue" or "refine".
 
+When continuing a draft, follow [SUPERDESIGN.md](references/SUPERDESIGN.md) **ITERATION MODE ROUTING**: replace refines the selected direction with version history; branch is only for alternatives the user wants to compare.
+
 # Step 0 — Environment preflight (BEFORE any CLI step)
 
 Superdesign runs entirely through its CLI, so you must be able to execute shell commands. Confirm that capability first, before any CLI verification.
@@ -132,6 +134,10 @@ After creating a project or design draft, and at natural review moments (after `
 ## Browser Choice
 
 `create-project` auto-opens the canvas in user's browser by default. Leave it on, and tell the user the canvas was opened (with the `canvas` URL as a clickable link). Only pass `--no-open` when there's no user-facing browser (CI, headless).
+
+# Images and local assets
+
+Before generation, inventory only the images the user attached or the narrowly relevant local assets selected for this target. Follow [SUPERDESIGN.md](references/SUPERDESIGN.md) **ASSET PURPOSE ROUTING**: temporary screenshots/references go to canvas reference nodes; logos, fonts, and reusable identity imagery go to Brand Assets; final-content imagery stays project content. Pass returned node ids or Brand Asset keys with `--reference-id` so create, iterate, and flow generation receive the actual pixels. Never bulk-upload the repository and never put local filesystem paths into draft HTML.
 
 # After generating: offer to go further
 

@@ -76,11 +76,25 @@ The design API rejects oversized context with a **400**. When that happens and t
 
 **BRAND & ICON RULES:**
 
-1. **Brand assets (logo, brand marks)**: Scan the project for brand assets (logo SVGs, brand images). Pass logo SVG files as `--context-file` so the design reproduces the actual brand identity. Designs MUST reuse the project's real logo/brand — never replace with generic placeholders.
+1. **Brand assets (logo, brand marks, fonts, reusable brand imagery)**: Select only the files actually needed for this target and upload them through the purpose-routing workflow below. Use `--purpose brand`, the correct `--type`, a stable repo-relative `--key`, and a useful `--description`. Designs MUST reuse the project's real identity — never replace it with generic placeholders.
 2. **Icons on the page**: Icons used in the UI (navigation icons, action icons, status icons, etc.) MUST be reproduced 1:1. Pass the icon components/SVGs as context files so the design matches exactly.
-3. **Decorative/content images (photos, illustrations, banners)**: Use a placeholder icon or generic image block instead. Do NOT pass large image files as context — these are not reproducible in design drafts anyway.
+3. **Decorative/content images (photos, illustrations, banners)**: Upload a selected image with `--purpose content` when the real image matters; otherwise use a placeholder. Never pass binary images as `--context-file`.
 
-Summary: **Logo = real, Icons = real, Photos/images = placeholder.**
+Summary: **Brand identity = durable Brand Assets, UI icons = source context, temporary inspiration = canvas reference, final imagery = project content.**
+
+### ASSET PURPOSE ROUTING (before every upload)
+
+Classify each deliberately selected file or user-attached image before uploading it. Never scan and upload an asset directory or repository wholesale.
+
+- **Temporary visual reference** — screenshots, mood references, competitor examples, annotated images: `upload-asset <file> --project-id <id> --purpose reference --key "<stable-descriptive-key>" --description "<what the model should notice>"`. Keep the returned canvas `nodeId`; pass it to generation with `--reference-id <nodeId>`. It belongs on the canvas, never in Brand Assets.
+- **Durable brand identity** — logos/marks, brand fonts, and reusable brand imagery: `upload-asset <file> --project-id <id> --purpose brand --type <logo|font|image> --key "<stable-repo-relative-key>" --description "<identity and intended use>"`. Keep the returned `assetKey`; use it as a `--reference-id` when the generation must see the pixels. Fonts are durable context but do not need to be visual reference blocks.
+- **Final-content imagery** — a generated hero, product photo, illustration, or other image meant to appear in the result: `upload-asset <file> --project-id <id> --purpose content --key "<stable-descriptive-key>" --description "<role in the design>"`. Use the returned public `url` in the design prompt where the HTML must embed it, and pass the returned `nodeId` via `--reference-id` when visual composition should follow the actual pixels. Do not mark it as brand merely because it will be visible in the final design.
+
+Use stable keys for local assets and reuse the server-returned key/node id on later calls. Uploading identical bytes deduplicates by content hash; uploading changed bytes under the same key updates the existing logical asset. Do not create timestamped/random keys and do not re-upload an unchanged file. A `deduplicated: true` response means reuse the returned identifiers.
+
+`--context-file` is for text/source context. `--reference-id` is for actual image pixels. On `create-design-draft`, `iterate-design-draft`, and `execute-flow-pages`, pass every relevant image id together after one flag, for example `--reference-id <screenshot-node-id> <brand-asset-key>`. A prompt that merely names a local image path does not make it visible.
+
+Generated/imported HTML may reference only public `https://` (or intentional `data:`) asset URLs. Never emit `/logo.svg`, `./image.png`, `../...`, `file://...`, or a machine-local absolute path; upload first and use the returned public URL.
 
 Task 1.2 - Design system:
 
@@ -156,9 +170,10 @@ Step 3 — Design in Superdesign
   **Line range usage**: per **CONTEXT FILE LINE RANGES** — pass files full by default; the `Target.tsx:45` above only skips a pure data-fetching block, keeping all JSX from line 45.
 
   This step produces ONE draft with ONE -p. The -p must ONLY ask for pixel-perfect reproduction, NO design changes.
+  If screenshots or other visual references were selected, append their ids as one `--reference-id <id...>` option so the reproduction model receives the actual pixels.
 
-- **Step 3b — Iterate with design variations using BRANCH mode — SEPARATE STEP**:
-  AFTER Step 3a completes and you have a draft-id, use `iterate-design-draft` with `--mode branch` to create design variations.
+- **Step 3b — Explore design variations using BRANCH mode — SEPARATE STEP**:
+  AFTER Step 3a completes and you have a draft-id, use `iterate-design-draft` with `--mode branch` only when the user wants alternative directions to compare.
   Each -p is ONE distinct variation. Do NOT combine multiple variations into a single -p.
 
   **VARIANT COUNT RULE** (every variation spends the user's generation credits, so the count is the user's call, not yours):
@@ -209,7 +224,7 @@ Step 3 differs — there is no Step 3a:
 - **Never create a "reproduction" of a page that doesn't exist.** Step 3a's job is capturing ground truth; for a new target there is none, and a fabricated "current UI" draft only corrupts the flow. Go straight to a design draft.
 - **If a related existing page is already on the canvas as a confirmed draft** (reproduced or designed earlier in this project): prefer `execute-flow-pages` from that draft — it inherits the confirmed page's style and shell, which is exactly what a sibling page should do.
 - **Otherwise**: `create-design-draft` with a normal design prompt (single `-p` describing the new page — a design prompt, not a reproduction prompt), passing `design-system.md`, the globals tokens, and the shared shell/layout + relevant component files as `--context-file` so the generated page matches the real app.
-- Then iterate variations with `iterate-design-draft --mode branch` per the VARIANT COUNT RULE, same as Step 3b.
+- When the user wants alternatives, explore them with `iterate-design-draft --mode branch` per the VARIANT COUNT RULE, same as Step 3b. Once the user selects a direction, route later feedback through **ITERATION MODE ROUTING** below.
 - After the first successful draft/flow result, add this target and its exact context bundle to `.superdesign/resume.json` per [RESUME.md](RESUME.md).
 - Optional, when the user emphasizes strict visual consistency with a specific existing page: offer to reproduce that representative page first (per Step 3a) and then `execute-flow-pages` the new page from it. This costs an extra generation, so propose it and let the user decide — don't do it unasked.
 
@@ -240,7 +255,7 @@ Step 3 — Design in Superdesign:
 - Create project: `npx --yes @superdesign/cli@latest create-project --title "<X>"`
 - Create initial draft (only for brand new, single -p only): `npx --yes @superdesign/cli@latest create-design-draft --project-id <id> --title "<X>" -p "<all design directions in one prompt>" --user-request "<the user's verbatim request>" --context-file .superdesign/design-system.md`
 - Surface the `canvas` URL per [SKILL.md](../SKILL.md) "Surface the canvas URL", then gather feedback and iterate.
-- Iterate in BRANCH mode;
+- Use **ITERATION MODE ROUTING** below: branch for alternatives, replace for feedback on the chosen direction.
 
 ---
 
@@ -286,10 +301,20 @@ When using execute-flow-pages:
 ## TOOL USE RULE
 
 Default tool while iterating design of a specific page is iterate-design-draft
-Default mode is branch
-You may use replace in two cases: (1) the user requests a tiny tweak you can describe in one sentence and is okay overwriting the previous version; (2) the graphic workflow's one-round self-review fix pass (see [GRAPHIC.md](GRAPHIC.md) Step 5) — that agent-initiated fix corrects the just-generated draft in place, so it uses `--mode replace` (never spend a variant branching a flaw you are fixing). Both cases are single-`-p`, one round only.
 Default tool while generating new pages based on an existing confirmed page is execute-flow-pages
 Prefer iterating an existing design draft over creating new ones
+
+### ITERATION MODE ROUTING
+
+Choose the mode from the user's intent, not from the size of the requested change:
+
+- **`replace` — refine the selected direction.** Use one `-p` with `--mode replace` when the user is giving concrete feedback on the draft they chose or are currently discussing. This includes content corrections, removing unsupported claims, using supplied assets, changing imagery, hierarchy, layout, sections, styling, or any other request whose intended outcome is one improved version of that direction. A change does not need to be tiny. Replace preserves the draft's version history and remains revertible; do not ask whether overwriting is okay.
+- **`branch` — explore alternatives.** Use `--mode branch` when the user explicitly asks for another direction, options, variants, comparison, experimentation, or several distinct outcomes. Multiple `-p` prompts or `--count > 1` are always branch exploration.
+- **Selection changes the default.** Phrases such as “I prefer,” “use this one,” “choose,” “continue with,” or “refine that direction” select a draft. Set that draft as active, then default subsequent concrete feedback to replace. Do not create a fresh branch merely because the feedback is substantial or arrives in a later turn.
+- **Fix defects in place.** Self-review corrections, malformed output, broken layout, missing requested assets, factual/content fidelity fixes, and other flaws in the just-generated result use one `-p` with replace. Never spend a branch on correcting a defect.
+- **Ask only when intent is genuinely ambiguous.** If the user could reasonably mean either “change this draft” or “show me a separate option,” ask one concise clarification before spending generation credits. Do not ask when their language already identifies one desired result.
+
+For branch calls that return several candidates, keep the source active until the user selects one. For replace, the draft id stays the same; update its current-version metadata and keep it active.
 
 For an unchanged initialized target, "prefer" is a hard routing rule: use [RESUME.md](RESUME.md); do not repeat init reads, source discovery, component checks, project creation, or reproduction.
 
@@ -361,6 +386,8 @@ Every command takes `--json` for the full machine payload, and `--full` expands 
 - `--model`: omit it unless the user names one, so the backend picks its default. Do not memorize the list — run `list-models`.
 - `--device` on `iterate-design-draft` is inherited from the source draft; omit it unless you are deliberately changing the viewport. `--kind graphic` switches `create-design-draft` to the fixed-canvas branch and sticks across iterations; pair it with `--width`/`--height` (see [GRAPHIC.md](GRAPHIC.md)).
 - `execute-flow-pages --context` is a prose string; `--context-file` passes source files. They are different inputs.
+- `create-design-draft`, `iterate-design-draft`, and `execute-flow-pages` accept image pixels through `--reference-id <ids...>`. Canvas image-node ids and Brand Asset keys are valid only within their project; an unknown id fails the job instead of being ignored.
+- `upload-asset` requires explicit purpose in this workflow: `reference` for temporary canvas inputs, `brand` for reusable identity, and `content` for final imagery. Stable keys upsert and content hashes deduplicate; use the response's `nodeId`, `assetKey`, `url`, and `deduplicated` fields rather than guessing identifiers.
 - `get-prompts`: index with the default output first, then re-run with `--full` for the chosen slug(s) only.
 - `create-project` auto-opens the browser — see Browser Choice in [SKILL.md](../SKILL.md). Revert and `--from-version` semantics live in VERSION HISTORY & REVERT.
 

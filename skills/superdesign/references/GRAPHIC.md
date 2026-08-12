@@ -12,7 +12,7 @@ A graphic lives in a project like any draft. Reuse the current project or `creat
 
 1. Confirm the brief (copy, canvas, layout, style, asset plan) — ONE confirmation round
 2. Generate the key visual with your own image tool (only if the layout needs one)
-3. `upload-asset` → public URL
+3. `upload-asset --purpose content` → public URL + canvas reference id
 4. `create-design-draft --kind graphic` with the assembled prompt
 5. Share the canvas link, iterate on feedback
 
@@ -113,17 +113,18 @@ If the user provides their own image file, skip generation and continue with upl
 ## Step 3 — Upload the asset
 
 ```bash
-npx --yes @superdesign/cli@latest upload-asset <file> --project-id <projectId>
+npx --yes @superdesign/cli@latest upload-asset <file> --project-id <projectId> \
+  --purpose content --key "graphic/<stable-name>" --description "Key visual for <graphic>"
 ```
 
-Accepts png/jpeg/webp/gif up to 10MB and prints a public `url` — that URL is what goes into the graphic prompt. Upload each asset once and reuse the URL across drafts/iterations. The asset also appears on the project canvas as an image node next to the graphic drafts (pass `--no-canvas` to skip that).
+The response prints a public `url` and canvas `nodeId`. Put the URL in the graphic prompt so the final HTML embeds it, and pass the node id through `--reference-id` so the generation model sees the actual pixels. Upload each asset once and reuse both values across drafts/iterations; stable keys and server-side hashes upsert changed files and deduplicate unchanged ones. A generated key visual is final content, not a Brand Asset.
 
 ## Step 4 — Generate the graphic
 
 ```bash
 npx --yes @superdesign/cli@latest create-design-draft --project-id <id> \
   --title "<Poster title>" --kind graphic --width <W> --height <H> \
-  -p "<assembled prompt>"
+  --reference-id <key-visual-node-id> -p "<assembled prompt>"
 ```
 
 Assemble the single `-p` prompt from the confirmed brief:
@@ -145,6 +146,7 @@ STYLE: <style adjectives, palette, font character (e.g. heavy grotesque headline
 ```
 
 Omit the KEY VISUAL block for asset-less layouts.
+Omit `--reference-id` only when there is no selected key visual or other image reference.
 
 ## Step 5 — Review & iterate
 
