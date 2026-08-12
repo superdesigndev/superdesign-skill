@@ -1,6 +1,6 @@
 # Resume an Existing Design
 
-Use this workflow when the user wants to continue, iterate, refine, revert, or extend a real-codebase UI design that Superdesign has already initialized. Its purpose is to preserve the codebase-to-canvas context across agent sessions without repeating repo analysis.
+Use this workflow whenever a real-codebase UI request addresses a route/feature already recorded in `.superdesign/resume.json`. Its purpose is to preserve the codebase-to-canvas context across agent sessions without repeating repo analysis; request wording does not determine eligibility.
 
 This is a UI-draft fast path. Graphics keep their workflow in [GRAPHIC.md](GRAPHIC.md), and a first-time or stale UI target returns to the appropriate SOP in [SUPERDESIGN.md](SUPERDESIGN.md).
 
@@ -59,7 +59,7 @@ Rules:
 
 - Keys in `targets` are stable route or feature identifiers (`/`, `/dashboard`, `settings-panel`).
 - A target created by `execute-flow-pages` may also store `sourceTarget` and `sourceDraftId` to preserve its origin. These fields are informational; its own `activeDraftId`, context, and fingerprints control later resume.
-- `contextFiles` stores the exact, already-budgeted `--context-file` arguments, including line ranges. Do not rediscover or reread these files on a valid warm resume; after the trust checks below, pass only the validated entries to the next generation command.
+- `contextFiles` stores the exact, already-budgeted `--context-file` arguments, including line ranges. Do not rediscover or reread them on an ordinary warm resume; after the trust checks below, pass the validated entries to the next generation command. Read or extend only the smallest relevant subset when the request triggers **Targeted context expansion** below.
 - `fingerprints` keys are real file paths without line-range suffixes. Hash the whole underlying file with SHA-256 (`sha256sum` when available, otherwise `shasum -a 256`). Hashing is a cheap freshness check; do not print or read the file contents into model context while doing it.
 - Include every underlying context file in `fingerprints`. A target entry is not valid if a context file is absent from the fingerprint map.
 - Keep `drafts` descriptive enough to distinguish parallel visual branches across sessions. Never infer the active visual direction from a version number alone.
@@ -82,7 +82,7 @@ If any check fails, reject the entire target entry: do not hash or upload its pa
 
 Use resume routing before the cold existing/new-target SOP when ALL are true:
 
-1. The user is continuing an existing UI design rather than asking for a fresh reproduction or a different uninitialized target.
+1. The request addresses the same saved route/feature. This is state-driven: "change", "redesign", or a direct instruction remains eligible. An explicit request to start over from fresh current-UI ground truth, or a different uninitialized target, does not use this target's warm state.
 2. `.superdesign/resume.json` has a matching target entry that passes the trust/schema validation above.
 3. All six init files pass the cheap complete test (exist and are non-empty). Do not read their contents.
 4. The target's design-system and context files exist.
@@ -90,7 +90,7 @@ Use resume routing before the cold existing/new-target SOP when ALL are true:
 
 After these structural checks, route by freshness:
 
-- **All fingerprints match:** follow the unchanged warm-resume procedure. Do NOT read the six init files, retrace imports, reopen source files, rescan brand assets, recalculate the payload budget, call `list-components`, create a project, or reproduce the existing UI again.
+- **All fingerprints match:** follow the warm-resume procedure. Do NOT read the six init files, retrace imports, reopen source files, rescan brand assets, recalculate the payload budget, call `list-components`, create a project, or reproduce the existing UI again unless the request meets the narrow **Targeted context expansion** rule.
 - **One or more fingerprints differ:** the target remains resume-eligible. Follow **Incremental refresh**; do not route cold merely because a hash changed.
 - **A structural/trust check fails, required files are absent, or incremental refresh determines the saved context is unreliable:** reject resume and use the appropriate cold SOP.
 
@@ -112,16 +112,26 @@ If the user asks for a direction that conflicts with `activeDraftId`, or multipl
 3. Verify validated context-file existence and SHA-256 fingerprints without reading file contents. Route mismatches to **Incremental refresh**.
 4. Run the session's one bare CLI preflight.
 5. Call `get-design --draft-id <activeDraftId> --json` to verify the saved draft and inspect its current version before iteration/revert. The canonical invocation is already specified here; do not run `get-design --help` first unless the command rejects it or the needed flags differ.
-6. Gather only unresolved user intent. Do not repeat questions already answered by the saved target/draft state.
+6. Gather only unresolved user intent. Do not repeat questions already answered by the saved target/draft state. Apply **Targeted context expansion** only when the request cannot be framed accurately from the user's words plus the fetched active draft.
 7. Run the appropriate command:
    - normal refinement: `iterate-design-draft --mode branch`
    - eligible tiny in-place tweak: `iterate-design-draft --mode replace`
    - revert: `revert-design-draft`
    - sibling pages from a confirmed draft: `execute-flow-pages`, then persist every returned page per **Flow-page persistence** below
 8. For generation, append the validated stored `contextFiles` as separately quoted `--context-file` arguments and enumerate them in any required upload approval. Passing source context to the service remains mandatory; rereading it into the agent context does not.
-9. Inspect the returned draft as required by the normal generation/review rules, then atomically update `.superdesign/resume.json` with the returned ids, current version, branch description, fingerprints, and `updatedAt`. Update `activeDraftId` only under the single/selected-result rule above.
+9. Inspect the returned draft as required by the normal generation/review rules, then update `.superdesign/resume.json` with the returned ids, current version, branch description, fingerprints, and `updatedAt`: write complete valid JSON to a temporary sibling file, then rename it over `.superdesign/resume.json`. Update `activeDraftId` only under the single/selected-result rule above.
 
 If `get-design` says the saved draft does not exist, use `fetch-design-nodes --project-id <projectId>` once to reconcile the project's drafts. Update the state when there is one clear match; ask the user when several match. If the project itself is gone, fall back to the appropriate cold SOP.
+
+## Targeted context expansion
+
+The generation service receives every validated saved `contextFiles` entry even when the calling agent does not read those files locally. Read source only when the calling agent itself cannot accurately translate the request into a design instruction from the user's words and fetched draft—for example, "restructure this the way the sidebar behaves" when that behavior is not visible or described in the draft.
+
+1. For a self-contained visual request (color, spacing, typography, copy, density, or an element visible in the fetched draft), do not read source; continue with the saved bundle.
+2. For an unresolved structural, behavioral, or component relationship, read only the most likely relevant file(s) already present in the validated saved bundle. Do not read every context file or any init document.
+3. If the referenced implementation is absent from the saved bundle, perform targeted discovery from the named symbol/component or the saved target source only. Validate every added path with the same repository-contained, non-secret rules, apply the normal payload budget, then add its exact context entry and whole-file fingerprint to the target before generation.
+4. Use the resulting facts only to frame the requested change and ensure the service receives the necessary context. Preserve all unrelated design details; context expansion alone does not require a new reproduction.
+5. Route to incremental or baseline refresh only if this inspection reveals changed source or that the saved target/dependency structure is no longer reliable. Otherwise continue warm from the active draft.
 
 ## Flow-page persistence
 
@@ -130,7 +140,7 @@ Treat pages returned by `execute-flow-pages` as distinct resumable targets, not 
 1. Derive one stable key per returned page from its requested route when present; otherwise use a normalized, unique feature key such as `flow:checkout`. If a key collides or remains ambiguous, ask one concise clarification before writing state; never overwrite another target silently.
 2. Create or update that page's own target entry with `targetKind: "new-ui"`, the shared `projectId`, its returned draft as `activeDraftId`, its own `drafts` metadata, `sourceTarget`, `sourceDraftId`, the exact validated context bundle used for the flow call, matching fingerprints, relevant component records, and `updatedAt`. Omit `baselineDraftId` because the page did not previously exist to reproduce.
 3. Record the source draft as the new page draft's `parentDraftId`. Preserve the source target's `activeDraftId`, history, context, and fingerprints unchanged; generating checkout must not make checkout the dashboard's active draft.
-4. When several pages return, write all target entries atomically after every result has a stable key. Later requests resume the matching page target independently through the normal trust/freshness checks.
+4. When several pages return, assemble all target entries first, write the complete JSON to a temporary sibling file, then rename it over `.superdesign/resume.json` once. Later requests resume the matching page target independently through the normal trust/freshness checks.
 
 ## Incremental refresh
 
@@ -159,6 +169,6 @@ After every successful UI `create-design-draft`, `iterate-design-draft`, `revert
 1. Create `.superdesign/resume.json` if needed.
 2. Preserve unrelated target and draft entries.
 3. Record the project, target, exact context-file bundle, underlying-file hashes, extracted project components, baseline/active draft ids, branch description, current version, and timestamp.
-4. Write valid JSON atomically so an interrupted write cannot destroy previously resumable state.
+4. Write complete valid JSON to a temporary sibling file, then rename it over `.superdesign/resume.json` so an interrupted write does not truncate the prior state.
 
 The cold workflow pays discovery cost once; every unchanged later session uses this file as the durable initialized design context.

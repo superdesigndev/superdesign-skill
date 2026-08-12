@@ -17,7 +17,7 @@ Three kinds of UI target, three SOPs. Decide BEFORE designing — the wrong SOP 
 - **B. New target in an existing codebase** — a real codebase is present, but the requested page/feature does not exist yet, so nothing renders to reproduce → **SOP: NEW TARGET IN EXISTING CODEBASE** (init/context as usual, then create a new draft directly — no reproduction step).
 - **C. New target without a codebase** — the no-codebase path from [SKILL.md](../SKILL.md) Step 1 → **SOP: BRAND NEW PROJECT** (conversational brief → design system → create draft).
 
-**RESUME ROUTING COMES FIRST:** when the user is continuing, refining, reverting, or extending an already-initialized UI design, read [RESUME.md](RESUME.md) and try its warm path before entering any SOP below. A valid resume skips cold context discovery and baseline reproduction. The target kind still determines the fallback SOP when resume state is absent or stale.
+**RESUME ROUTING COMES FIRST:** for every real-codebase UI request, check for a matching target in `.superdesign/resume.json` before entering any SOP below. Valid saved state is the default for that target regardless of request wording; [RESUME.md](RESUME.md) decides warm iteration, targeted context expansion, incremental repair, or baseline refresh. The target kind determines the fallback SOP only when saved state is absent, rejected, or the user explicitly asks to start over from fresh ground truth.
 
 A task can mix targets (e.g. "redesign the dashboard and add a settings page"): handle the existing target per A first, then extend to the new pages per B — usually `execute-flow-pages` from the confirmed dashboard draft.
 
