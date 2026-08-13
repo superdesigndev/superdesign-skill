@@ -158,7 +158,7 @@ Treat a generated graphic as unfinished until you have looked at the render your
 - In Codex Desktop, use `@Browser` and explicitly select the in-app surface with `agent.browsers.get("iab")`. Use Chrome only when the user asks for it, the task needs an existing Chrome tab/login/profile/extension, or the in-app Browser is unavailable or blocked.
 - In other environments, use whatever your host provides (a sandboxed screenshot/preview tool, or a browser tool with vision). If you genuinely cannot see the render, skip the review and tell the user plainly that you have not visually verified it — do not imply you checked.
 
-Open the draft's `preview` URL and judge it as a designer would: every copy string reproduced verbatim (headline, info lines, footer — no typos, no rewording), nothing overflowing the fixed canvas, text legible where it sits over the key visual, sensible image crop, and general layout/contrast/typography quality. If you spot concrete issues, run EXACTLY ONE `iterate-design-draft --mode replace` fix round and re-check — one round only, never keep looping on your own.
+Open the draft's `preview` URL and judge it as a designer would: every copy string reproduced verbatim (headline, info lines, footer — no typos, no rewording), nothing overflowing the fixed canvas, text legible where it sits over the key visual, sensible image crop, and general layout/contrast/typography quality. If you spot concrete issues, follow [SUPERDESIGN.md](SUPERDESIGN.md) **CORRECTION METHOD ROUTING**: direct-edit exact copy/link/literal HTML-CSS defects, or run EXACTLY ONE `iterate-design-draft --mode replace` round when the fix requires visual judgment. Re-check once and never keep looping on your own.
 
 ### Deliver
 

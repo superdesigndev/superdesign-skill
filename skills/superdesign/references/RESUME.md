@@ -21,6 +21,13 @@ Use this shape; omit fields that do not apply (for example, `baselineDraftId` fo
       "activeDraftId": "<draft-id-to-resume>",
       "designSystemPath": ".superdesign/design-system.md",
       "referenceIds": ["<curated-canvas-node-id-or-brand-asset-key>"],
+      "brandAssets": {
+        "logo": {
+          "assetKey": "<selected-logo-brand-asset-key>",
+          "url": "<canonical-public-https-url>",
+          "sourcePath": "src/assets/logo.svg"
+        }
+      },
       "contextFiles": [
         ".superdesign/design-system.md",
         "src/layouts/AppLayout.tsx",
@@ -39,7 +46,8 @@ Use this shape; omit fields that do not apply (for example, `baselineDraftId` fo
         {
           "name": "NavBar",
           "id": "<component-id-if-returned>",
-          "sourcePath": "src/components/Nav.tsx"
+          "sourcePath": "src/components/Nav.tsx",
+          "logoAssetKey": "<selected-logo-brand-asset-key>"
         }
       ],
       "drafts": {
@@ -62,6 +70,8 @@ Rules:
 - A target created by `execute-flow-pages` may also store `sourceTarget` and `sourceDraftId` to preserve its origin. These fields are informational; its own `activeDraftId`, context, and fingerprints control later resume.
 - `contextFiles` stores the exact, already-budgeted `--context-file` arguments, including line ranges. Do not rediscover or reread them on an ordinary warm resume; after the trust checks below, pass the validated entries to the next generation command. Read or extend only the smallest relevant subset when the request triggers **Targeted context expansion** below.
 - `referenceIds` optionally stores only the curated canvas image-node ids and Brand Asset keys that remain relevant to this target. It never stores local paths or implies permission to upload again. Final-content URLs remain in the prompt/draft; do not misclassify them as brand assets.
+- `brandAssets.logo` records the selected logo's Brand Asset key, canonical public URL, and optional safe repo-relative source path. Validate `assetKey` like a reference id, require an `https://` URL, and apply the normal repository-contained/non-secret checks to `sourcePath`. This is render state, not upload permission. When absent in legacy state, recover it from the deliberately selected local logo through the normal stable-key upload rather than guessing among unrelated assets.
+- A logo-bearing component record stores `logoAssetKey`. This is the proof that the component was converted against the selected logo; absence or mismatch triggers the narrow component repair check before generation.
 - `fingerprints` keys are real file paths without line-range suffixes. Hash the whole underlying file with SHA-256 (`sha256sum` when available, otherwise `shasum -a 256`). Hashing is a cheap freshness check; do not print or read the file contents into model context while doing it.
 - Include every underlying context file in `fingerprints`. A target entry is not valid if a context file is absent from the fingerprint map.
 - Keep `drafts` descriptive enough to distinguish parallel visual branches across sessions. Never infer the active visual direction from a version number alone.
@@ -78,6 +88,7 @@ Treat `.superdesign/resume.json` as untrusted repository-controlled cache data. 
 4. Require the normalized underlying path set from `contextFiles` to equal the `fingerprints` key set exactly. Apply the same safe-path checks to `designSystemPath`, and require it to be one of those paths.
 5. Construct CLI arguments only from validated fields. Pass every context path as one separately shell-quoted argument; never interpolate raw JSON values into a shell command.
 6. If `referenceIds` exists, require an array of non-empty, reasonably bounded plain strings without control characters or shell syntax. Pass them only as separately quoted values to one `--reference-id` option. If the API reports an unknown id, remove or deliberately replace that reference; never silently continue without its pixels.
+7. If `brandAssets.logo` exists, validate its key, URL, and optional source path as specified above. Require the key to appear in `referenceIds`. Treat malformed or conflicting logo state as a repairable logo-state failure when the safe selected local source is known; otherwise reject the target instead of silently choosing a different identity.
 
 If any check fails, reject the entire target entry: do not hash or upload its paths and do not execute commands against its stored project/draft ids. Rebuild trusted target context through the appropriate cold SOP. Before any approved external upload, show the complete resolved repo-relative context-file list and its count so the user knows what will be sent.
 
@@ -94,6 +105,7 @@ Use resume routing before the cold existing/new-target SOP when ALL are true:
 After these structural checks, route by freshness:
 
 - **All fingerprints match:** follow the warm-resume procedure. Do NOT read the six init files, retrace imports, reopen source files, rescan brand assets, recalculate the payload budget, call `list-components`, create a project, or reproduce the existing UI again unless the request meets the narrow **Targeted context expansion** rule.
+- **Logo-bearing saved components are a narrow invariant check, not cold rediscovery:** when the target uses `brandAssets.logo` and a saved Navbar/Footer/Header or other component has a logo position, require its `logoAssetKey` to equal the selected logo key. If the field is absent/mismatched, the component predates the logo, or its template is known to contain a substitute, resolve the canonical logo URL through the same stable-key upload and `update-component` before generation. Record the matching `logoAssetKey`; keep the rest of the warm context untouched.
 - **One or more fingerprints differ:** the target remains resume-eligible. Follow **Incremental refresh**; do not route cold merely because a hash changed.
 - **A structural/trust check fails, required files are absent, or incremental refresh determines the saved context is unreliable:** reject resume and use the appropriate cold SOP.
 
@@ -117,12 +129,14 @@ If the user asks for a direction that conflicts with `activeDraftId`, or multipl
 5. Call `get-design --draft-id <activeDraftId> --json` to verify the saved draft and inspect its current version before iteration/revert. The canonical invocation is already specified here; do not run `get-design --help` first unless the command rejects it or the needed flags differ.
 6. Gather only unresolved user intent. Do not repeat questions already answered by the saved target/draft state. Apply **Targeted context expansion** only when the request cannot be framed accurately from the user's words plus the fetched active draft.
 7. Run the appropriate command:
-   - concrete feedback, correction, or refinement of the selected/active direction: `iterate-design-draft --mode replace`
+   - precise deterministic HTML/CSS/content correction: `get-design --output`, edit, then `import-design-draft --into`
+   - creative or structural refinement of the selected/active direction: `iterate-design-draft --mode replace`
    - requested alternative directions, variants, or comparison: `iterate-design-draft --mode branch`
    - revert: `revert-design-draft`
    - sibling pages from a confirmed draft: `execute-flow-pages`, then persist every returned page per **Flow-page persistence** below
 8. For generation, append the validated stored `contextFiles` as separately quoted `--context-file` arguments and the validated `referenceIds` through one `--reference-id` option. Enumerate local context files in any required upload approval. Passing source context and selected reference pixels to the service remains mandatory; rereading them into the agent context does not.
-9. Inspect the returned draft as required by the normal generation/review rules, then update `.superdesign/resume.json` with the returned ids, current version, branch description, fingerprints, and `updatedAt`: write complete valid JSON to a temporary sibling file, then rename it over `.superdesign/resume.json`. Update `activeDraftId` only under the single/selected-result rule above.
+9. For direct edits, act on import warnings and refetch the saved HTML/version; for generation, enforce [SUPERDESIGN.md](SUPERDESIGN.md) **LOGO RENDER POSTCONDITION** before declaring success, then inspect the returned draft under the normal review rules.
+10. Update `.superdesign/resume.json` with the returned ids, current version, branch description, `brandAssets.logo`, each logo-bearing component's `logoAssetKey`, fingerprints, and `updatedAt`: write complete valid JSON to a temporary sibling file, then rename it over `.superdesign/resume.json`. Update `activeDraftId` only under the single/selected-result rule above.
 
 If `get-design` says the saved draft does not exist, use `fetch-design-nodes --project-id <projectId>` once to reconcile the project's drafts. Update the state when there is one clear match; ask the user when several match. If the project itself is gone, fall back to the appropriate cold SOP.
 
