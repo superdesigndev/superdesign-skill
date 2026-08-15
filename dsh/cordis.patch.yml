@@ -1,0 +1,14 @@
+# The layer this bundle contributes to a dsh profile that lists it.
+#
+# One row: a skill provider that publishes the packaged `skills/superdesign/`
+# tree on `ctx.skills`. The row references the package by NAME (not a relative
+# path) so Node resolution finds the installed copy — see
+# https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/user/develop/basic/publish.md
+#
+# The skill is the whole product here: no MCP server, no tools, nothing to
+# configure at install time. The skill itself walks the user through
+# `superdesign login` on first use.
+
+- insert:
+    - id: superdesign-skill
+      name: superdesign-dsh
