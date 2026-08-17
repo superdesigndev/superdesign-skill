@@ -4,7 +4,15 @@ Notable changes to the Superdesign skill and its plugin packaging.
 
 All plugin manifests carry an explicit `version`, so marketplaces only hand users an update when that
 field is bumped — every release entry below corresponds to a `chore(plugin): bump to X.Y.Z` commit that
-bumps `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, and `.cursor-plugin/plugin.json` together.
+bumps `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, `.cursor-plugin/plugin.json`, and the
+root `package.json` (the DeepSeek Harness bundle) together.
+
+## Unreleased
+
+- Add DeepSeek Harness (`dsh`) packaging off the same `skills/superdesign/` tree: a root `package.json`
+  declaring `dsh.bundle`, plus `dsh/cordis.patch.yml` and a dependency-free `dsh/index.js` that publishes
+  the skill on `ctx.skills`. Installs with
+  `dsh plugin --profile <name> add github:superdesigndev/superdesign-skill`.
 
 ## 0.4.3
 

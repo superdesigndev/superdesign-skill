@@ -29,6 +29,16 @@ is a user-typed command you cannot run for them:
 Then continue at Step 2. Do NOT also run `npx skills add` — that leaves a second, unnamespaced copy of the
 same skill.
 
+**DeepSeek Harness (`dsh`)** — install the bundle into the profile you boot, then restart `dsh`:
+
+```
+dsh plugin --profile <your-profile> add github:superdesigndev/superdesign-skill
+```
+
+Then continue at Step 2. Do NOT also run `npx skills add` — the bundle already publishes this skill.
+(Without the bundle, `dsh` also picks the skill up from `~/.agents/skills/superdesign/`, which is where
+`npx skills add -g` writes it.)
+
 **Every other agent** — run (non-interactive), substituting **your own agent's slug**:
 
 ```
@@ -48,7 +58,8 @@ skills directory. Preserve the directory structure, including `SKILL.md`, the `r
 the deprecated compatibility forwarder files at the skill root.
 
 Typical skills dirs: `~/.claude/skills/superdesign/` (Claude Code) · `.agents/skills/superdesign/` (Cursor,
-Codex, Cline, Gemini CLI, GitHub Copilot, Zed, Warp) · or your agent's documented skills path.
+Codex, Cline, Gemini CLI, GitHub Copilot, Zed, Warp, DeepSeek Harness) · or your agent's documented skills
+path.
 
 ## Step 2 — Auth
 
