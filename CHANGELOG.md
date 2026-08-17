@@ -9,6 +9,17 @@ root `package.json` (the DeepSeek Harness bundle) together.
 
 ## Unreleased
 
+## 0.4.4
+
+- Make local project assets visibly reliable: discover and upload relevant logos, fonts, screenshots,
+  and images; place uploaded images predictably on the canvas; and use an available project logo
+  wherever a design or reusable component calls for one.
+- Route iteration by user intent: refine an accepted direction in place, reserve branches for genuine
+  alternatives, use Superdesign replacement generation for creative recomposition, and use direct,
+  reversible draft versions for exact local-model corrections.
+- Carry selected visual references into generation and reuse existing assets before generating new
+  imagery, while keeping caller-authored HTML imports conformant and recoverable.
+
 - Add DeepSeek Harness (`dsh`) packaging off the same `skills/superdesign/` tree: a root `package.json`
   declaring `dsh.bundle`, plus `dsh/cordis.patch.yml` and a dependency-free `dsh/index.js` that publishes
   the skill on `ctx.skills`. Installs with

@@ -1,7 +1,7 @@
 {
   "name": "superdesign",
   "displayName": "Superdesign",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "Design or redesign frontend UI and marketing graphics on the Superdesign infinite canvas. Reads your codebase for context, sets up a design system, and generates branchable design drafts you refine.",
   "author": {
     "name": "Superdesign dev, Inc.",
