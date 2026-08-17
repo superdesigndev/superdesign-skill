@@ -15,8 +15,10 @@ Superdesign helps you (1) find design inspirations/styles and (2) generate/itera
 4. **Help me improve design of X**
 5. **Make a poster / marketing asset** (flyer, cover art, social feed post, story, channel cover, thumbnail, ad creative) — a static artwork, not a page. Skip repo init/analysis; read [GRAPHIC.md](references/GRAPHIC.md) and follow it (you generate the key visual with your own image tool, upload it, then compose the artwork on a fixed canvas; platform dimension table included).
 6. **Design from a live website / reference URL** (borrow a style, restyle, recombine, or plan a rebuild) — extract a reference site's design DNA (style guide, design tokens, content structure, brand assets, a static reference clone) with `extract-website`, then design with it. Read [WEBSITE.md](references/WEBSITE.md) and follow its recipes. Note: via the CLI a "recreate"/"clone" is a **style-informed rebuild** — faithful pixel-recreation and *editable* on-canvas clones are done in the Superdesign app (superdesign.dev), not the CLI.
-7. **Design with your own model** — when the user explicitly asks, or `create-design-draft` / `iterate-design-draft` still fails after one retry, follow [design-with-your-model.md](references/design-with-your-model.md) to author and import the draft yourself.
+7. **Design or correct with your own model** — when the user explicitly asks, `create-design-draft` / `iterate-design-draft` still fails after one retry, or [SUPERDESIGN.md](references/SUPERDESIGN.md) **CORRECTION METHOD ROUTING** selects a deterministic direct edit, follow [design-with-your-model.md](references/design-with-your-model.md) to author or revise the draft yourself.
 8. **Work on an initialized target** — whenever a real-codebase UI request addresses a target already recorded in `.superdesign/resume.json`, try the durable path in [RESUME.md](references/RESUME.md) before any cold repo/context discovery. This is state-driven, not dependent on words such as "continue" or "refine".
+
+When continuing a draft, follow [SUPERDESIGN.md](references/SUPERDESIGN.md) **ITERATION MODE ROUTING**: replace refines the selected direction with version history; branch is only for alternatives the user wants to compare.
 
 # Step 0 — Environment preflight (BEFORE any CLI step)
 
@@ -132,6 +134,10 @@ After creating a project or design draft, and at natural review moments (after `
 ## Browser Choice
 
 `create-project` auto-opens the canvas in user's browser by default. Leave it on, and tell the user the canvas was opened (with the `canvas` URL as a clickable link). Only pass `--no-open` when there's no user-facing browser (CI, headless).
+
+# Images and local assets
+
+Before generation, inventory only the images the user attached or the narrowly relevant local assets selected for this target. Follow [SUPERDESIGN.md](references/SUPERDESIGN.md) **ASSET PURPOSE ROUTING**: temporary screenshots/references go to canvas reference nodes; logos, fonts, and reusable identity imagery go to Brand Assets; final-content imagery stays project content. Pass returned node ids or Brand Asset keys with `--reference-id` so create, iterate, and flow generation receive the actual pixels. When any source component or requested design has a logo position, enforce SUPERDESIGN.md's **Logo invariant**: an available appropriate Brand Asset logo must visibly render there, including inside reusable components; never substitute initials, emoji, generic marks, invented SVGs, or text alone. For a pasted direct public image URL or a website reference, read [WEBSITE.md](references/WEBSITE.md) and materialize only the selected visual through the same upload flow. Never bulk-upload the repository and never put local filesystem paths into draft HTML.
 
 # After generating: offer to go further
 

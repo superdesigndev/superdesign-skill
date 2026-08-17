@@ -76,11 +76,28 @@ The design API rejects oversized context with a **400**. When that happens and t
 
 **BRAND & ICON RULES:**
 
-1. **Brand assets (logo, brand marks)**: Scan the project for brand assets (logo SVGs, brand images). Pass logo SVG files as `--context-file` so the design reproduces the actual brand identity. Designs MUST reuse the project's real logo/brand — never replace with generic placeholders.
+1. **Brand assets (logo, brand marks, fonts, reusable brand imagery)**: Select only the files actually needed for this target and upload them through the purpose-routing workflow below. Use `--purpose brand`, the correct `--type`, a stable repo-relative `--key`, and a useful `--description`. Designs MUST reuse the project's real identity — never replace it with generic placeholders.
+   **Logo invariant:** whenever the source UI, a reusable component, or the requested design has a logo position and an appropriate logo Brand Asset exists, the exact Brand Asset logo MUST render there. Availability without visible use is a failed workflow. Resolve the upload's `assetKey` and public `url` before component extraction or generation; embed the exact URL in logo-bearing component templates, pass the key via `--reference-id`, and explicitly prohibit initials, emoji, generic marks, invented SVGs, or text-only substitutes. If several logos exist, use the one selected by the source UI/user; ask only when that choice is genuinely ambiguous.
 2. **Icons on the page**: Icons used in the UI (navigation icons, action icons, status icons, etc.) MUST be reproduced 1:1. Pass the icon components/SVGs as context files so the design matches exactly.
-3. **Decorative/content images (photos, illustrations, banners)**: Use a placeholder icon or generic image block instead. Do NOT pass large image files as context — these are not reproducible in design drafts anyway.
+3. **Decorative/content images (photos, illustrations, banners)**: Upload a selected image with `--purpose content` when the real image matters; otherwise use a placeholder. Never pass binary images as `--context-file`.
 
-Summary: **Logo = real, Icons = real, Photos/images = placeholder.**
+Summary: **Brand identity = durable Brand Assets, UI icons = source context, temporary inspiration = canvas reference, final imagery = project content.**
+
+### ASSET PURPOSE ROUTING (before every upload)
+
+Classify each deliberately selected file or user-attached image before uploading it. Never scan and upload an asset directory or repository wholesale.
+
+- **Temporary visual reference** — screenshots, mood references, competitor examples, annotated images: `upload-asset <file> --project-id <id> --purpose reference --key "<stable-descriptive-key>" --description "<what the model should notice>"`. Keep the returned canvas `nodeId`; pass it to generation with `--reference-id <nodeId>`. It belongs on the canvas, never in Brand Assets.
+- **Durable brand identity** — logos/marks, brand fonts, and reusable brand imagery: `upload-asset <file> --project-id <id> --purpose brand --type <logo|font|image> --key "<stable-repo-relative-key>" --description "<identity and intended use>"`. Keep the returned `assetKey`; use it as a `--reference-id` when the generation must see the pixels. Fonts are durable context but do not need to be visual reference blocks.
+- **Final-content imagery** — a generated hero, product photo, illustration, or other image meant to appear in the result: `upload-asset <file> --project-id <id> --purpose content --key "<stable-descriptive-key>" --description "<role in the design>"`. Use the returned public `url` in the design prompt where the HTML must embed it, and pass the returned `nodeId` via `--reference-id` when visual composition should follow the actual pixels. Do not mark it as brand merely because it will be visible in the final design.
+
+Use stable keys for local assets and reuse the server-returned key/node id on later calls. Uploading identical bytes deduplicates by content hash; uploading changed bytes under the same key updates the existing logical asset. Do not create timestamped/random keys and do not re-upload an unchanged file when its returned identifiers and public URL are already recorded. A legacy/warm logo record missing its canonical public URL may repeat the same stable-key upload once to recover that URL; deduplication must return the same logical asset. A `deduplicated: true` response means reuse the returned identifiers.
+
+`--context-file` is for text/source context. `--reference-id` is for actual image pixels. On `create-design-draft`, `iterate-design-draft`, and `execute-flow-pages`, pass every relevant image id together after one flag, for example `--reference-id <screenshot-node-id> <brand-asset-key>`. A prompt that merely names a local image path does not make it visible.
+
+For every generation containing a logo position, add an explicit constraint to the generation prompt: use the exact supplied Brand Asset logo in every logo position and do not replace it with initials, emoji, a generic mark, an invented SVG, or text alone. The `--reference-id` makes pixels visible; this instruction plus component URL embedding makes their use mandatory.
+
+Generated/imported HTML may reference only public `https://` (or intentional `data:`) asset URLs. Never emit `/logo.svg`, `./image.png`, `../...`, `file://...`, or a machine-local absolute path; upload first and use the returned public URL.
 
 Task 1.2 - Design system:
 
@@ -100,11 +117,13 @@ After requirements gathering, extract reusable components so they are available 
 2. **Create project first** (if not already created): `npx --yes @superdesign/cli@latest create-project --title "<X>"`
 3. **Check existing components**: `npx --yes @superdesign/cli@latest list-components --project-id <id>`
 4. **For each needed component that doesn't exist yet**:
-   a. Read the React source code from the path listed in `extractable-components.md`
-   b. Convert to Petite-Vue HTML template following the **Petite-Vue Template Spec** in [COMPONENTS.md](COMPONENTS.md) (read it first)
-   c. Create `.superdesign/tmp/` if needed. Ensure `.superdesign/tmp/` is ignored by the project's `.gitignore`;
+   a. If the source component contains a logo, resolve/upload the selected Brand Asset logo first and keep its returned public URL and `assetKey`. Read [COMPONENTS.md](COMPONENTS.md) **BRAND LOGO INVARIANT**; the converted template must embed that exact URL.
+   b. Read the React source code from the path listed in `extractable-components.md`
+   c. Convert to Petite-Vue HTML template following the **Petite-Vue Template Spec** in [COMPONENTS.md](COMPONENTS.md) (read it first)
+   d. Create `.superdesign/tmp/` if needed. Ensure `.superdesign/tmp/` is ignored by the project's `.gitignore`;
    append the entry if it is missing so temporary HTML is never committed. Then write the HTML to a file there.
-   d. Create the component:
+   e. Inspect the template before upload. When the source requires a logo, confirm it contains the resolved logo's exact public URL and contains no substitute mark; repair it before continuing if not.
+   f. Create the component:
    ```
    npx --yes @superdesign/cli@latest create-component --project-id <id> \
      --name "NavBar" \
@@ -114,6 +133,10 @@ After requirements gathering, extract reusable components so they are available 
    ```
 5. **Focus on layout components first** (NavBar, Sidebar, Footer, Header) — these appear on every page and benefit most from extraction.
 6. **Skip basic UI primitives** (Button, Input, Card) — these are too simple to warrant extraction and are better as inline HTML in drafts.
+
+Before reusing a saved logo-bearing component, apply the same invariant. If its stored/template HTML predates the selected logo or contains a substitute, update it with `update-component` before generation and update its saved version metadata. Do not preserve a wrong component merely because resume state is otherwise valid.
+
+When persistence is enabled, record the selected logo under `brandAssets.logo` and stamp every logo-bearing component record with its `logoAssetKey` per [RESUME.md](RESUME.md). A matching stamp is the warm-path proof that the component was built against that logo; missing or mismatched proof requires repair before reuse.
 
 After extraction, proceed to Step 3. The draft generation agent will automatically see these components via `buildComponentContext()` and use `<sd-component>` tags in the generated HTML.
 
@@ -127,6 +150,18 @@ After extraction, proceed to Step 3. The draft generation agent will automatical
 Step 3 — Design in Superdesign
 
 - Reuse the project id recovered from valid resume state. Otherwise create a project (IMPORTANT - MUST create project first unless a project id is already known): `npx --yes @superdesign/cli@latest create-project --title "<X>"`
+
+### LOGO RENDER POSTCONDITION
+
+Apply this after every `create-design-draft`, `iterate-design-draft`, and `execute-flow-pages` result when the source/request requires a logo and `brandAssets.logo` is available. Do it before reporting success or asking the user to review:
+
+1. Fetch each returned draft with `get-design --output` and inspect its HTML.
+2. Count every expected logo position from the source/request. For each position, require either the selected logo's exact public URL or a reference to a saved reusable component whose `logoAssetKey` matches the selected logo. Merely passing the Brand Asset key to generation is not proof of use.
+3. Reject initials, emoji, generic icons, invented SVG marks, and text-only substitutes in those positions. Brand text may remain beside the real logo when the source design includes both.
+4. If a reused component is wrong, repair its template with `update-component` first. If the draft omitted or substituted an inline logo, make the smallest deterministic HTML correction with `get-design --output` plus `import-design-draft --into`. Keep the same draft id/version history and do not branch or spend another generation credit.
+5. Refetch the component/draft and repeat the check. Stop and report the failed postcondition if the exact logo still cannot be proven; never call the draft complete based only on successful upload or generation.
+
+This is a structural HTML/component verification, not a claim of complete visual QA. The user still reviews rendering on the canvas.
 
 - **Step 3a — PIXEL-PERFECT reproduction (ground truth) — MANDATORY ONCE PER COLD/BASELINE-REFRESH TARGET**:
   Before ANY design changes, FIRST create a draft that is a **100% pixel-perfect reproduction** of the current UI.
@@ -156,9 +191,10 @@ Step 3 — Design in Superdesign
   **Line range usage**: per **CONTEXT FILE LINE RANGES** — pass files full by default; the `Target.tsx:45` above only skips a pure data-fetching block, keeping all JSX from line 45.
 
   This step produces ONE draft with ONE -p. The -p must ONLY ask for pixel-perfect reproduction, NO design changes.
+  If screenshots or other visual references were selected, append their ids as one `--reference-id <id...>` option so the reproduction model receives the actual pixels.
 
-- **Step 3b — Iterate with design variations using BRANCH mode — SEPARATE STEP**:
-  AFTER Step 3a completes and you have a draft-id, use `iterate-design-draft` with `--mode branch` to create design variations.
+- **Step 3b — Explore design variations using BRANCH mode — SEPARATE STEP**:
+  AFTER Step 3a completes and you have a draft-id, use `iterate-design-draft` with `--mode branch` only when the user wants alternative directions to compare.
   Each -p is ONE distinct variation. Do NOT combine multiple variations into a single -p.
 
   **VARIANT COUNT RULE** (every variation spends the user's generation credits, so the count is the user's call, not yours):
@@ -209,7 +245,7 @@ Step 3 differs — there is no Step 3a:
 - **Never create a "reproduction" of a page that doesn't exist.** Step 3a's job is capturing ground truth; for a new target there is none, and a fabricated "current UI" draft only corrupts the flow. Go straight to a design draft.
 - **If a related existing page is already on the canvas as a confirmed draft** (reproduced or designed earlier in this project): prefer `execute-flow-pages` from that draft — it inherits the confirmed page's style and shell, which is exactly what a sibling page should do.
 - **Otherwise**: `create-design-draft` with a normal design prompt (single `-p` describing the new page — a design prompt, not a reproduction prompt), passing `design-system.md`, the globals tokens, and the shared shell/layout + relevant component files as `--context-file` so the generated page matches the real app.
-- Then iterate variations with `iterate-design-draft --mode branch` per the VARIANT COUNT RULE, same as Step 3b.
+- When the user wants alternatives, explore them with `iterate-design-draft --mode branch` per the VARIANT COUNT RULE, same as Step 3b. Once the user selects a direction, route later feedback through **ITERATION MODE ROUTING** below.
 - After the first successful draft/flow result, add this target and its exact context bundle to `.superdesign/resume.json` per [RESUME.md](RESUME.md).
 - Optional, when the user emphasizes strict visual consistency with a specific existing page: offer to reproduce that representative page first (per Step 3a) and then `execute-flow-pages` the new page from it. This costs an extra generation, so propose it and let the user decide — don't do it unasked.
 
@@ -240,7 +276,7 @@ Step 3 — Design in Superdesign:
 - Create project: `npx --yes @superdesign/cli@latest create-project --title "<X>"`
 - Create initial draft (only for brand new, single -p only): `npx --yes @superdesign/cli@latest create-design-draft --project-id <id> --title "<X>" -p "<all design directions in one prompt>" --user-request "<the user's verbatim request>" --context-file .superdesign/design-system.md`
 - Surface the `canvas` URL per [SKILL.md](../SKILL.md) "Surface the canvas URL", then gather feedback and iterate.
-- Iterate in BRANCH mode;
+- Use **ITERATION MODE ROUTING** below: branch for alternatives, replace for feedback on the chosen direction.
 
 ---
 
@@ -286,10 +322,30 @@ When using execute-flow-pages:
 ## TOOL USE RULE
 
 Default tool while iterating design of a specific page is iterate-design-draft
-Default mode is branch
-You may use replace in two cases: (1) the user requests a tiny tweak you can describe in one sentence and is okay overwriting the previous version; (2) the graphic workflow's one-round self-review fix pass (see [GRAPHIC.md](GRAPHIC.md) Step 5) — that agent-initiated fix corrects the just-generated draft in place, so it uses `--mode replace` (never spend a variant branching a flaw you are fixing). Both cases are single-`-p`, one round only.
 Default tool while generating new pages based on an existing confirmed page is execute-flow-pages
 Prefer iterating an existing design draft over creating new ones
+
+### ITERATION MODE ROUTING
+
+Choose the mode from the user's intent, not from the size of the requested change:
+
+- **`replace` — creatively refine the selected direction.** Use one `-p` with `--mode replace` when the user wants the design model to interpret feedback about imagery, hierarchy, composition, layout, sections, styling, or another change requiring visual/design judgment. A change does not need to be tiny. Replace preserves the draft's version history and remains revertible; do not ask whether overwriting is okay.
+- **`branch` — explore alternatives.** Use `--mode branch` when the user explicitly asks for another direction, options, variants, comparison, experimentation, or several distinct outcomes. Multiple `-p` prompts or `--count > 1` are always branch exploration.
+- **Selection stops exploratory branching.** Phrases such as “I prefer,” “use this one,” “choose,” “continue with,” or “refine that direction” select a draft. Set that draft as active, then route subsequent feedback through **CORRECTION METHOD ROUTING**. Do not create a fresh branch merely because the feedback is substantial or arrives in a later turn.
+- **Fix defects without branching.** Route deterministic defects through **CORRECTION METHOD ROUTING** below. Use replace only when fixing the defect still requires creative or structural design judgment. Never spend a branch on correcting a defect.
+- **Ask only when intent is genuinely ambiguous.** If the user could reasonably mean either “change this draft” or “show me a separate option,” ask one concise clarification before spending generation credits. Do not ask when their language already identifies one desired result.
+
+For branch calls that return several candidates, keep the source active until the user selects one. For replace, the draft id stays the same; update its current-version metadata and keep it active.
+
+### CORRECTION METHOD ROUTING
+
+Choose the authoring method before correcting the selected draft:
+
+- **Direct edit — exact result is knowable from the request and current HTML.** Use `get-design --output` followed by `import-design-draft --into` for precise text/link corrections, removal of unsupported copy, swapping an already-uploaded public asset URL, literal class/style fixes, exact spacing/sizing/overflow changes, malformed markup cleanup, and similarly deterministic HTML/CSS edits. Keep the same draft id; the import creates a validated, revertible version without generation credits. Follow [design-with-your-model.md](design-with-your-model.md), act on returned warnings, refetch the saved HTML/version, and ask the user to review the canvas. Do not claim visual verification from reading HTML.
+- **Model replace — desired result requires design judgment.** Use `iterate-design-draft --mode replace` for recomposition, hierarchy improvements, aesthetic refinement, responsive redesign, image-crop/art-direction choices, or feedback whose correct CSS/markup cannot be specified deterministically from the current HTML and user's words.
+- **Branch — user wants alternatives.** Use branch only under **ITERATION MODE ROUTING** above.
+
+If a request mixes exact corrections with creative redesign, include the exact constraints in one replace prompt rather than first direct-editing HTML that the model will immediately rewrite. If “make this better” is too ambiguous to choose a method, ask one concise question before spending credits.
 
 For an unchanged initialized target, "prefer" is a hard routing rule: use [RESUME.md](RESUME.md); do not repeat init reads, source discovery, component checks, project creation, or reproduction.
 
@@ -361,6 +417,9 @@ Every command takes `--json` for the full machine payload, and `--full` expands 
 - `--model`: omit it unless the user names one, so the backend picks its default. Do not memorize the list — run `list-models`.
 - `--device` on `iterate-design-draft` is inherited from the source draft; omit it unless you are deliberately changing the viewport. `--kind graphic` switches `create-design-draft` to the fixed-canvas branch and sticks across iterations; pair it with `--width`/`--height` (see [GRAPHIC.md](GRAPHIC.md)).
 - `execute-flow-pages --context` is a prose string; `--context-file` passes source files. They are different inputs.
+- `create-design-draft`, `iterate-design-draft`, and `execute-flow-pages` accept image pixels through `--reference-id <ids...>`. Canvas image-node ids and Brand Asset keys are valid only within their project; an unknown id fails the job instead of being ignored.
+- `upload-asset` requires explicit purpose in this workflow: `reference` for temporary canvas inputs, `brand` for reusable identity, and `content` for final imagery. Stable keys upsert and content hashes deduplicate; use the response's `nodeId`, `assetKey`, `url`, and `deduplicated` fields rather than guessing identifiers.
+- A pasted direct public image URL is an agent-side adapter, not a platform fetch: read [WEBSITE.md](WEBSITE.md), download it safely to an external temporary file, then use the same `upload-asset` command. Do not upload raw PDFs; PDF reference ingestion is deferred.
 - `get-prompts`: index with the default output first, then re-run with `--full` for the chosen slug(s) only.
 - `create-project` auto-opens the browser — see Browser Choice in [SKILL.md](../SKILL.md). Revert and `--from-version` semantics live in VERSION HISTORY & REVERT.
 

@@ -2,6 +2,18 @@
 
 Read this right before converting a codebase component into a reusable Superdesign DraftComponent — i.e. Step 2.5's conversion step in [SUPERDESIGN.md](SUPERDESIGN.md), or any `create-component`/`update-component` call. Run `create-component --help` / `update-component --help` for their flag sets.
 
+## BRAND LOGO INVARIANT
+
+Treat a real project logo as required content whenever the source component or requested design contains a logo position.
+
+1. Before converting the component, resolve the appropriate logo selected by the source UI or user from the project's Brand Assets. On a cold flow, upload the selected local logo first with `--purpose brand --type logo`, a stable repo-relative `--key`, and a usage description. Keep both the returned `assetKey` and public `url`. On a warm flow, reuse the saved logo key; if its public URL is not already available in the working context, repeat the same stable-key upload so deduplication returns the canonical URL.
+2. Hardcode that exact public `https://` URL in an `<img>` inside every logo-bearing template. Preserve the source alt text, dimensions, and layout treatment.
+3. Never replace an available logo with initials, product-name text alone, an emoji, a generic icon, an invented SVG, or another placeholder. Text may accompany the logo only when the source UI does so.
+4. Before `create-component` or `update-component`, inspect the finished HTML. If the source needs a logo and the template does not contain the resolved logo URL, stop and repair the template first.
+5. If a logo becomes available after a reusable component was created, update every affected component before the next generation.
+
+Allow a no-logo fallback only when the project has no appropriate logo Brand Asset and no deliberately selected local logo. Do not fabricate a brand mark; preserve a text-only identity when appropriate.
+
 ## PETITE-VUE TEMPLATE SPEC
 
 When converting React components to Petite-Vue HTML templates for `create-component`:
@@ -76,7 +88,11 @@ function NavBar({ activeItem = "home" }) {
 
 ```html
 <nav class="flex items-center gap-4 px-6 py-3 bg-white border-b">
-  <svg class="w-6 h-6"><!-- actual logo SVG --></svg>
+  <img
+    src="https://cdn.example.com/brand/logo.svg"
+    alt="Project logo"
+    class="h-6 w-6"
+  />
   <a
     :href="homeHref"
     :class="{ 'font-bold': activeItem === 'home' }"
