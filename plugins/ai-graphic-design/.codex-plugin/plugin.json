@@ -1,0 +1,57 @@
+{
+  "name": "ai-graphic-design",
+  "version": "0.1.2",
+  "description": "AI Graphic Design, powered by Superdesign, creates graphics, slides, presentations and PPT-style decks, and stores AI-generated images in a persistent Moodboard project on an infinite canvas.",
+  "author": {
+    "name": "Superdesign dev, Inc.",
+    "email": "support@superdesign.dev",
+    "url": "https://superdesign.dev"
+  },
+  "homepage": "https://superdesign.dev",
+  "repository": "https://github.com/superdesigndev/superdesign-skill",
+  "license": "MIT",
+  "keywords": [
+    "ai-graphic-design",
+    "graphic-design",
+    "poster-maker",
+    "social-media-design",
+    "presentation-design",
+    "slides",
+    "slide-design",
+    "presentations",
+    "presentation-maker",
+    "ppt",
+    "powerpoint",
+    "pitch-deck",
+    "moodboard",
+    "ai-assets",
+    "visual-library",
+    "image-upload",
+    "infinite-canvas",
+    "superdesign"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "AI Graphic Design",
+    "shortDescription": "Graphics, slides & moodboard",
+    "longDescription": "AI Graphic Design is powered by Superdesign. Create polished posters, social graphics and campaign assets; design coherent slides, presentations, pitch decks and PPT-style decks; or use a persistent Moodboard project to collect AI-generated images and visual references on the Superdesign infinite canvas. Reopen the canvas whenever you want to view or reuse those assets, and create gallery or exhibition-style webpages from selected material when requested.",
+    "developerName": "Superdesign",
+    "category": "Creativity",
+    "capabilities": [
+      "Read",
+      "Write",
+      "UI"
+    ],
+    "websiteURL": "https://superdesign.dev",
+    "privacyPolicyURL": "https://superdesign.dev/privacy-policy",
+    "termsOfServiceURL": "https://superdesign.dev/terms-of-service",
+    "defaultPrompt": [
+      "Create three graphic directions for my campaign.",
+      "Design a polished presentation/PPT deck from this brief.",
+      "Upload these AI images to my Moodboard project and open the canvas."
+    ],
+    "brandColor": "#5B4BFF",
+    "composerIcon": "./assets/ai-graphic-design-icon.png",
+    "logo": "./assets/ai-graphic-design-icon.png"
+  }
+}

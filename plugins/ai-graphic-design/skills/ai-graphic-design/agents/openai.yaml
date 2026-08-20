@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Graphic Design"
+  short_description: "Graphics, slides & moodboard"
+  default_prompt: "Use $ai-graphic-design to create visual work or save my AI-generated images in a persistent Moodboard project on the Superdesign canvas."
