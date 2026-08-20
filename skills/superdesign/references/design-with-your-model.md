@@ -29,3 +29,5 @@ Use this path when the user explicitly asks the current Agent to design, when `c
 7. For a real-codebase UI target, record the imported draft/version as the active result in `.superdesign/resume.json` per [RESUME.md](RESUME.md). Preserve the already-selected context bundle and fingerprints; graphics do not use this resume state.
 
 Use the real model identifier exposed by the harness. If none is available, omit `--generated-by` instead of inventing one. Use `--width`/`--height` for a custom viewport and add `--kind graphic` for fixed-canvas graphics; read `--help` rather than guessing other flags.
+
+For presentation HTML, read [PRESENTATION.md](PRESENTATION.md) first. A new presentation import uses `--kind presentation` plus the approved `--outline-file`, navigation, transition, and Brand Assets settings. An imported version preserves stored presentation metadata by default; pass `--outline-file` only after an approved structural slide edit, and pass `--navigation-controls` only when that preference changed.

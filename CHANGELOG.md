@@ -7,6 +7,22 @@ field is bumped — every release entry below corresponds to a `chore(plugin): b
 bumps `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, `.cursor-plugin/plugin.json`, and the
 root `package.json` (the DeepSeek Harness bundle) together.
 
+## Unreleased
+
+- Add a presentation workflow with host-agent requirements reasoning, visual-direction selection, and
+  editable outline approval before generation.
+- Route presentation creation through the dedicated CLI contract with stored outline, navigation,
+  transition, Brand Assets, and visual-reference inputs.
+- Add presentation-aware targeted and structural iteration guidance that reads and updates stored deck
+  metadata without changing normal UI or graphic workflows.
+- Add a grouped presentation-preference questionnaire with explicit choices, browser-first website-reference
+  inspection, and a full final approval block that confirms the outline, visual direction, controls,
+  transition, and Brand Assets.
+- Keep presentation creation, iteration, and visual branches on the backend draft-model default unless
+  the user explicitly requests a named model or a model comparison.
+- Add an editable PPTX export route that prefers a native Superdesign export and otherwise uses an
+  available host presentation tool to reconstruct slides with editable objects and visual verification.
+
 ## 0.5.1
 
 - Simplify the skill entrypoint into a concise capability catalog while keeping detailed workflows in

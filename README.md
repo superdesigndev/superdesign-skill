@@ -1,8 +1,8 @@
-# Superdesign: the design skill for Claude Code, Cursor and any coding agent
+# Superdesign: UI, presentations, and graphics for coding agents
 
 **Stop shipping AI-slop UI.** Coding agents write great code and mediocre interfaces: generic layouts, default shadcn everything, no taste. Superdesign is the skill that gives your agent design judgment, so the UI it ships actually looks considered.
 
-Install it once and your agent (Claude Code, Cursor, Codex, and 70+ others) can find real design direction, set up a design system, and generate + iterate high-quality UI drafts on an infinite canvas, all without leaving your terminal.
+Install it once and your agent (Claude Code, Cursor, Codex, and 70+ others) can find real design direction and generate + iterate high-quality UI, presentations, and graphics on an infinite canvas, all without leaving your terminal.
 
 > Powered by [superdesign.dev](https://superdesign.dev), the AI product design agent.
 
@@ -16,7 +16,7 @@ Install it once and your agent (Claude Code, Cursor, Codex, and 70+ others) can 
 
 **Superdesign is an AI product design agent.** It gives coding agents (Claude Code, Cursor, Codex, and 70+ others) real design judgment, so the UI they ship looks considered instead of generic.
 
-- **What it does** — finds design direction, sets up a design system from your codebase, and generates + iterates high-quality UI drafts on an infinite canvas, all from your terminal.
+- **What it does** — finds design direction, sets up design systems, approves presentation outlines, and generates + iterates high-quality UI, slide decks, and graphics on an infinite canvas.
 - **Who it's for** — developers, indie hackers, and product/UI designers who want to go from idea to shippable UI fast without leaving their coding agent.
 - **How it's different** — style-preset skills just swap in a theme or a component library. Superdesign designs *into* your existing design system: it reads your code for context, gathers real style references, and produces branchable drafts you refine.
 - **Cross-session continuity** — after the first real-codebase design, the skill remembers the project, draft, extracted components, and budgeted source-context bundle so later unchanged iterations resume without repeating codebase discovery.
@@ -66,15 +66,21 @@ Just talk to your agent:
 /superdesign improve the design of my dashboard
 ```
 
+```
+/superdesign create an 8-slide presentation about our product launch
+```
+
 The skill handles the rest: it reads your code for context, gathers real style references, and produces design drafts you can branch and refine.
 
 ---
 
 # Core scenarios (what this skill handles)
 
-1. **Help me design X** (feature/page/flow)
-2. **Set design system**
-3. **Help me improve design of X** (make it not look AI-generated)
+1. **Design or improve UI** (feature/page/flow)
+2. **Create a presentation** with an editable approved outline
+3. **Create graphics** (posters, covers, social posts, and ads)
+4. **Set or extract a design system**
+5. **Generate supporting images or video**
 
 ## Tooling overview
 
@@ -110,6 +116,9 @@ Use design agent to generate high quality design drafts:
 - Iterate design draft (replace / branch)
 - Plan flow pages → execute flow pages
 - Fetch specific design draft
+- Create a presentation from an approved ordered slide outline
+- Read stored presentation outline and preferences for safe iteration
+- List reusable Project Brand Assets
 
 ---
 
@@ -283,6 +292,11 @@ superdesign extract-website --url https://example.com --design-md   # style guid
 # The design system is passed as --context-file on the draft/iterate commands, not here.
 superdesign create-project --title "X"
 superdesign create-project --title "X" --template ./index.html
+
+# Presentation - approve the outline in chat before this call
+superdesign create-presentation --project-id <id> --title "X" \
+  --outline-file ./slides.json --visual-direction "..." \
+  --navigation-controls show --transition auto --brand-assets use
 
 # Iterate: replace mode (single variation, updates in place)
 superdesign iterate-design-draft --draft-id <id> -p "..." --mode replace

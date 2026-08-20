@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "name": "superdesign",
-  "description": "The Superdesign design skill for Claude Code, published by Superdesign dev, Inc.",
+  "description": "The Superdesign UI, presentation, and graphics skill for Claude Code, published by Superdesign dev, Inc.",
   "owner": {
     "name": "Superdesign dev, Inc.",
     "email": "support@superdesign.dev",
@@ -16,7 +16,8 @@
         "design",
         "ui",
         "design-systems",
-        "graphics"
+        "graphics",
+        "presentations"
       ]
     }
   ]

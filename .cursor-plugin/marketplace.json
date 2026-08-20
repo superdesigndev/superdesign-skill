@@ -6,14 +6,14 @@
     "url": "https://superdesign.dev"
   },
   "metadata": {
-    "description": "The Superdesign design skill for Cursor, published by Superdesign dev, Inc.",
+    "description": "The Superdesign UI, presentation, and graphics skill for Cursor, published by Superdesign dev, Inc.",
     "version": "0.4.4"
   },
   "plugins": [
     {
       "name": "superdesign",
       "source": "./",
-      "description": "Design or redesign frontend UI and marketing graphics on the Superdesign infinite canvas."
+      "description": "Design or redesign frontend UI, presentations, and marketing graphics on the Superdesign infinite canvas."
     }
   ]
 }

@@ -2,7 +2,7 @@
   "name": "superdesign",
   "displayName": "Superdesign",
   "version": "0.5.1",
-  "description": "Design or redesign frontend UI and marketing graphics on the Superdesign infinite canvas. Reads your codebase for context, sets up a design system, and generates branchable design drafts you refine.",
+  "description": "Design or redesign frontend UI, presentations, and marketing graphics on the Superdesign infinite canvas. Uses approved slide outlines, project context, and branchable drafts you refine.",
   "author": {
     "name": "Superdesign dev, Inc.",
     "email": "support@superdesign.dev",
@@ -24,6 +24,8 @@
     "branding",
     "graphics",
     "posters",
+    "presentations",
+    "slide-decks",
     "image-generation",
     "infinite-canvas",
     "design-drafts"
