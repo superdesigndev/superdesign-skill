@@ -423,6 +423,12 @@ Every command takes `--json` for the full machine payload, and `--full` expands 
 - `get-prompts`: index with the default output first, then re-run with `--full` for the chosen slug(s) only.
 - `create-project` auto-opens the browser — see Browser Choice in [SKILL.md](../SKILL.md). Revert and `--from-version` semantics live in VERSION HISTORY & REVERT.
 
+### Image & Video Generation (quote → confirm; spends credits)
+
+Read [ASSET_GENERATION.md](ASSET_GENERATION.md) whenever the work needs a new image or video asset. Prefer existing/user-provided assets first. For a new image, prefer the host agent's native image generation when available, then import it with `upload-asset`; use `generate-image` when the user requests a Superdesign model, wants model comparisons or ledger tracking, or the Superdesign catalog better fits the job. Use `generate-video` for generated video.
+
+Superdesign image/video generation is quote → confirm: quoting is free, while `confirm-generation` spends the displayed credits. Relay the quote and run its exact confirmation command only after the user explicitly approves that price in this conversation. Read the command's `--help` and follow its returned hints for current models, parameters, and recovery.
+
 ---
 
 ## EXTRACT-WEBSITE
