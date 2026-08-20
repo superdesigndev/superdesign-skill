@@ -7,6 +7,14 @@ field is bumped — every release entry below corresponds to a `chore(plugin): b
 bumps `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, `.cursor-plugin/plugin.json`, and the
 root `package.json` (the DeepSeek Harness bundle) together.
 
+## 0.5.1
+
+- Simplify the skill entrypoint into a concise capability catalog while keeping detailed workflows in
+  their scenario-specific references.
+- Highlight task-aware selection and comparison across leading design-generation models.
+- Route supporting image and video generation from the skill entrypoint and align the Codex-facing
+  description around creating the best UI and visuals.
+
 ## 0.5.0
 
 - Add image and video asset generation guidance for the Superdesign CLI: prefer a host agent's native
