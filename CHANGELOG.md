@@ -7,7 +7,16 @@ field is bumped — every release entry below corresponds to a `chore(plugin): b
 bumps `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, `.cursor-plugin/plugin.json`, and the
 root `package.json` (the DeepSeek Harness bundle) together.
 
-## Unreleased
+## 0.5.0
+
+- Add image and video asset generation guidance for the Superdesign CLI: prefer a host agent's native
+  image generator for ordinary assets, use Superdesign when its model catalog or generation ledger is
+  specifically useful, and route generated video through Superdesign.
+- Add `ASSET_GENERATION.md` to decide when original pixels or motion improve a design, distinguish
+  final content from temporary visual references and durable Brand Assets, and carry generated results
+  into design drafts through their public URL and canvas node id.
+- Keep the paid generation mechanics discoverable through live CLI help and returned hints, while
+  preserving the explicit quote confirmation boundary and idempotent timeout recovery rule.
 
 ## 0.4.4
 
