@@ -414,7 +414,7 @@ Every command takes `--json` for the full machine payload, and `--full` expands 
 
 - No source draft to build on → `create-design-draft` (the Step 3a reproduction, a new target in an existing codebase, or a scratch project). Vary an existing draft → `iterate-design-draft`. Extend sibling pages from a confirmed one → `execute-flow-pages` (1-10 pages per call, each styled after the source draft).
 - Resuming a project from an earlier session → use `.superdesign/resume.json` and address its saved draft id directly. If the saved draft is rejected or resume state is unavailable, `fetch-design-nodes --project-id <id>` recovers the project's draft ids as the fallback.
-- `--model`: omit it unless the user names one, so the backend picks its default. Do not memorize the list — run `list-models`.
+- `--model`: model choice materially affects design quality, speed, and cost. Run `list-models`, choose a model that fits the task instead of always relying on the default, and briefly tell the user what you picked and why. Use different models for independent comparison directions when requested; never memorize the catalog.
 - `--device` on `iterate-design-draft` is inherited from the source draft; omit it unless you are deliberately changing the viewport. `--kind graphic` switches `create-design-draft` to the fixed-canvas branch and sticks across iterations; pair it with `--width`/`--height` (see [GRAPHIC.md](GRAPHIC.md)).
 - `execute-flow-pages --context` is a prose string; `--context-file` passes source files. They are different inputs.
 - `create-design-draft`, `iterate-design-draft`, and `execute-flow-pages` accept image pixels through `--reference-id <ids...>`. Canvas image-node ids and Brand Asset keys are valid only within their project; an unknown id fails the job instead of being ignored.
@@ -422,14 +422,6 @@ Every command takes `--json` for the full machine payload, and `--full` expands 
 - A pasted direct public image URL is an agent-side adapter, not a platform fetch: read [WEBSITE.md](WEBSITE.md), download it safely to an external temporary file, then use the same `upload-asset` command. Do not upload raw PDFs; PDF reference ingestion is deferred.
 - `get-prompts`: index with the default output first, then re-run with `--full` for the chosen slug(s) only.
 - `create-project` auto-opens the browser — see Browser Choice in [SKILL.md](../SKILL.md). Revert and `--from-version` semantics live in VERSION HISTORY & REVERT.
-
-### Image & Video Generation (quote → confirm; spends credits)
-
-Read [ASSET_GENERATION.md](ASSET_GENERATION.md) whenever the work needs a new image or video asset. Prefer existing/user-provided assets first. For a new image, prefer the host agent's native image generation when available, then import it with `upload-asset`; use `generate-image` when the user requests a Superdesign model, wants model comparisons or ledger tracking, or the Superdesign catalog better fits the job. Use `generate-video` for generated video.
-
-Superdesign image/video generation is quote → confirm: quoting is free, while `confirm-generation` spends the displayed credits. Relay the quote and run its exact confirmation command only after the user explicitly approves that price in this conversation. Read the command's `--help` and follow its returned hints for current models, parameters, and recovery.
-
----
 
 ## EXTRACT-WEBSITE
 
