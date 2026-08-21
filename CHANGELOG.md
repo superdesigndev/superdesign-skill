@@ -7,7 +7,7 @@ field is bumped — every release entry below corresponds to a `chore(plugin): b
 bumps `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, `.cursor-plugin/plugin.json`, and the
 root `package.json` (the DeepSeek Harness bundle) together.
 
-## Unreleased
+## 0.6.0
 
 - Add a presentation workflow with host-agent requirements reasoning, visual-direction selection, and
   editable outline approval before generation.
