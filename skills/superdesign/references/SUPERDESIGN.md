@@ -4,10 +4,11 @@ IMPORTANT: MUST produce design on superdesign, only implement actual code AFTER 
 
 Convention — whenever this file says to ask, confirm, or check something with the user: use the session's user-input mechanism if one is available, otherwise ask in chat.
 
-HARD GATE — INIT BEFORE ANY DESIGN (real-codebase path): When a real codebase is present, NEVER run any generation command (`create-project`, `create-design-draft`, `iterate-design-draft`, `execute-flow-pages`) until init is complete per the init-complete test in [SKILL.md](../SKILL.md) (all six `.superdesign/init/` files exist and are non-empty). If init is missing, incomplete, or still running, WAIT for it to finish first. Creating a project or draft before init is done is a hard error. This gate does NOT apply to:
+HARD GATE — INIT BEFORE ANY DESIGN (real-codebase path): When a real codebase is present, NEVER run any generation command (`create-project`, `create-design-draft`, `create-presentation`, `iterate-design-draft`, `execute-flow-pages`) until init is complete per the init-complete test in [SKILL.md](../SKILL.md) (all six `.superdesign/init/` files exist and are non-empty). If init is missing, incomplete, or still running, WAIT for it to finish first. Creating a project or draft before init is done is a hard error. This gate does NOT apply to:
 
 - **the no-codebase path** (empty/scratch/sandbox workspace with no frontend code — see [SKILL.md](../SKILL.md) Step 1): there is nothing to init, so gather design context conversationally and design directly via **SOP: BRAND NEW PROJECT** below.
 - **the graphic workflow** ([GRAPHIC.md](GRAPHIC.md)): posters/marketing assets are standalone fixed-canvas artworks that never require repo init or design-system context — UNLESS the user wants on-brand output matching the codebase (asked explicitly, or confirmed via the graphic brief's on-brand item), in which case pass the design-system/brand context — running init first only if that context doesn't already exist.
+- **the presentation workflow** ([PRESENTATION.md](PRESENTATION.md)): slide decks skip UI repo init by default. Use only relevant product documents, design-system context, and Brand Assets when the user wants an on-brand deck. Run init only when codebase brand matching is required and no usable brand or theme context exists.
 
 ## UI TARGET ROUTING (pick the SOP by what the design targets)
 
@@ -355,6 +356,8 @@ When the user's feedback is vague ("I don't like the banner position"), ask what
 
 When you run `create-design-draft` or `iterate-design-draft` on behalf of a user request, you SHOULD pass the user's verbatim message for that round via `--user-request "<text>"`.
 
+The same rule applies to `create-presentation` and presentation iterations.
+
 - Pass the user's ACTUAL words for this round (not your paraphrase, not the design-system-fidelity boilerplate). This is the caller-side signal the design backend uses to improve generation quality.
 - This is separate from `-p`/`--prompt`: `-p` is the directional design instruction(s) you author; `--user-request` is the raw human ask that motivated them.
 - Transparency: the text is shared with SuperDesign and stored server-side to improve generation. Keep it to the round's request; the field is capped at 16KB (truncate if longer).
@@ -413,8 +416,10 @@ Every command takes `--json` for the full machine payload, and `--full` expands 
 **Which command:**
 
 - No source draft to build on → `create-design-draft` (the Step 3a reproduction, a new target in an existing codebase, or a scratch project). Vary an existing draft → `iterate-design-draft`. Extend sibling pages from a confirmed one → `execute-flow-pages` (1-10 pages per call, each styled after the source draft).
+- A slide deck is a presentation artifact, not a normal page or graphic. Read [PRESENTATION.md](PRESENTATION.md), approve the complete outline in chat, then use `create-presentation`. Never use `create-design-draft` for initial presentation creation.
+- Before a presentation iteration, use `get-design --json` to load its stored outline and preferences. Structural replace edits pass the complete final outline through `--presentation-outline-file`; visible control changes pass `--navigation-controls`. Omit these presentation-only flags from ordinary drafts and non-structural presentation edits.
 - Resuming a project from an earlier session → use `.superdesign/resume.json` and address its saved draft id directly. If the saved draft is rejected or resume state is unavailable, `fetch-design-nodes --project-id <id>` recovers the project's draft ids as the fallback.
-- `--model`: model choice materially affects design quality, speed, and cost. Run `list-models`, choose a model that fits the task instead of always relying on the default, and briefly tell the user what you picked and why. Use different models for independent comparison directions when requested; never memorize the catalog.
+- `--model`: model choice materially affects design quality, speed, and cost. Run `list-models`, choose a model that fits the task instead of always relying on the default, and briefly tell the user what you picked and why. Use different models for independent comparison directions when requested; never memorize the catalog. **Presentation exception:** follow [PRESENTATION.md](PRESENTATION.md); normal presentation creation, iteration, and visual branching omit `--model` and use the backend draft default.
 - `--device` on `iterate-design-draft` is inherited from the source draft; omit it unless you are deliberately changing the viewport. `--kind graphic` switches `create-design-draft` to the fixed-canvas branch and sticks across iterations; pair it with `--width`/`--height` (see [GRAPHIC.md](GRAPHIC.md)).
 - `execute-flow-pages --context` is a prose string; `--context-file` passes source files. They are different inputs.
 - `create-design-draft`, `iterate-design-draft`, and `execute-flow-pages` accept image pixels through `--reference-id <ids...>`. Canvas image-node ids and Brand Asset keys are valid only within their project; an unknown id fails the job instead of being ignored.

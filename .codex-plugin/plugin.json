@@ -1,7 +1,7 @@
 {
   "name": "superdesign",
   "version": "0.5.1",
-  "description": "Superdesign adds a design skill to ChatGPT that spans both web UI and graphics.",
+  "description": "Superdesign adds a design skill to ChatGPT for web UI, presentations, and graphics.",
   "author": {
     "name": "Superdesign dev, Inc.",
     "email": "support@superdesign.dev",
@@ -23,6 +23,8 @@
     "branding",
     "graphics",
     "posters",
+    "presentations",
+    "slide-decks",
     "image-generation",
     "infinite-canvas",
     "design-drafts"
@@ -30,8 +32,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "01 Superdesign",
-    "shortDescription": "Create the best UI & visuals",
-    "longDescription": "From landing pages to launch graphics, Superdesign turns your ideas into polished visuals you can explore and refine with ChatGPT. See multiple directions side by side on an infinite browser canvas, choose what feels right, and keep iterating—all grounded in your brand and existing design system.",
+    "shortDescription": "Create UI, presentations & visuals",
+    "longDescription": "From landing pages and presentations to launch graphics, Superdesign turns your ideas into polished visuals you can explore and refine with ChatGPT. Approve slide outlines, compare design directions on an infinite browser canvas, and keep iterating—all grounded in your brand and existing design system.",
     "developerName": "Superdesign",
     "category": "Creativity",
     "capabilities": [
@@ -45,6 +47,7 @@
     "defaultPrompt": [
       "Design an on-brand landing page for this product.",
       "Reimagine this interface in three distinct visual directions.",
+      "Create an on-brand presentation with an approved slide outline.",
       "Create a polished launch graphic for this product to share on X (Twitter)."
     ],
     "brandColor": "#000000",
