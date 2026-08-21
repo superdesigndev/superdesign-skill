@@ -1,6 +1,6 @@
 {
   "name": "superdesign-dsh",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "type": "module",
   "description": "Design frontend UI, presentations, and marketing graphics on the Superdesign infinite canvas — packaged as a DeepSeek Harness skill bundle.",
   "main": "dsh/index.js",
